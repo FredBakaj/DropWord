@@ -1,12 +1,13 @@
 ﻿namespace DropWord.Domain.Common;
 
-public abstract class BaseAuditableEntity : BaseEntity
+public abstract class BaseAuditableEntity<T> : BaseEntity<T>,IBaseAuditableEntity where T : struct
 {
     public DateTimeOffset Created { get; set; }
+    public DateTimeOffset? WhenDeleted { get; set; }
+}
 
-    public string? CreatedBy { get; set; }
-
-    public DateTimeOffset LastModified { get; set; }
-
-    public string? LastModifiedBy { get; set; }
+public interface IBaseAuditableEntity
+{
+    public DateTimeOffset Created { get; set; }
+    public DateTimeOffset? WhenDeleted { get; set; }
 }

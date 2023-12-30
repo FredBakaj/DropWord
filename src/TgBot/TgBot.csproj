@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>DropWord.TgBot</RootNamespace>
+    <AssemblyName>DropWord.TgBot</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" />
+    <PackageReference Include="Swashbuckle.AspNetCore"/>
+    <PackageReference Include="Telegram.Bot" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Core\Config\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Core\Config\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Core\Config\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Core\Config\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+
+</Project>

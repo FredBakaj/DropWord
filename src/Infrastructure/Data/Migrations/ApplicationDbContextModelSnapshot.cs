@@ -17,379 +17,430 @@ namespace DropWord.Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-preview.6.23329.4")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DropWord.Domain.Entities.TodoItem", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
-
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                b.Property<DateTimeOffset>("Created")
-                    .HasColumnType("datetimeoffset");
-
-                b.Property<string>("CreatedBy")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<bool>("Done")
-                    .HasColumnType("bit");
-
-                b.Property<DateTimeOffset>("LastModified")
-                    .HasColumnType("datetimeoffset");
-
-                b.Property<string>("LastModifiedBy")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<int>("ListId")
-                    .HasColumnType("int");
-
-                b.Property<string>("Note")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<int>("Priority")
-                    .HasColumnType("int");
-
-                b.Property<DateTime?>("Reminder")
-                    .HasColumnType("datetime2");
-
-                b.Property<string>("Title")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("nvarchar(200)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("ListId");
-
-                b.ToTable("TodoItems");
-            });
-
-            modelBuilder.Entity("DropWord.Domain.Entities.TodoList", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
-
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                b.Property<DateTimeOffset>("Created")
-                    .HasColumnType("datetimeoffset");
-
-                b.Property<string>("CreatedBy")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<DateTimeOffset>("LastModified")
-                    .HasColumnType("datetimeoffset");
-
-                b.Property<string>("LastModifiedBy")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("Title")
-                    .IsRequired()
-                    .HasMaxLength(200)
-                    .HasColumnType("nvarchar(200)");
-
-                b.HasKey("Id");
-
-                b.ToTable("TodoLists");
-            });
-
-            modelBuilder.Entity("DropWord.Infrastructure.Identity.ApplicationUser", b =>
-            {
-                b.Property<string>("Id")
-                    .HasColumnType("nvarchar(450)");
-
-                b.Property<int>("AccessFailedCount")
-                    .HasColumnType("int");
-
-                b.Property<string>("ConcurrencyStamp")
-                    .IsConcurrencyToken()
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("Email")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
-
-                b.Property<bool>("EmailConfirmed")
-                    .HasColumnType("bit");
-
-                b.Property<bool>("LockoutEnabled")
-                    .HasColumnType("bit");
-
-                b.Property<DateTimeOffset?>("LockoutEnd")
-                    .HasColumnType("datetimeoffset");
-
-                b.Property<string>("NormalizedEmail")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
-
-                b.Property<string>("NormalizedUserName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
-
-                b.Property<string>("PasswordHash")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("PhoneNumber")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<bool>("PhoneNumberConfirmed")
-                    .HasColumnType("bit");
-
-                b.Property<string>("SecurityStamp")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<bool>("TwoFactorEnabled")
-                    .HasColumnType("bit");
-
-                b.Property<string>("UserName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("NormalizedEmail")
-                    .HasDatabaseName("EmailIndex");
-
-                b.HasIndex("NormalizedUserName")
-                    .IsUnique()
-                    .HasDatabaseName("UserNameIndex")
-                    .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                b.ToTable("AspNetUsers", (string)null);
-            });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-            {
-                b.Property<string>("Id")
-                    .HasColumnType("nvarchar(450)");
-
-                b.Property<string>("ConcurrencyStamp")
-                    .IsConcurrencyToken()
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("Name")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
-
-                b.Property<string>("NormalizedName")
-                    .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("NormalizedName")
-                    .IsUnique()
-                    .HasDatabaseName("RoleNameIndex")
-                    .HasFilter("[NormalizedName] IS NOT NULL");
-
-                b.ToTable("AspNetRoles", (string)null);
-            });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
-
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("RoleId")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("RoleId");
-
-                b.ToTable("AspNetRoleClaims", (string)null);
-            });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("int");
-
-                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("UserId")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("UserId");
-
-                b.ToTable("AspNetUserClaims", (string)null);
-            });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-            {
-                b.Property<string>("LoginProvider")
-                    .HasMaxLength(128)
-                    .HasColumnType("nvarchar(128)");
-
-                b.Property<string>("ProviderKey")
-                    .HasMaxLength(128)
-                    .HasColumnType("nvarchar(128)");
-
-                b.Property<string>("ProviderDisplayName")
-                    .HasColumnType("nvarchar(max)");
-
-                b.Property<string>("UserId")
-                    .IsRequired()
-                    .HasColumnType("nvarchar(450)");
-
-                b.HasKey("LoginProvider", "ProviderKey");
-
-                b.HasIndex("UserId");
-
-                b.ToTable("AspNetUserLogins", (string)null);
-            });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-            {
-                b.Property<string>("UserId")
-                    .HasColumnType("nvarchar(450)");
-
-                b.Property<string>("RoleId")
-                    .HasColumnType("nvarchar(450)");
-
-                b.HasKey("UserId", "RoleId");
-
-                b.HasIndex("RoleId");
-
-                b.ToTable("AspNetUserRoles", (string)null);
-            });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-            {
-                b.Property<string>("UserId")
-                    .HasColumnType("nvarchar(450)");
-
-                b.Property<string>("LoginProvider")
-                    .HasMaxLength(128)
-                    .HasColumnType("nvarchar(128)");
-
-                b.Property<string>("Name")
-                    .HasMaxLength(128)
-                    .HasColumnType("nvarchar(128)");
-
-                b.Property<string>("Value")
-                    .HasColumnType("nvarchar(max)");
-
-                b.HasKey("UserId", "LoginProvider", "Name");
-
-                b.ToTable("AspNetUserTokens", (string)null);
-            });
-
-            modelBuilder.Entity("DropWord.Domain.Entities.TodoItem", b =>
-            {
-                b.HasOne("DropWord.Domain.Entities.TodoList", "List")
-                    .WithMany("Items")
-                    .HasForeignKey("ListId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.Navigation("List");
-            });
-
-            modelBuilder.Entity("DropWord.Domain.Entities.TodoList", b =>
-            {
-                b.OwnsOne("DropWord.Domain.ValueObjects.Colour", "Colour", b1 =>
+            modelBuilder.Entity("DropWord.Domain.Entities.SentenceEntity", b =>
                 {
-                    b1.Property<int>("TodoListId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b1.Property<string>("Code")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Language")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b1.HasKey("TodoListId");
+                    b.Property<string>("Sentence")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b1.ToTable("TodoLists");
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
 
-                    b1.WithOwner()
-                        .HasForeignKey("TodoListId");
+                    b.HasKey("Id");
+
+                    b.ToTable("Sentence", (string)null);
                 });
 
-                b.Navigation("Colour")
-                    .IsRequired();
-            });
+            modelBuilder.Entity("DropWord.Domain.Entities.SentencesPairEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-            {
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                    .WithMany()
-                    .HasForeignKey("RoleId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-            {
-                b.HasOne("DropWord.Infrastructure.Identity.ApplicationUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-            {
-                b.HasOne("DropWord.Infrastructure.Identity.ApplicationUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.Property<string>("FirstLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-            {
-                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                    .WithMany()
-                    .HasForeignKey("RoleId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.Property<int>("FirstSentenceId")
+                        .HasColumnType("int");
 
-                b.HasOne("DropWord.Infrastructure.Identity.ApplicationUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.Property<string>("SecondLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-            {
-                b.HasOne("DropWord.Infrastructure.Identity.ApplicationUser", null)
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-            });
+                    b.Property<int>("SecondSentenceId")
+                        .HasColumnType("int");
 
-            modelBuilder.Entity("DropWord.Domain.Entities.TodoList", b =>
-            {
-                b.Navigation("Items");
-            });
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FirstSentenceId");
+
+                    b.HasIndex("SecondSentenceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SentencesPair", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.StateTreeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("JsonData")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("StateTree", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserLearningInfoEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountUseForDaySentences")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("LastUseForDaySentencesId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserLearningInfo", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserSentencesCollectionEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSentencesCollection", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserSettingsEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FirstLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HideLanguageEnum")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InterfaceLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserSettings", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UsingSentencesPairEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountUse")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsLearning")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SentencesPairId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SentencesPairId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UsingSentencesPair", (string)null);
+                });
+
+            modelBuilder.Entity("SentencesPairEntityUserSentencesCollectionEntity", b =>
+                {
+                    b.Property<int>("SentencesPairsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserSentencesCollectionsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SentencesPairsId", "UserSentencesCollectionsId");
+
+                    b.HasIndex("UserSentencesCollectionsId");
+
+                    b.ToTable("SentencesPairEntityUserSentencesCollectionEntity", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.SentencesPairEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.SentenceEntity", "FirstSentence")
+                        .WithMany("FirstSentencesPairs")
+                        .HasForeignKey("FirstSentenceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DropWord.Domain.Entities.SentenceEntity", "SecondSentence")
+                        .WithMany("SecondSentencesPairs")
+                        .HasForeignKey("SecondSentenceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
+                        .WithMany("SentencesPairs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("FirstSentence");
+
+                    b.Navigation("SecondSentence");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.StateTreeEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
+                        .WithOne("StateTree")
+                        .HasForeignKey("DropWord.Domain.Entities.StateTreeEntity", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserLearningInfoEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
+                        .WithOne("UserLearningInfo")
+                        .HasForeignKey("DropWord.Domain.Entities.UserLearningInfoEntity", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserSentencesCollectionEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
+                        .WithMany("UserSentencesCollections")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserSettingsEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
+                        .WithOne("UserSettings")
+                        .HasForeignKey("DropWord.Domain.Entities.UserSettingsEntity", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UsingSentencesPairEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.SentencesPairEntity", "SentencesPair")
+                        .WithMany("UsingSentencesPairs")
+                        .HasForeignKey("SentencesPairId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
+                        .WithMany("UsingSentencesPairs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("SentencesPair");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SentencesPairEntityUserSentencesCollectionEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.SentencesPairEntity", null)
+                        .WithMany()
+                        .HasForeignKey("SentencesPairsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DropWord.Domain.Entities.UserSentencesCollectionEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserSentencesCollectionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.SentenceEntity", b =>
+                {
+                    b.Navigation("FirstSentencesPairs");
+
+                    b.Navigation("SecondSentencesPairs");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.SentencesPairEntity", b =>
+                {
+                    b.Navigation("UsingSentencesPairs");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.UserEntity", b =>
+                {
+                    b.Navigation("SentencesPairs");
+
+                    b.Navigation("StateTree")
+                        .IsRequired();
+
+                    b.Navigation("UserLearningInfo")
+                        .IsRequired();
+
+                    b.Navigation("UserSentencesCollections");
+
+                    b.Navigation("UserSettings")
+                        .IsRequired();
+
+                    b.Navigation("UsingSentencesPairs");
+                });
 #pragma warning restore 612, 618
         }
     }

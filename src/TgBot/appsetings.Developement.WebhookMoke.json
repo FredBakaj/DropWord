@@ -1,0 +1,12 @@
+﻿{
+    "CommonSettings": {
+        "WebHookUrl": "https://8f18-91-90-11-159.ngrok-free.app:443/api/v1/botWebhook",
+        "BotToken": "6500604522:AAGVGxtBVGM0b7KkQnQmyZ2pfAaEa-F7wyI",
+        "IsWebHook": true,
+        "WebHookSecretToken" : "fwjoi39jm23oi8r9wj",
+        "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=DropWordDB;Trusted_Connection=True;"
+    },
+    "ConnectionStrings": {
+        "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=DropWordDB;Trusted_Connection=True;"
+    }
+}

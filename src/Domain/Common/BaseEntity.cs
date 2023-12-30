@@ -1,13 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DropWord.Domain.Common;
 
-public abstract class BaseEntity
+public abstract class BaseEntity<T>: BaseEntity where T : struct
 {
     // This can easily be modified to be BaseEntity<T> and public T Id to support different key types.
     // Using non-generic integer types for simplicity
-    public int Id { get; set; }
+    public T Id { get; set; }
 
+    
+}
+public abstract class BaseEntity
+{
     private readonly List<BaseEvent> _domainEvents = new();
 
     [NotMapped]
