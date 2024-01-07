@@ -7,11 +7,22 @@ namespace DropWord.TgBot.Core.Handler.Implementation
     {
         private IBotMiddleware _lastMiddleware = null!;
         private IBotMiddleware _firstMiddleware = null!;
-        
+
+        private ILogger<ABotMiddlewareHandler> _logger;
+        protected readonly IServiceProvider _serviceProvider;
+
+        public ABotMiddlewareHandler(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+            _logger = serviceProvider.GetService<ILogger<ABotMiddlewareHandler>>()!;
+
+            Bind();
+        }
+
         /// <summary>
         /// Добавлення ланцюга обовязків
         /// </summary>
-        protected async Task AddMiddleware(IBotMiddleware middlewate)
+        protected void AddMiddleware(IBotMiddleware middlewate)
         {
             if (_lastMiddleware == null)
             {
@@ -20,7 +31,7 @@ namespace DropWord.TgBot.Core.Handler.Implementation
             }
             else
             {
-                await _lastMiddleware.SetNext(middlewate);
+                _lastMiddleware.SetNext(middlewate);
                 _lastMiddleware = middlewate;
             }
         }
@@ -33,6 +44,6 @@ namespace DropWord.TgBot.Core.Handler.Implementation
         /// <summary>
         /// Формує ланцюг обовязків
         /// </summary>
-        protected abstract Task Bind();
+        protected abstract void Bind();
     }
 }

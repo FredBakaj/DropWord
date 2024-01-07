@@ -10,6 +10,8 @@ public class UserConfig : BaseConfig, IEntityTypeConfiguration<UserEntity>
     {
         builder.ToTable("User");
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedNever();
+        
         builder.HasQueryFilter(x => x.WhenDeleted == null);
         
         builder.HasOne(x => x.StateTree)

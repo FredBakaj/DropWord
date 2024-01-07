@@ -9,8 +9,8 @@ namespace DropWord.TgBot.Di.Controller
     {
         public static void BuildService(IServiceCollection services)
         {
-            services.AddTransient<IBotStateTreeHandler, BotStateTreeHandler>();
             services.AddTransient<IBotController, BaseController>();
+            services.AddTransient<IBotController, StartController>();
         }
     }
 }

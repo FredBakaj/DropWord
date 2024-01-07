@@ -32,7 +32,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
         private async Task BaseAction(UpdateBDto update)
         {
-            await _botViewHandler.SendAsync(BaseViewField.ShowBaseMenu, update);
+            await _botViewHandler.SendAsync(BaseViewField.Intro, update);
         }
 
         

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DropWord.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240103211925_InitMigration")]
+    [Migration("20240109212247_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -134,10 +134,7 @@ namespace DropWord.Infrastructure.Data.Migrations
             modelBuilder.Entity("DropWord.Domain.Entities.UserEntity", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");

@@ -9,9 +9,7 @@ public class ViewBuild
 {
     public static void BuildService(IServiceCollection services)
     {
-        
-        services.AddTransient<IBotViewHandler, BotViewHandler>();
-        // View
         services.AddTransient<IBotView, BaseBotView>();
+        services.AddTransient<IBotView, StartBotView>();
     }
 }

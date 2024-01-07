@@ -35,17 +35,23 @@ public abstract class ReceiverServiceBase<TUpdateHandler> : IReceiverService
         // ToDo: we can inject ReceiverOptions through IOptions container
         var receiverOptions = new ReceiverOptions()
         {
-            AllowedUpdates = Array.Empty<UpdateType>(),
-            ThrowPendingUpdates = true,
+            AllowedUpdates = Array.Empty<UpdateType>(), ThrowPendingUpdates = true,
         };
 
         var me = await _botClient.GetMeAsync(stoppingToken);
         _logger.LogInformation("Start receiving updates for {BotName}", me.Username ?? "My Awesome Bot");
+        
+        //delete webhook
+        var webhookInfo = await _botClient.GetWebhookInfoAsync(cancellationToken: stoppingToken);
+        if (webhookInfo.Url != string.Empty)
+        {
+            await _botClient.DeleteWebhookAsync(cancellationToken: stoppingToken);
+        }
 
         // Start receiving updates
         await _botClient.ReceiveAsync(
-            _updateHandler.HandleUpdateAsync, 
-            _updateHandler.HandleErrorAsync, 
+            _updateHandler.HandleUpdateAsync,
+            _updateHandler.HandleErrorAsync,
             receiverOptions: receiverOptions,
             cancellationToken: stoppingToken);
     }

@@ -31,8 +31,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     WhenDeleted = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },

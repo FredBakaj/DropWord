@@ -1,8 +1,5 @@
-﻿using DropWord.Application.StateTree.Commands.GetStateAndAction;
-using DropWord.Domain.Entities;
-using DropWord.TgBot.Core.Extension;
+﻿using DropWord.TgBot.Core.Handler;
 using DropWord.TgBot.Core.Model;
-using MediatR;
 
 namespace DropWord.TgBot.Core.Src.Middleware.Implementation
 {
@@ -11,25 +8,24 @@ namespace DropWord.TgBot.Core.Src.Middleware.Implementation
     /// </summary>
     public class StateMiddleware : ABotMiddleware
     {
-        private readonly ISender _sender;
+        private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
 
 
-        public StateMiddleware(ISender sender)
+        public StateMiddleware(IBotStateTreeUserHandler botStateTreeUserHandler)
         {
-            _sender = sender;
+            _botStateTreeUserHandler = botStateTreeUserHandler;
         }
 
         public override async Task Next(UpdateBDto update)
         {
             if (update.TelegramState == null)
             {
-                var userModel = await _sender.Send(new GetStateAndActionCommand(){UserId = update.GetUserId()});
-                var userModel_ = userModel as StateTreeEntity;
+                var userModel = await _botStateTreeUserHandler.GetStateAndActionAsync(update);
                 update.TelegramState =
-                    new StateTreeBDto() { State = userModel_!.State, Action = userModel_!.Action };
+                    new StateTreeBDto() { State = userModel!.State, Action = userModel!.Action };
             }
 
-            //await base.Next(update);
+            await base.Next(update);
         }
     }
 }
