@@ -23,4 +23,18 @@
         <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Common\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Common\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Common\**" />
+    </ItemGroup>
+
+
+
 </Project>
