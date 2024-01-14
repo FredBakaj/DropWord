@@ -1,5 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces.Sentence;
 using DropWord.Application.Common.Models.Sentence;
+using DropWord.Domain.Constants;
 using DropWord.Infrastructure.Sentence.Dto;
 using DropWord.Infrastructure.Sentence.Field.RestApiRequest;
 using DropWord.Infrastructure.Utils;
@@ -15,10 +16,10 @@ public class Translate : ITranslate
         string translateSentence = await TranslatorAsync(sentence, originalLanguage, translateLanguage);
         var result = new TranslateSentenceModel()
         {
-            FirstSentence = sentence,
-            SecondSentence = translateSentence,
-            FirstLanguage = originalLanguage,
-            SecondLanguage = translateLanguage
+            OriginalSentence = sentence,
+            TranslateSentence = translateSentence,
+            OriginalLanguage = originalLanguage,
+            TranslateLanguage = translateLanguage
         };
         return result;
     }
@@ -42,10 +43,10 @@ public class Translate : ITranslate
         {
             result.Add(new TranslateSentenceModel()
             {
-                FirstSentence = sentencesList[i],
-                SecondSentence = splitText[i],
-                FirstLanguage = originalLanguage,
-                SecondLanguage = translateLanguage
+                OriginalSentence = sentencesList[i],
+                TranslateSentence = splitText[i],
+                OriginalLanguage = originalLanguage,
+                TranslateLanguage = translateLanguage
             });
         }
 
@@ -57,7 +58,7 @@ public class Translate : ITranslate
     {
         var LangDetector = new LanguageDetector();
         LangDetector.AddAllLanguages();
-        var detectLanguage = LangDetector.Detect(sentence)!;
+        var detectLanguage = ConvertLanguageCode(LangDetector.Detect(sentence)!);
         var result = new DetectLanguageModel() { Language = detectLanguage, Sentence = sentence };
         return Task.FromResult(result);
     }
@@ -69,7 +70,7 @@ public class Translate : ITranslate
         var result = new List<DetectLanguageModel>();
         foreach (var item in sentence)
         {
-            var detectLanguage = LangDetector.Detect(item)!;
+            var detectLanguage = ConvertLanguageCode(LangDetector.Detect(item)!);
             var resultItem = new DetectLanguageModel() { Language = detectLanguage, Sentence = item };
             result.Add(resultItem);
         }
@@ -90,5 +91,18 @@ public class Translate : ITranslate
         var apiResponse = await restApiClient.PostAsync<TranslateDataDTO>(apiUrl, headers, body);
 
         return apiResponse.Data.Translations.TranslatedText;
+    }
+
+    public string ConvertLanguageCode(string code)
+    {
+        Dictionary<string, string> codes = new Dictionary<string, string>()
+        {
+            { "ukr", LanguageConst.Ukrainian },
+            { "fra", LanguageConst.French },
+            { "eng", LanguageConst.English },
+            { "deu", LanguageConst.German },
+            { "pol", LanguageConst.Polish },
+        };
+        return codes[code];
     }
 }

@@ -2,11 +2,11 @@
 
 public abstract class LanguageConst
 {
-    public const string Ukrainian = nameof(Ukrainian);
-    public const string English = nameof(English); 
-    public const string German = nameof(German); 
-    public const string Polish = nameof(Polish); 
-    public const string French = nameof(French); 
+    public const string Ukrainian = "uk";
+    public const string English = "en"; 
+    public const string German = "de"; 
+    public const string Polish = "pl"; 
+    public const string French = "fr"; 
 
 
 

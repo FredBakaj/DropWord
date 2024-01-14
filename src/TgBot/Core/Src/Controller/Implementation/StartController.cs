@@ -86,7 +86,7 @@ public class StartController : IBotController
         var firstLanguage = LanguageConst.Ukrainian;
         await _sender.Send(new ChangeLanguagePairCommand()
         {
-            UserId = update.GetUserId(), FirstLanguage = firstLanguage, SecondLanguage = secondLanguage
+            UserId = update.GetUserId(), MainLanguage = firstLanguage, LearnLanguage = secondLanguage
         });
 
         await _botStateTreeUserHandler.SetStateAndActionAsync(update, BaseControllerField.BaseState,

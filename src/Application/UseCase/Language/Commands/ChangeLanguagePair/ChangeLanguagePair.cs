@@ -5,8 +5,8 @@ namespace DropWord.Application.UseCase.Language.Commands.ChangeLanguagePair;
 public record ChangeLanguagePairCommand : IRequest
 {
     public long UserId { get; set; }
-    public string FirstLanguage { get; set; } = null!;
-    public string SecondLanguage { get; set; } = null!;
+    public string MainLanguage { get; set; } = null!;
+    public string LearnLanguage { get; set; } = null!;
 }
 
 public class ChangeLanguagePairCommandValidator : AbstractValidator<ChangeLanguagePairCommand>
@@ -32,8 +32,8 @@ public class ChangeLanguagePairCommandHandler : IRequestHandler<ChangeLanguagePa
             .Where(x => x.Id == request.UserId)
             .FirstAsync(cancellationToken);
 
-        user.UserSettings.FirstLanguage = request.FirstLanguage;
-        user.UserSettings.SecondLanguage = request.SecondLanguage;
+        user.UserSettings.MainLanguage = request.MainLanguage;
+        user.UserSettings.LearnLanguage = request.LearnLanguage;
 
         await _context.SaveChangesAsync(cancellationToken: cancellationToken);
     }

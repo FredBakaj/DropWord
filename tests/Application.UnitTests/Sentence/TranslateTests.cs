@@ -16,7 +16,7 @@ public class TranslateTests
         var translateLang = "ru";
         var actual = new Translate();
         var result = await actual.TranslateAsync(failures, originalLang, translateLang);
-        result.SecondSentence.Should()
+        result.TranslateSentence.Should()
             .BeEquivalentTo(
                 "На протяжении многих столетий в типографии используется стандартный рыбный текст, начинающийся с Lorem ipsum — отрывка без фраз из произведения римского философа Цицерона.");
 

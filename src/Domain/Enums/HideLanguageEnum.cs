@@ -2,6 +2,6 @@
 
 public enum HideLanguageEnum
 {
-    FirstLanguage = 0,
-    SecondLanguage = 1
+    MainLanguage = 0,
+    LearnLanguage = 1
 }

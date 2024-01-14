@@ -43,10 +43,10 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
             };
             var userSettings = new UserSettingsEntity()
             {
-                FirstLanguage = String.Empty,
-                SecondLanguage = String.Empty,
+                MainLanguage = String.Empty,
+                LearnLanguage = String.Empty,
                 InterfaceLanguage = request.InterfaceLanguage,
-                HideLanguageEnum = HideLanguageEnum.FirstLanguage,
+                HideLanguageEnum = HideLanguageEnum.MainLanguage,
             };
             var user_ = new UserEntity()
             {

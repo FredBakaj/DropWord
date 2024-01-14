@@ -2,8 +2,8 @@
 
 public class TranslateSentenceModel
 {
-    public string FirstSentence { get; set; } = null!;
-    public string SecondSentence { get; set; } = null!;
-    public string FirstLanguage { get; set; } = null!;
-    public string SecondLanguage { get; set; } = null!;
+    public string OriginalSentence { get; set; } = null!;
+    public string TranslateSentence { get; set; } = null!;
+    public string OriginalLanguage { get; set; } = null!;
+    public string TranslateLanguage { get; set; } = null!;
 }
