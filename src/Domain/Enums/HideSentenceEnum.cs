@@ -1,6 +1,6 @@
 ﻿namespace DropWord.Infrastructure.Common.Enum;
 
-public enum HideLanguageEnum
+public enum HideSentenceEnum
 {
     MainLanguage = 0,
     LearnLanguage = 1

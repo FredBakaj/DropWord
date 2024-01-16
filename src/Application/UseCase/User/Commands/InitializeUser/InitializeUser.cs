@@ -46,13 +46,20 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
                 MainLanguage = String.Empty,
                 LearnLanguage = String.Empty,
                 InterfaceLanguage = request.InterfaceLanguage,
-                HideLanguageEnum = HideLanguageEnum.MainLanguage,
+                HideSentenceEnum = HideSentenceEnum.MainLanguage,
+            };
+
+            var userLearningInfo = new UserLearningInfoEntity()
+            {
+                CountUseForDaySentences = null,
+                LastUseForDaySentencesId = null,
             };
             var user_ = new UserEntity()
             {
                 Id = request.UserId, 
                 StateTree = stateTree, 
-                UserSettings = userSettings
+                UserSettings = userSettings,
+                UserLearningInfo = userLearningInfo,
             };
 
             _context.Users.Add(user_);

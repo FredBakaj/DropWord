@@ -5,9 +5,9 @@
         public const string BaseState = nameof(BaseState);
         public const string BaseAction = nameof(BaseAction);
 
-        public const string RepeatWordKeyboard = nameof(RepeatWordKeyboard);
+        public const string RepeatSentenceKeyboard = "Повтор";
         public const string RepeatWordWriteKeyboard = nameof(RepeatWordWriteKeyboard);
-        public const string NewWordKeyboard = nameof(NewWordKeyboard);
+        public const string NewSentenceButton = "Нове";
         public const string SwitchLanguageKeyboard = nameof(SwitchLanguageKeyboard);
         public const string SettingsKeyboard = nameof(SettingsKeyboard);
     }

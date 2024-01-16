@@ -6,7 +6,7 @@ public class UserSettingsEntity : BaseAuditableEntity<int>
 {
  
     public string InterfaceLanguage { get; set; } = null!;
-    public HideLanguageEnum HideLanguageEnum { get; set; }
+    public HideSentenceEnum HideSentenceEnum { get; set; }
     public string MainLanguage { get; set; } = null!;
     public string LearnLanguage { get; set; } = null!;
 
