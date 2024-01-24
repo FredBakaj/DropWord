@@ -30,8 +30,8 @@ namespace DropWord.TgBot.Core.Src.Middleware.Implementation
             await _sender.Send(new InitializeUserCommand()
             {
                 UserId = update.GetUserId(),
-                State = StartControllerField.StartState,
-                Action = StartControllerField.StartAction,
+                State = StartField.StartState,
+                Action = StartField.StartAction,
                 InterfaceLanguage = interfaceLanguage
             });
             await base.Next(update);

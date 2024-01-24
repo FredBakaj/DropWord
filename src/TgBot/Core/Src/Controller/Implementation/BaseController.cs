@@ -26,7 +26,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
         private readonly int _offerResetCountRepeatSentences;
 
-        public string Name() => BaseControllerField.BaseState;
+        public string Name() => BaseField.BaseState;
 
         public BaseController(IBotStateTreeHandler botStateTreeHandler, IBotViewHandler botViewHandler, ISender sender,
             IConfiguration configuration, IBotStateTreeUserHandler botStateTreeUserHandler)
@@ -49,13 +49,13 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
         private void Initialize()
         {
-            _botStateTreeHandler.AddAction(BaseControllerField.BaseAction, BaseAction);
-            _botStateTreeHandler.AddKeyboard(BaseControllerField.BaseAction, BaseControllerField.NewSentenceButton,
+            _botStateTreeHandler.AddAction(BaseField.BaseAction, BaseAction);
+            _botStateTreeHandler.AddKeyboard(BaseField.BaseAction, BaseField.NewSentenceButton,
                 NewSentenceButton);
-            _botStateTreeHandler.AddKeyboard(BaseControllerField.BaseAction, BaseControllerField.RepeatSentenceKeyboard,
+            _botStateTreeHandler.AddKeyboard(BaseField.BaseAction, BaseField.RepeatSentenceKeyboard,
                 RepeatSentenceKeyboard);
-            _botStateTreeHandler.AddCallback(BaseControllerField.BaseAction,
-                BaseControllerField.ResetCountRepeatSentencesCallback,
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction,
+                BaseField.ResetCountRepeatSentencesCallback,
                 ResetCountRepeatSentencesCallback);
         }
 

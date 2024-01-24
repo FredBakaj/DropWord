@@ -94,7 +94,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             var text =
                 $"Наразі у вас порожній список для повторення ☹️," +
                 $" поповнити його можна за допомогою вивчення нових слів," +
-                $" це можна зробити натиснувши кнопку \"{BaseControllerField.NewSentenceButton}\"";
+                $" це можна зробити натиснувши кнопку \"{BaseField.NewSentenceButton}\"";
             await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
         }
 
@@ -104,8 +104,8 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             {
                 new KeyboardButton[]
                 {
-                    BaseControllerField.RepeatSentenceKeyboard, "Повтор ✍️",
-                    BaseControllerField.NewSentenceButton
+                    BaseField.RepeatSentenceKeyboard, "Повтор ✍️",
+                    BaseField.NewSentenceButton
                 },
                 new KeyboardButton[] { "🇬🇧 🔃 🇬🇧", "⚙️" }
             }) { ResizeKeyboard = true };
@@ -141,7 +141,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 new[]
                 {
                     InlineKeyboardButton.WithCallbackData(text: "Повернутись",
-                        callbackData: BaseControllerField.ResetCountRepeatSentencesCallback),
+                        callbackData: BaseField.ResetCountRepeatSentencesCallback),
                 }
             });
             await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: inlineKeyboard);

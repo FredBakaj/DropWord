@@ -1,6 +1,6 @@
 ﻿namespace DropWord.TgBot.Core.Field.Controller
 {
-    public abstract class BaseControllerField
+    public abstract class BaseField
     {
         public const string BaseState = nameof(BaseState);
         public const string BaseAction = nameof(BaseAction);

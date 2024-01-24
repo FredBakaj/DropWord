@@ -1,6 +1,6 @@
 ﻿namespace DropWord.TgBot.Core.Field.Controller;
 
-public abstract class StartControllerField
+public abstract class StartField
 {
     public const string StartState = "StartState";
     public const string StartAction = "StartAction";

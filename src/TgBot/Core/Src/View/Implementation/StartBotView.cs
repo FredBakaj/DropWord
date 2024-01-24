@@ -26,13 +26,13 @@ public class StartBotView : ABotView
         {
             new KeyboardButton[]
             {
-                StartControllerField.UkrainianEnglishLanguageButton,
-                StartControllerField.UkrainianGermanLanguageButton
+                StartField.UkrainianEnglishLanguageButton,
+                StartField.UkrainianGermanLanguageButton
             },
             new KeyboardButton[]
             {
-                StartControllerField.UkrainianPolishLanguageButton,
-                StartControllerField.UkrainianFrenchLanguageButton
+                StartField.UkrainianPolishLanguageButton,
+                StartField.UkrainianFrenchLanguageButton
             }
         }) { ResizeKeyboard = true };
         await _botClient.SendTextMessageAsync(update.GetUserId(), text, replyMarkup: replyMarkup);
@@ -47,13 +47,13 @@ public class StartBotView : ABotView
         {
             new KeyboardButton[]
             {
-                StartControllerField.UkrainianEnglishLanguageButton,
-                StartControllerField.UkrainianGermanLanguageButton
+                StartField.UkrainianEnglishLanguageButton,
+                StartField.UkrainianGermanLanguageButton
             },
             new KeyboardButton[]
             {
-                StartControllerField.UkrainianPolishLanguageButton,
-                StartControllerField.UkrainianFrenchLanguageButton
+                StartField.UkrainianPolishLanguageButton,
+                StartField.UkrainianFrenchLanguageButton
             }
         }) { ResizeKeyboard = true };
         await _botClient.SendTextMessageAsync(update.GetUserId(), text, replyMarkup: replyMarkup);

@@ -15,7 +15,7 @@ public class StartController : IBotController
     private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
     private readonly IBotViewHandler _botViewHandler;
     private readonly ISender _sender;
-    public string Name() => StartControllerField.StartState;
+    public string Name() => StartField.StartState;
 
     public StartController(
         IBotStateTreeHandler botStateTreeHandler,
@@ -33,16 +33,16 @@ public class StartController : IBotController
 
     private void Initialize()
     {
-        _botStateTreeHandler.AddAction(StartControllerField.StartAction, StartActionAsync);
+        _botStateTreeHandler.AddAction(StartField.StartAction, StartActionAsync);
 
-        _botStateTreeHandler.AddKeyboard(StartControllerField.SelectLanguageAction,
-            StartControllerField.UkrainianEnglishLanguageButton, UkrainianEnglishLanguageButtonAsync);
-        _botStateTreeHandler.AddKeyboard(StartControllerField.SelectLanguageAction,
-            StartControllerField.UkrainianGermanLanguageButton, UkrainianGermanLanguageButtonAsync);
-        _botStateTreeHandler.AddKeyboard(StartControllerField.SelectLanguageAction,
-            StartControllerField.UkrainianPolishLanguageButton, UkrainianPolishLanguageButtonAsync);
-        _botStateTreeHandler.AddKeyboard(StartControllerField.SelectLanguageAction,
-            StartControllerField.UkrainianFrenchLanguageButton, UkrainianFrenchLanguageButtonAsync);
+        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
+            StartField.UkrainianEnglishLanguageButton, UkrainianEnglishLanguageButtonAsync);
+        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
+            StartField.UkrainianGermanLanguageButton, UkrainianGermanLanguageButtonAsync);
+        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
+            StartField.UkrainianPolishLanguageButton, UkrainianPolishLanguageButtonAsync);
+        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
+            StartField.UkrainianFrenchLanguageButton, UkrainianFrenchLanguageButtonAsync);
     }
 
     public async Task Exec(UpdateBDto update)
@@ -53,7 +53,7 @@ public class StartController : IBotController
     private async Task StartActionAsync(UpdateBDto update)
     {
         await _botViewHandler.SendAsync(StartViewField.Start, update);
-        await _botStateTreeUserHandler.SetActionAsync(update, StartControllerField.SelectLanguageAction);
+        await _botStateTreeUserHandler.SetActionAsync(update, StartField.SelectLanguageAction);
     }
 
 
@@ -89,8 +89,8 @@ public class StartController : IBotController
             UserId = update.GetUserId(), MainLanguage = firstLanguage, LearnLanguage = secondLanguage
         });
 
-        await _botStateTreeUserHandler.SetStateAndActionAsync(update, BaseControllerField.BaseState,
-            BaseControllerField.BaseAction);
+        await _botStateTreeUserHandler.SetStateAndActionAsync(update, BaseField.BaseState,
+            BaseField.BaseAction);
         await _botViewHandler.SendAsync(BaseViewField.Intro, update);
     }
 }
