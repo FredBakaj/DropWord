@@ -45,7 +45,6 @@ public class
     public async Task<StatusOfSentenceInputEnum> Handle(SentencesRepetitionByInputCommand request,
         CancellationToken cancellationToken)
     {
-        //TODO Добавить проверку на нулл если пустой кидать кастомную ошибку
         var sentencePair = await _context.UsingSentencesPair
             .Include(x => x.SentencesPair)
             .ThenInclude(x => x.FirstSentence)

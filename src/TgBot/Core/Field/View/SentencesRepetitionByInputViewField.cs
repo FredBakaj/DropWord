@@ -10,4 +10,7 @@ public abstract class SentencesRepetitionByInputViewField
     public const string RightInputAndOutOfSentencesToRepeat = nameof(RightInputAndOutOfSentencesToRepeat);
     public const string InputWithErrorsAndOutOfSentencesToRepeat = nameof(InputWithErrorsAndOutOfSentencesToRepeat);
     public const string IncorrectInputAndOutOfSentencesToRepeat = nameof(IncorrectInputAndOutOfSentencesToRepeat);
+    public const string RightInputAndResetCountSentence = nameof(RightInputAndResetCountSentence);
+    public const string InputWithErrorsAndResetCountSentence = nameof(InputWithErrorsAndResetCountSentence);
+    public const string IncorrectInputAndResetCountSentence = nameof(IncorrectInputAndResetCountSentence);
 }

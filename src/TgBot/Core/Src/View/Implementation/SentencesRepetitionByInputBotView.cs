@@ -77,8 +77,18 @@ public class SentencesRepetitionByInputBotView : ABotView
         await ResetRepeatSentencesAsync(updateBDto, text);
     }
 
+    [BotView(SentencesRepetitionByInputViewField.RightInputAndResetCountSentence)]
+    public async Task RightInputAndResetCountSentence(RightInputAndResetCountSentenceVDto resetCountSentenceVDto)
+    {
+        var text = $"* Все правельно * 💪 \n\n " +
+                   $"*Ви повторили {resetCountSentenceVDto.CountSentence} речень, повернутись на початок?*\n";
+
+        await ResetRepeatSentencesAsync(resetCountSentenceVDto.Update, text);
+    }
+
     [BotView(SentencesRepetitionByInputViewField.InputWithErrorsAndOutOfSentencesToRepeat)]
-    public async Task InputWithErrorsAndOutOfSentencesToRepeat(InputWithErrorsAndOutOfSentencesToRepeatVDto inputWithErrorsVDto)
+    public async Task InputWithErrorsAndOutOfSentencesToRepeat(
+        InputWithErrorsAndOutOfSentencesToRepeatVDto inputWithErrorsVDto)
     {
         var text = $"*Майже вірно* 🤏 \n\n" +
                    $" *Як правельно* 🤔\n {inputWithErrorsVDto.RightSentence} \n\n" +
@@ -88,14 +98,37 @@ public class SentencesRepetitionByInputBotView : ABotView
         await ResetRepeatSentencesAsync(inputWithErrorsVDto.Update, text);
     }
 
+    [BotView(SentencesRepetitionByInputViewField.InputWithErrorsAndResetCountSentence)]
+    public async Task InputWithErrorsAndResetCountSentence(InputWithErrorsAndResetCountSentenceVDto inputWithErrorsVDto)
+    {
+        var text = $"*Майже вірно* 🤏 \n\n" +
+                   $" *Як правельно* 🤔\n {inputWithErrorsVDto.RightSentence} \n\n" +
+                   $" *Де були помилки* 👀\n {inputWithErrorsVDto.CorrectedSentence}\n\n " +
+                   $"*Наступне речення* ✍️\n ||{inputWithErrorsVDto.NextSentence}||" +
+                   $"*Ви повторили {inputWithErrorsVDto.CountSentence} речень, повернутись на початок?*\n";
+        await ResetRepeatSentencesAsync(inputWithErrorsVDto.Update, text);
+    }
+
     [BotView(SentencesRepetitionByInputViewField.IncorrectInputAndOutOfSentencesToRepeat)]
-    public async Task IncorrectInputAndOutOfSentencesToRepeat(IncorrectInputAndOutOfSentencesToRepeatVDto incorrectInputVDto)
+    public async Task IncorrectInputAndOutOfSentencesToRepeat(
+        IncorrectInputAndOutOfSentencesToRepeatVDto incorrectInputVDto)
     {
         var text = $"*Неправильний переклад* ☹️ \n\n" +
                    $"* Як правельно* 🤔\n {incorrectInputVDto.RightSentence} \n\n" +
                    $"*Наразі у вас закінчились речення для повтору. Повернутись на початок?* ↩️\n";
-        
+
         await ResetRepeatSentencesAsync(incorrectInputVDto.Update, text);
+    }
+
+    [BotView(SentencesRepetitionByInputViewField.IncorrectInputAndResetCountSentence)]
+    public async Task IncorrectInputAndResetCountSentence(IncorrectInputAndResetCountSentenceVDto incorrectInputVDto)
+    {
+        var text = $"*Неправильний переклад* ☹️ \n\n" +
+                   $"* Як правельно* 🤔\n {incorrectInputVDto.RightSentence} \n\n" +
+                   $" *Наступне речення* ✍️\n ||{incorrectInputVDto.NextSentence}||" +
+                   $"*Ви повторили {incorrectInputVDto.CountSentence} речень, повернутись на початок?*\n";
+
+        await _botClient.SendTextMessageMarkdown2Async(incorrectInputVDto.Update.GetUserId(), text);
     }
 
     private async Task ResetRepeatSentencesAsync(UpdateBDto updateBDto, string text)

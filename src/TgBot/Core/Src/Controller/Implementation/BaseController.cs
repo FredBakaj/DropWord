@@ -96,73 +96,105 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private async Task RepeatSentenceKeyboard(UpdateBDto updateBDto)
         {
             //Оборачиваем отображения пары слов в проверку на кол-во отображонных слов 
-            if (!await _repeatSentenceManager.TryShowRepeatResetToStartAsync(updateBDto,
-                    //Название вю котороя необходимо отобразить если кол-во отображонных слов достигло определёного числа.
-                    BaseViewField.ResetCountRepeatSentence))
+            if (await _repeatSentenceManager.CanShowResetCountRepeatSentences(updateBDto))
             {
-                try
+                await RepeatSentenceAsync(updateBDto);
+                await _repeatSentenceManager.ClearShowResetCountRepeatSentencesView(updateBDto);
+            }
+            else
+            {
+                var countRepetitionSentences =
+                    await _repeatSentenceManager.GetCountRepetitionSentences(updateBDto.GetUserId());
+                var viewDto = new ResetCountRepeatSentenceVDto()
                 {
-                    var repeatSentenceDto = await _sender.Send(new GetSentenceForRepeatQuery()
-                    {
-                        UserId = updateBDto.GetUserId()
-                    });
-
-                    var viewDto = new RepeatSentenceVDto()
-                    {
-                        Update = updateBDto,
-                        SentenceToLearnLabel = repeatSentenceDto.SentenceToLearnLabel,
-                        FirstSentence = repeatSentenceDto.FirstSentence,
-                        SecondSentence = repeatSentenceDto.SecondSentence
-                    };
-                    await _botViewHandler.SendAsync(BaseViewField.RepeatSentence, viewDto);
-
-                    await _sender.Send(new RepeatSentenceCommand()
-                    {
-                        UserId = updateBDto.GetUserId(),
-                        IsLearn = false,
-                        UsingSentencesPairId = repeatSentenceDto.UsingSentencesPairId
-                    });
-                }
-                catch (OutOfSentencesToRepeatException)
-                {
-                    await _botViewHandler.SendAsync(BaseViewField.ResetOutOfSentencesToRepeat, updateBDto);
-                }
-                catch (EmptyCollectionOfSentencesToRepeatException)
-                {
-                    await _botViewHandler.SendAsync(BaseViewField.EmptyCollectionOfSentencesToRepeat, updateBDto);
-                }
+                    Update = updateBDto, Count = countRepetitionSentences!.Value
+                };
+                await _botViewHandler.SendAsync(BaseViewField.ResetCountRepeatSentence, viewDto);
+                await _repeatSentenceManager.SaveShowResetCountRepeatSentencesView(updateBDto);
             }
         }
 
+        private async Task RepeatSentenceAsync(UpdateBDto updateBDto)
+        {
+            try
+            {
+                var repeatSentenceDto = await _sender.Send(new GetSentenceForRepeatQuery()
+                {
+                    UserId = updateBDto.GetUserId()
+                });
+
+                var viewDto = new RepeatSentenceVDto()
+                {
+                    Update = updateBDto,
+                    SentenceToLearnLabel = repeatSentenceDto.SentenceToLearnLabel,
+                    FirstSentence = repeatSentenceDto.FirstSentence,
+                    SecondSentence = repeatSentenceDto.SecondSentence
+                };
+                await _botViewHandler.SendAsync(BaseViewField.RepeatSentence, viewDto);
+
+                await _sender.Send(new RepeatSentenceCommand()
+                {
+                    UserId = updateBDto.GetUserId(),
+                    IsLearn = false,
+                    UsingSentencesPairId = repeatSentenceDto.UsingSentencesPairId
+                });
+            }
+            catch (OutOfSentencesToRepeatException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.ResetOutOfSentencesToRepeat, updateBDto);
+            }
+            catch (EmptyCollectionOfSentencesToRepeatException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.EmptyCollectionOfSentencesToRepeat, updateBDto);
+            }
+        }
+        
         private async Task SentencesRepetitionByInputKeyboard(UpdateBDto updateBDto)
         {
+            
             //Оборачиваем отображения пары слов в проверку на кол-во отображонных слов 
-            if (!await _repeatSentenceManager.TryShowRepeatResetToStartAsync(updateBDto,
-                    //Название вю котороя необходимо отобразить если кол-во отображонных слов достигло определёного числа.
-                    BaseViewField.ResetCountRepeatSentence))
+            if (!await _repeatSentenceManager.CanShowResetCountRepeatSentences(updateBDto))
             {
-                try
+                await StartSentencesRepetitionByInputAsync(updateBDto);
+                await _repeatSentenceManager.ClearShowResetCountRepeatSentencesView(updateBDto);
+            }
+            else
+            {
+                var countRepetitionSentences =
+                    await _repeatSentenceManager.GetCountRepetitionSentences(updateBDto.GetUserId());
+                var viewDto = new ResetCountRepeatSentenceVDto()
                 {
-                    await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto,
-                        SentencesRepetitionByInputField.State,
-                        SentencesRepetitionByInputField.Action);
-                    //Сохроняет промежуточные данны для сравнения слов между вводами
-                    var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
-                    var nextSentence = _repeatSentenceManager.GetNextSentence(nextSentencePair);
+                    Update = updateBDto, Count = countRepetitionSentences!.Value
+                };
+                await _botViewHandler.SendAsync(BaseViewField.ResetCountRepeatSentence, viewDto);
 
-                    //Отправляет сообщение начало повтора вводом 
-                    var viewModel =
-                        new StartInputVDto() { Update = updateBDto, Sentence = nextSentence };
-                    await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.StartInput, viewModel);
-                }
-                catch (OutOfSentencesToRepeatException)
-                {
-                    await _botViewHandler.SendAsync(BaseViewField.ResetOutOfSentencesToRepeat, updateBDto);
-                }
-                catch (EmptyCollectionOfSentencesToRepeatException)
-                {
-                    await _botViewHandler.SendAsync(BaseViewField.EmptyCollectionOfSentencesToRepeat, updateBDto);
-                }
+                await _repeatSentenceManager.SaveShowResetCountRepeatSentencesView(updateBDto);
+            }
+        }
+
+        private async Task StartSentencesRepetitionByInputAsync(UpdateBDto updateBDto)
+        {
+            try
+            {
+                await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto,
+                    SentencesRepetitionByInputField.State,
+                    SentencesRepetitionByInputField.Action);
+                //Сохроняет промежуточные данны для сравнения слов между вводами
+                var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
+                var nextSentence = _repeatSentenceManager.GetNextSentence(nextSentencePair);
+
+                //Отправляет сообщение начало повтора вводом 
+                var viewModel =
+                    new StartInputVDto() { Update = updateBDto, Sentence = nextSentence };
+                await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.StartInput, viewModel);
+            }
+            catch (OutOfSentencesToRepeatException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.ResetOutOfSentencesToRepeat, updateBDto);
+            }
+            catch (EmptyCollectionOfSentencesToRepeatException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.EmptyCollectionOfSentencesToRepeat, updateBDto);
             }
         }
 

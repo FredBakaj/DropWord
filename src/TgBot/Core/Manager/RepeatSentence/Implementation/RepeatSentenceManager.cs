@@ -30,46 +30,43 @@ public class RepeatSentenceManager : IRepeatSentenceManager
         _offerResetCountRepeatSentences =
             Convert.ToInt32(configuration.GetSection("UserSettings")["OfferResetCountRepeatSentences"]);
     }
-
-    public async Task<bool> TryShowRepeatResetToStartAsync(UpdateBDto updateBDto, string resetCountFieldView)
+    
+    public async Task<int?> GetCountRepetitionSentences(long userId)
     {
         var countRepetitionSentences = await _sender.Send(new GetCountRepetitionSentencesQuery()
         {
-            UserId = updateBDto.GetUserId()
+            UserId = userId
         });
+        return countRepetitionSentences.Count;
+    }
 
-        //Отображалось ли сообщение о сбросе повтора в начало
+    public async Task<bool> IsShowResetCountRepeatSentences(UpdateBDto updateBDto)
+    {
         TempSDto? stateDto =
             await _botStateTreeUserHandler.GetDataAsync<TempSDto>(updateBDto);
         bool isShowResetCountRepeatSentences = stateDto != null ? stateDto.TempData == TempStateUserEnum.ShowResetCountRepeatSentences : false;
+        return isShowResetCountRepeatSentences;
+    }
 
-        if (countRepetitionSentences.Count != null &&
-            countRepetitionSentences.Count % _offerResetCountRepeatSentences == 0 &&
-            !isShowResetCountRepeatSentences)
-        {
-            var viewDto = new ResetCountRepeatSentenceVDto()
-            {
-                Update = updateBDto, Count = countRepetitionSentences.Count!.Value
-            };
-            await _botViewHandler.SendAsync(resetCountFieldView, viewDto);
+    public async Task<bool> CanShowResetCountRepeatSentences(UpdateBDto updateBDto)
+    {
+        var countRepetitionSentences = await GetCountRepetitionSentences(updateBDto.GetUserId());
+        var isShowResetCountRepeatSentences = await IsShowResetCountRepeatSentences(updateBDto);
+        var result = countRepetitionSentences != null &&
+                     countRepetitionSentences % _offerResetCountRepeatSentences == 0 &&
+                     !isShowResetCountRepeatSentences;
+        return !result;
+    }
 
-            //Записать информацию что сообщение о сбросе повтора отображалось пользователю
-            stateDto = new TempSDto() { TempData = TempStateUserEnum.ShowResetCountRepeatSentences};
-            await _botStateTreeUserHandler.SetDataAndActionAsync(updateBDto, updateBDto.TelegramState!.Action,
-                stateDto);
-
-            return true;
-        }
-        else
-        {
-            //Очистка промежуточных данных пользователя
-            if (stateDto != null)
-            {
-                await _botStateTreeUserHandler.ClearDataAsync(updateBDto);
-            }
-
-            return false;
-        }
+    public async Task SaveShowResetCountRepeatSentencesView(UpdateBDto updateBDto)
+    {
+        var stateDto = new TempSDto() { TempData = TempStateUserEnum.ShowResetCountRepeatSentences};
+        await _botStateTreeUserHandler.SetDataAndActionAsync(updateBDto, updateBDto.TelegramState!.Action,
+            stateDto);
+    }
+    public async Task ClearShowResetCountRepeatSentencesView(UpdateBDto updateBDto)
+    {
+        await _botStateTreeUserHandler.ClearDataAsync(updateBDto);
     }
     
     public async Task<SentenceForRepeatDto> GetSentencesPairAndSaveInDataAsync(UpdateBDto updateBDto)

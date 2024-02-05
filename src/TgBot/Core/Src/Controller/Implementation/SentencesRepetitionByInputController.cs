@@ -65,18 +65,36 @@ public class SentencesRepetitionByInputController : IBotController
         var repeatSentenceDto = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
         //Отправляет сообщение начало повтора вводом 
         var viewModel =
-            new StartInputVDto() { Update = updateBDto, Sentence = _repeatSentenceManager.GetNextSentence(repeatSentenceDto) };
+            new StartInputVDto()
+            {
+                Update = updateBDto, Sentence = _repeatSentenceManager.GetNextSentence(repeatSentenceDto)
+            };
         await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.StartInput, viewModel);
+    }
+
+    private async Task ProcessingInputAndTryShowResetCountSentence(UpdateBDto updateBDto, Func<Task> processingInput,
+        Func<Task> showResetCount)
+    {
+        //Оборачиваем отображения пары слов в проверку на кол-во отображонных слов 
+        if (await _repeatSentenceManager.CanShowResetCountRepeatSentences(updateBDto))
+        {
+            await processingInput();
+            if (await _repeatSentenceManager.IsShowResetCountRepeatSentences(updateBDto))
+            {
+                await _repeatSentenceManager.ClearShowResetCountRepeatSentencesView(updateBDto);
+            }
+        }
+        else
+        {
+            await showResetCount();
+            await _repeatSentenceManager.SaveShowResetCountRepeatSentencesView(updateBDto);
+        }
     }
 
     private async Task NextSentenceActionAsync(UpdateBDto updateBDto)
     {
-        //TODO Добавить проверку на кол-во вводов, добавить вюшку для сброса слов.
         var messageText = updateBDto.GetMessage().Text!;
         var dataModel = await _botStateTreeUserHandler.GetDataAsync<SentencesRepetitionByInputSDto>(updateBDto);
-        //TODO Добавить проверку на нулл dataModel если он пустой то код ниже не запускать, отправлять сообщение с кнопкой 
-        // получить слово, и сетать в дату модель с инфой о том, что пользователь уже пытался получить слово, чтобы 
-        // если все слова закончились не переключаться между сообщениями Получить слово и все слова закончились
         if (dataModel != null)
         {
             var responseRepeat = await _sender.Send(new SentencesRepetitionByInputCommand()
@@ -90,15 +108,22 @@ public class SentencesRepetitionByInputController : IBotController
             {
                 if (responseRepeat == StatusOfSentenceInputEnum.Right)
                 {
-                    await ProcessRightInputAsync(updateBDto, dataModel);
+                    await ProcessingInputAndTryShowResetCountSentence(updateBDto,
+                        () => ProcessRightInputAsync(updateBDto),
+                        () => ShowResetCountSentenceForRightInputAsync(updateBDto));
                 }
                 else if (responseRepeat == StatusOfSentenceInputEnum.InputWithErrors)
                 {
-                    await ProcessInputWithErrorsAsync(updateBDto, dataModel, messageText);
+                    await ProcessingInputAndTryShowResetCountSentence(updateBDto,
+                        () => ProcessInputWithErrorsAsync(updateBDto, dataModel, messageText),
+                        () => ShowResetCountSentenceForInputWithErrorsAsync(updateBDto, dataModel, messageText));
                 }
                 else if (responseRepeat == StatusOfSentenceInputEnum.Incorrect)
                 {
-                    await ProcessIncorrectInputAsync(updateBDto, dataModel);
+                    await ProcessingInputAndTryShowResetCountSentence(updateBDto,
+                    () => ProcessIncorrectInputAsync(updateBDto, dataModel),
+                    () => ShowResetCountSentenceForIncorrectInputAsync(updateBDto,dataModel)
+                    );
                 }
             }
             catch (OutOfSentencesToRepeatException)
@@ -109,7 +134,8 @@ public class SentencesRepetitionByInputController : IBotController
         else
         {
             var tempDataModel = await _botStateTreeUserHandler.GetDataAsync<TempSDto>(updateBDto);
-            if (tempDataModel != null && tempDataModel.TempData == TempStateUserEnum.EmptyDataForRepeatSentencesByInput)
+            if (tempDataModel != null &&
+                tempDataModel.TempData == TempStateUserEnum.EmptyDataForRepeatSentencesByInput)
             {
                 //todo Добавить ResetOutOfSentencesToRepeat во вю SentencesRepetitionByInputViewField 
                 await _botViewHandler.SendAsync(BaseViewField.ResetOutOfSentencesToRepeat, updateBDto);
@@ -118,7 +144,8 @@ public class SentencesRepetitionByInputController : IBotController
             {
                 try
                 {
-                    var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
+                    var nextSentencePair =
+                        await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
                     var viewModel = new StartInputVDto()
                     {
                         Update = updateBDto, Sentence = _repeatSentenceManager.GetNextSentence(nextSentencePair),
@@ -128,7 +155,8 @@ public class SentencesRepetitionByInputController : IBotController
                 catch (OutOfSentencesToRepeatException)
                 {
                     tempDataModel = new TempSDto() { TempData = TempStateUserEnum.EmptyDataForRepeatSentencesByInput };
-                    await _botStateTreeUserHandler.SetDataAndActionAsync(updateBDto, updateBDto.TelegramState!.Action,
+                    await _botStateTreeUserHandler.SetDataAndActionAsync(updateBDto,
+                        updateBDto.TelegramState!.Action,
                         tempDataModel);
                     //TODO добавить вю ResetOutOfSentencesToRepeat в SentencesRepetitionByInputViewField
                     await _botViewHandler.SendAsync(BaseViewField.ResetOutOfSentencesToRepeat, updateBDto);
@@ -137,9 +165,8 @@ public class SentencesRepetitionByInputController : IBotController
         }
     }
 
-    
 
-    private async Task ProcessRightInputAsync(UpdateBDto updateBDto, SentencesRepetitionByInputSDto data)
+    private async Task ProcessRightInputAsync(UpdateBDto updateBDto)
     {
         try
         {
@@ -148,6 +175,29 @@ public class SentencesRepetitionByInputController : IBotController
             //Отправка сообщения с информацие что ввод правельный и следующим словом
             var viewModel = new RightInputVDto() { Update = updateBDto, NextSentence = nextSentence };
             await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.RightInput, viewModel);
+        }
+        catch (OutOfSentencesToRepeatException)
+        {
+            await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.RightInputAndOutOfSentencesToRepeat,
+                updateBDto);
+            throw;
+        }
+    }
+
+    private async Task ShowResetCountSentenceForRightInputAsync(UpdateBDto updateBDto)
+    {
+        try
+        {
+            var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
+            var nextSentence = _repeatSentenceManager.GetNextSentence(nextSentencePair);
+            var countSentence = await _repeatSentenceManager.GetCountRepetitionSentences(updateBDto.GetUserId());
+            //Отправка сообщения с информацие что ввод правельный и следующим словом
+            var viewModel = new RightInputAndResetCountSentenceVDto()
+            {
+                Update = updateBDto, NextSentence = nextSentence, CountSentence = countSentence!.Value
+            };
+            await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.RightInputAndResetCountSentence,
+                viewModel);
         }
         catch (OutOfSentencesToRepeatException)
         {
@@ -175,10 +225,51 @@ public class SentencesRepetitionByInputController : IBotController
             {
                 Update = updateBDto,
                 NextSentence = nextSentence,
-                CorrectedSentence = diffSentenceWithMarkup.Sentence, //TODO заменить на другое слово
+                CorrectedSentence = diffSentenceWithMarkup.Sentence,
                 RightSentence = originalSentence
             };
             await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.InputWithErrors, viewModel);
+        }
+        catch (OutOfSentencesToRepeatException)
+        {
+            var viewModel = new InputWithErrorsAndOutOfSentencesToRepeatVDto()
+            {
+                Update = updateBDto,
+                RightSentence = originalSentence,
+                CorrectedSentence = diffSentenceWithMarkup.Sentence
+            };
+            await _botViewHandler.SendAsync(
+                SentencesRepetitionByInputViewField.InputWithErrorsAndOutOfSentencesToRepeat, viewModel);
+            throw;
+        }
+    }
+
+    private async Task ShowResetCountSentenceForInputWithErrorsAsync(UpdateBDto updateBDto,
+        SentencesRepetitionByInputSDto data,
+        string messageText)
+    {
+        var originalSentence = _repeatSentenceManager.GetOriginalSentence(data);
+        var diffSentenceWithMarkup = await
+            _sender.Send(new GetDiffSentenceWithMarkupQuery()
+            {
+                OldSentence = originalSentence, NewSentence = messageText
+            });
+        var countSentence = await _repeatSentenceManager.GetCountRepetitionSentences(updateBDto.GetUserId());
+        try
+        {
+            var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
+            var nextSentence = _repeatSentenceManager.GetNextSentence(nextSentencePair);
+            //Отправка сообщения с информацие что ввод содержит ошибки 
+            var viewModel = new InputWithErrorsAndResetCountSentenceVDto()
+            {
+                Update = updateBDto,
+                NextSentence = nextSentence,
+                CorrectedSentence = diffSentenceWithMarkup.Sentence,
+                RightSentence = originalSentence,
+                CountSentence = countSentence!.Value
+            };
+            await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.InputWithErrorsAndResetCountSentence,
+                viewModel);
         }
         catch (OutOfSentencesToRepeatException)
         {
@@ -207,6 +298,35 @@ public class SentencesRepetitionByInputController : IBotController
                 Update = updateBDto, NextSentence = nextSentence, RightSentence = originalSentence
             };
             await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.IncorrectInput, viewModel);
+        }
+        catch (OutOfSentencesToRepeatException)
+        {
+            var viewModel = new IncorrectInputAndOutOfSentencesToRepeatVDto()
+            {
+                Update = updateBDto, RightSentence = originalSentence
+            };
+
+            await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.IncorrectInputAndOutOfSentencesToRepeat,
+                viewModel);
+            throw;
+        }
+    }
+
+    private async Task ShowResetCountSentenceForIncorrectInputAsync(UpdateBDto updateBDto,
+        SentencesRepetitionByInputSDto data)
+    {
+        var originalSentence = _repeatSentenceManager.GetOriginalSentence(data);
+        try
+        {
+            var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
+            var nextSentence = _repeatSentenceManager.GetNextSentence(nextSentencePair);
+            var countSentence = await _repeatSentenceManager.GetCountRepetitionSentences(updateBDto.GetUserId());
+            //Отправка сообщения с информацие что ввод содержит ошибки 
+            var viewModel = new IncorrectInputAndResetCountSentenceVDto()
+            {
+                Update = updateBDto, NextSentence = nextSentence, RightSentence = originalSentence, CountSentence = countSentence!.Value
+            };
+            await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.IncorrectInputAndResetCountSentence, viewModel);
         }
         catch (OutOfSentencesToRepeatException)
         {
