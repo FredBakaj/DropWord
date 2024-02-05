@@ -1,10 +1,10 @@
-﻿using DropWord.Infrastructure.Common.Enum;
+﻿using DropWord.Domain.Enums;
 
 namespace DropWord.TgBot.Core.ViewDto;
 
 public class RepeatSentenceVDto : BaseVDto
 {
-    public HideSentenceEnum HideSentenceEnum { get; set; }
+    public SentenceToLearnLabelEnum SentenceToLearnLabel { get; set; }
     public string FirstSentence { get; set; } = null!;
     public string SecondSentence { get; set; } = null!;
 }

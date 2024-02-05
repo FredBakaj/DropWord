@@ -1,4 +1,4 @@
-﻿using DropWord.Infrastructure.Common.Enum;
+﻿using DropWord.Domain.Enums;
 
 namespace DropWord.Domain.Entities;
 
@@ -6,7 +6,7 @@ public class UserSettingsEntity : BaseAuditableEntity<int>
 {
  
     public string InterfaceLanguage { get; set; } = null!;
-    public HideSentenceEnum HideSentenceEnum { get; set; }
+    public LearnSentencesModeEnum LearnSentencesModeEnum { get; set; }
     public string MainLanguage { get; set; } = null!;
     public string LearnLanguage { get; set; } = null!;
 

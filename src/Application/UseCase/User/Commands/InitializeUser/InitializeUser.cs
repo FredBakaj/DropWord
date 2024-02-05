@@ -1,6 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Domain.Entities;
-using DropWord.Infrastructure.Common.Enum;
+using DropWord.Domain.Enums;
 
 namespace DropWord.Application.UseCase.User.Commands.InitializeUser;
 
@@ -46,7 +46,7 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
                 MainLanguage = String.Empty,
                 LearnLanguage = String.Empty,
                 InterfaceLanguage = request.InterfaceLanguage,
-                HideSentenceEnum = HideSentenceEnum.MainLanguage,
+                LearnSentencesModeEnum = LearnSentencesModeEnum.MainLanguage,
             };
 
             var userLearningInfo = new UserLearningInfoEntity()

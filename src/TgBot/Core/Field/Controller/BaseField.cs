@@ -12,5 +12,6 @@
         public const string NewSentenceButton = "Нове";
         public const string SwitchLanguageKeyboard = nameof(SwitchLanguageKeyboard);
         public const string SettingsKeyboard = nameof(SettingsKeyboard);
+        public const string SentencesRepetitionByInputKeyboard = "Повтор ✍️";
     }
 }

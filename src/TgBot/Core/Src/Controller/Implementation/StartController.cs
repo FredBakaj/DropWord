@@ -91,6 +91,6 @@ public class StartController : IBotController
 
         await _botStateTreeUserHandler.SetStateAndActionAsync(update, BaseField.BaseState,
             BaseField.BaseAction);
-        await _botViewHandler.SendAsync(BaseViewField.Intro, update);
+        await _botViewHandler.SendAsync(BaseViewField.Menu, update);
     }
 }

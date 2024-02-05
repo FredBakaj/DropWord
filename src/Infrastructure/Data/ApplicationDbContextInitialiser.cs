@@ -43,7 +43,7 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-            await _context.Database.EnsureDeletedAsync(CancellationToken.None);
+            //await _context.Database.EnsureDeletedAsync(CancellationToken.None);
             await _context.Database.MigrateAsync();
         }
         catch (Exception ex)

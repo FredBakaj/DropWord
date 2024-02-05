@@ -11,6 +11,7 @@ namespace DropWord.TgBot.Di.Controller
         {
             services.AddTransient<IBotController, BaseController>();
             services.AddTransient<IBotController, StartController>();
+            services.AddTransient<IBotController, SentencesRepetitionByInputController>();
         }
     }
 }

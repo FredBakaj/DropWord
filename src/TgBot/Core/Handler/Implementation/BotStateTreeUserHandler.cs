@@ -29,10 +29,11 @@ public class BotStateTreeUserHandler : IBotStateTreeUserHandler
     }
 
     public async Task SetDataAndActionAsync<T>(UpdateBDto update, string action, T data,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) where T : class
     {
+        var stateDataModel = new StateDataBDto<T>() { DataType = data.GetType().Name, Data = data };
         var userId = update.GetUserId();
-        await _sender.Send(new SetDataAndActionCommand() { UserId = userId, Action = action, Data = data! },
+        await _sender.Send(new SetDataAndActionCommand() { UserId = userId, Action = action, Data = stateDataModel },
             cancellationToken);
     }
 
@@ -49,16 +50,20 @@ public class BotStateTreeUserHandler : IBotStateTreeUserHandler
         string userData = await _sender.Send(new GetDataQuery() { UserId = userId }, cancellationToken);
         if (userData != null && userData != string.Empty)
         {
-            return JsonConvert.DeserializeObject<T>(userData);
+            var dataStateModel = JsonConvert.DeserializeObject<StateDataBDto<T>>(userData);
+            if (dataStateModel!.DataType == typeof(T).Name)
+            {
+                return dataStateModel!.Data;
+            }
         }
+
         return null;
     }
 
     public async Task ClearDataAsync(UpdateBDto update, CancellationToken cancellationToken = default)
     {
         var userId = update.GetUserId();
-        await _sender.Send(new ClearDataCommand() { UserId = userId}, cancellationToken);
-
+        await _sender.Send(new ClearDataCommand() { UserId = userId }, cancellationToken);
     }
 
     public async Task<StateTreeBDto> GetStateAndActionAsync(UpdateBDto update,

@@ -2,7 +2,6 @@
 using DropWord.Application.UseCase.Sentence.Commands.LearnNewSentence;
 using DropWord.Application.UseCase.Sentence.Commands.RepeatSentence;
 using DropWord.Application.UseCase.Sentence.Commands.ResetCountRepeatSentence;
-using DropWord.Application.UseCase.Sentence.Queries.GetCountRepetitionSentences;
 using DropWord.Application.UseCase.Sentence.Queries.GetNewSentence;
 using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
 using DropWord.Domain.Exceptions;
@@ -10,6 +9,7 @@ using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Handler;
+using DropWord.TgBot.Core.Manager.RepeatSentence;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.StateDto;
 using DropWord.TgBot.Core.ViewDto;
@@ -23,21 +23,20 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private readonly IBotViewHandler _botViewHandler;
         private readonly ISender _sender;
         private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
-
-        private readonly int _offerResetCountRepeatSentences;
+        private readonly IRepeatSentenceManager _repeatSentenceManager;
 
         public string Name() => BaseField.BaseState;
 
         public BaseController(IBotStateTreeHandler botStateTreeHandler, IBotViewHandler botViewHandler, ISender sender,
-            IConfiguration configuration, IBotStateTreeUserHandler botStateTreeUserHandler)
+            IBotStateTreeUserHandler botStateTreeUserHandler,
+            IRepeatSentenceManager repeatSentenceManager)
         {
             _botStateTreeHandler = botStateTreeHandler;
             _botViewHandler = botViewHandler;
             _sender = sender;
             _botStateTreeUserHandler = botStateTreeUserHandler;
+            _repeatSentenceManager = repeatSentenceManager;
 
-            _offerResetCountRepeatSentences =
-                Convert.ToInt32(configuration.GetSection("UserSettings")["OfferResetCountRepeatSentences"]);
 
             Initialize();
         }
@@ -57,6 +56,8 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             _botStateTreeHandler.AddCallback(BaseField.BaseAction,
                 BaseField.ResetCountRepeatSentencesCallback,
                 ResetCountRepeatSentencesCallback);
+            _botStateTreeHandler.AddKeyboard(BaseField.BaseAction, BaseField.SentencesRepetitionByInputKeyboard,
+                SentencesRepetitionByInputKeyboard);
         }
 
         //Добавление предложений в базу 
@@ -94,39 +95,11 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         //Отправляет уже изученую пару предложений для повторения
         private async Task RepeatSentenceKeyboard(UpdateBDto updateBDto)
         {
-            var countRepetitionSentences = await _sender.Send(new GetCountRepetitionSentencesQuery()
+            //Оборачиваем отображения пары слов в проверку на кол-во отображонных слов 
+            if (!await _repeatSentenceManager.TryShowRepeatResetToStartAsync(updateBDto,
+                    //Название вю котороя необходимо отобразить если кол-во отображонных слов достигло определёного числа.
+                    BaseViewField.ResetCountRepeatSentence))
             {
-                UserId = updateBDto.GetUserId()
-            });
-
-            //Отображалось ли сообщение о сбросе повтора в начало
-            ResetCountRepeatSentencesSDto? stateDto =
-                await _botStateTreeUserHandler.GetDataAsync<ResetCountRepeatSentencesSDto>(updateBDto);
-            bool isShowResetCountRepeatSentences = stateDto != null ? stateDto.IsShow : false;
-
-            if (countRepetitionSentences.Count != null &&
-                countRepetitionSentences.Count % _offerResetCountRepeatSentences == 0 &&
-                !isShowResetCountRepeatSentences)
-            {
-                var viewDto = new ResetCountRepeatSentenceVDto()
-                {
-                    Update = updateBDto, Count = countRepetitionSentences.Count!.Value
-                };
-                await _botViewHandler.SendAsync(BaseViewField.ResetCountRepeatSentence, viewDto);
-
-                //Записать информацию что сообщение о сбросе повтора отображалось пользователю
-                stateDto = new ResetCountRepeatSentencesSDto() { IsShow = true };
-                await _botStateTreeUserHandler.SetDataAndActionAsync(updateBDto, updateBDto.TelegramState!.Action,
-                    stateDto);
-            }
-            else
-            {
-                //Очистка промежуточных данных пользователя
-                if (stateDto != null)
-                {
-                    await _botStateTreeUserHandler.ClearDataAsync(updateBDto);
-                }
-
                 try
                 {
                     var repeatSentenceDto = await _sender.Send(new GetSentenceForRepeatQuery()
@@ -137,7 +110,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                     var viewDto = new RepeatSentenceVDto()
                     {
                         Update = updateBDto,
-                        HideSentenceEnum = repeatSentenceDto.HideSentenceEnum,
+                        SentenceToLearnLabel = repeatSentenceDto.SentenceToLearnLabel,
                         FirstSentence = repeatSentenceDto.FirstSentence,
                         SecondSentence = repeatSentenceDto.SecondSentence
                     };
@@ -149,6 +122,38 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                         IsLearn = false,
                         UsingSentencesPairId = repeatSentenceDto.UsingSentencesPairId
                     });
+                }
+                catch (OutOfSentencesToRepeatException)
+                {
+                    await _botViewHandler.SendAsync(BaseViewField.ResetOutOfSentencesToRepeat, updateBDto);
+                }
+                catch (EmptyCollectionOfSentencesToRepeatException)
+                {
+                    await _botViewHandler.SendAsync(BaseViewField.EmptyCollectionOfSentencesToRepeat, updateBDto);
+                }
+            }
+        }
+
+        private async Task SentencesRepetitionByInputKeyboard(UpdateBDto updateBDto)
+        {
+            //Оборачиваем отображения пары слов в проверку на кол-во отображонных слов 
+            if (!await _repeatSentenceManager.TryShowRepeatResetToStartAsync(updateBDto,
+                    //Название вю котороя необходимо отобразить если кол-во отображонных слов достигло определёного числа.
+                    BaseViewField.ResetCountRepeatSentence))
+            {
+                try
+                {
+                    await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto,
+                        SentencesRepetitionByInputField.State,
+                        SentencesRepetitionByInputField.Action);
+                    //Сохроняет промежуточные данны для сравнения слов между вводами
+                    var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
+                    var nextSentence = _repeatSentenceManager.GetNextSentence(nextSentencePair);
+
+                    //Отправляет сообщение начало повтора вводом 
+                    var viewModel =
+                        new StartInputVDto() { Update = updateBDto, Sentence = nextSentence };
+                    await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.StartInput, viewModel);
                 }
                 catch (OutOfSentencesToRepeatException)
                 {

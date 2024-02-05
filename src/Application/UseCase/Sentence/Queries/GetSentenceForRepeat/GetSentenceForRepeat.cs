@@ -1,6 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
+using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
-using DropWord.Infrastructure.Common.Enum;
 
 namespace DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
 
@@ -62,7 +62,7 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
                 return CreateResponse(usingSentencesPair.Id,
                     sentencesPair.FirstSentence.Sentence,
                     sentencesPair.SecondSentence.Sentence,
-                    user.UserSettings.HideSentenceEnum);
+                    user.UserSettings.LearnSentencesModeEnum);
             }
             //Если нету слов которые были добавленны после текущего в тотже день
             else
@@ -88,7 +88,7 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
                     return CreateResponse(usingSentencesPairId.UsingSentencesPairId,
                         sentencesPair.FirstSentence.Sentence,
                         sentencesPair.SecondSentence.Sentence,
-                        user.UserSettings.HideSentenceEnum);
+                        user.UserSettings.LearnSentencesModeEnum);
                 }
                 else
                 {
@@ -121,7 +121,7 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
                 return CreateResponse(usingSentencesPair!.Id,
                     sentencesPair!.FirstSentence.Sentence,
                     sentencesPair.SecondSentence.Sentence,
-                    user.UserSettings.HideSentenceEnum);
+                    user.UserSettings.LearnSentencesModeEnum);
             }
 
             throw new EmptyCollectionOfSentencesToRepeatException("Not have a sentence");
@@ -129,14 +129,15 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
     }
 
     private SentenceForRepeatDto CreateResponse(int usingSentencesPairId, string firstSentence, string secondSentence,
-        HideSentenceEnum hideSentenceEnum)
+        LearnSentencesModeEnum learnSentencesModeEnum)
     {
+        var sentenceToLearnLabel = SentenceToLearnLabelEnum.First; //добавить логику определения sentenceToLearnLabel по learnSentencesModeEnum
         return new SentenceForRepeatDto()
         {
             UsingSentencesPairId = usingSentencesPairId,
             FirstSentence = firstSentence,
             SecondSentence = secondSentence,
-            HideSentenceEnum = hideSentenceEnum
+            SentenceToLearnLabel = sentenceToLearnLabel
         };
     }
 }

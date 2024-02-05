@@ -1,11 +1,11 @@
 ﻿using DropWord.Domain.Enums;
 
-namespace DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+namespace DropWord.TgBot.Core.StateDto;
 
-public class SentenceForRepeatDto
+public class SentencesRepetitionByInputSDto
 {
     public int UsingSentencesPairId { get; set; }
     public string FirstSentence { get; set; } = null!;
     public string SecondSentence { get; set; } = null!;
-    public SentenceToLearnLabelEnum SentenceToLearnLabel { get; set; }
+    public SentenceToLearnLabelEnum SentenceToLearnLabelEnum { get; set; }
 }

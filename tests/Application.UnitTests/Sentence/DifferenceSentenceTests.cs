@@ -26,9 +26,9 @@ public class DifferenceSentenceTests
 
         var actual = new DifferenceSentence();
 
-        var result = actual.GetDifferenceString(originalText, newText);
+        var result = actual.DiffSentencePercent(originalText, newText);
         
-        result.Should().BeEmpty();
+        result.Should().BeInRange(0, 1);
     }
 }
  

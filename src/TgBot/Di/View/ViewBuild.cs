@@ -11,5 +11,6 @@ public class ViewBuild
     {
         services.AddTransient<IBotView, BaseBotView>();
         services.AddTransient<IBotView, StartBotView>();
+        services.AddTransient<IBotView, SentencesRepetitionByInputBotView>();
     }
 }

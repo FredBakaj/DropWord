@@ -1,5 +1,5 @@
 ﻿using DropWord.Application.Common.Interfaces;
-using DropWord.Infrastructure.Common.Enum;
+using DropWord.Domain.Enums;
 
 namespace DropWord.Application.UseCase.Sentence.Queries.GetNewSentence;
 
@@ -49,9 +49,10 @@ public class GetNewSentenceQueryHandler : IRequestHandler<GetNewSentenceQuery, N
         var result = new NewSentenceDto()
         {
             SentencePairId = sentences.Id,
-            HideSentence = userSettings.HideSentenceEnum,
             FirstSentence = sentences.FirstSentence.Sentence,
-            SecondSentence = sentences.SecondSentence.Sentence
+            SecondSentence = sentences.SecondSentence.Sentence,
+            SentenceToLearnLabel = SentenceToLearnLabelEnum.First
+            
         };
         return result;
     }

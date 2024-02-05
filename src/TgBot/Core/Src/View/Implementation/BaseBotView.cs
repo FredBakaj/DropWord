@@ -1,4 +1,4 @@
-﻿using DropWord.Infrastructure.Common.Enum;
+﻿using DropWord.Domain.Enums;
 using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
@@ -20,7 +20,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             _botClient = botClient;
         }
 
-        [BotView(BaseViewField.Intro)]
+        [BotView(BaseViewField.Menu)]
         public async Task Intro(UpdateBDto update)
         {
             var text = "Головне меню";
@@ -50,20 +50,19 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         [BotView(BaseViewField.NewSentence)]
         public async Task NewSentence(NewSentenceVDto sentence)
         {
-            var text = MakeHideSentencesPairText(sentence.NewSentence.HideSentence,
+            var text = MakeHideSentencesPairText(sentence.NewSentence.SentenceToLearnLabel,
                 sentence.NewSentence.FirstSentence, sentence.NewSentence.SecondSentence);
 
-            await _botClient.SendTextMessageAsync(sentence.Update.GetUserId(), text, parseMode: ParseMode.MarkdownV2);
+            await _botClient.SendTextMessageMarkdown2Async(sentence.Update.GetUserId(), text);
         }
 
         [BotView(BaseViewField.RepeatSentence)]
         public async Task RepeatSentenceKeyboard(RepeatSentenceVDto repeatSentence)
         {
-            var text = MakeHideSentencesPairText(repeatSentence.HideSentenceEnum, repeatSentence.FirstSentence,
+            var text = MakeHideSentencesPairText(repeatSentence.SentenceToLearnLabel, repeatSentence.FirstSentence,
                 repeatSentence.SecondSentence);
 
-            await _botClient.SendTextMessageAsync(repeatSentence.Update.GetUserId(), text,
-                parseMode: ParseMode.MarkdownV2);
+            await _botClient.SendTextMessageMarkdown2Async(repeatSentence.Update.GetUserId(), text);
         }
 
         [BotView(BaseViewField.ResetCountRepeatSentence)]
@@ -104,7 +103,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             {
                 new KeyboardButton[]
                 {
-                    BaseField.RepeatSentenceKeyboard, "Повтор ✍️",
+                    BaseField.RepeatSentenceKeyboard, BaseField.SentencesRepetitionByInputKeyboard,
                     BaseField.NewSentenceButton
                 },
                 new KeyboardButton[] { "🇬🇧 🔃 🇬🇧", "⚙️" }
@@ -113,23 +112,21 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             await _botClient.SendTextMessageAsync(update.GetUserId(), text, replyMarkup: replyMarkup);
         }
 
-        private string MakeHideSentencesPairText(HideSentenceEnum hideSentenceEnum, string firstSentence,
+        private string MakeHideSentencesPairText(SentenceToLearnLabelEnum learnSentencesModeEnum, string firstSentence,
             string secondSentence)
         {
             var text = string.Empty;
-            if (hideSentenceEnum == HideSentenceEnum.MainLanguage)
+            if (learnSentencesModeEnum == SentenceToLearnLabelEnum.First)
             {
                 text = $"{secondSentence} \n\n" +
                        $"||{firstSentence}||";
             }
-            else if (hideSentenceEnum == HideSentenceEnum.LearnLanguage)
+            else if (learnSentencesModeEnum == SentenceToLearnLabelEnum.Second)
             {
                 text = $"{firstSentence} \n\n" +
                        $"||{secondSentence}||";
             }
-
-            text = text.Replace("-", "\\-");
-            text = text.Replace("#", "\\#");
+            
             return text;
         }
 
