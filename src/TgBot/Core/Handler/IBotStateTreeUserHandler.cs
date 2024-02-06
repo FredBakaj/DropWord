@@ -10,4 +10,8 @@ public interface IBotStateTreeUserHandler
     Task<T?> GetDataAsync<T>(UpdateBDto update, CancellationToken cancellationToken = default) where T : class;
     Task ClearDataAsync(UpdateBDto update, CancellationToken cancellationToken = default);
     Task<StateTreeBDto> GetStateAndActionAsync(UpdateBDto update, CancellationToken cancellationToken = default);
+
+    Task SetTempDataAsync<T>(UpdateBDto update, T tempData, CancellationToken cancellationToken = default) where T : class;
+    Task<T?> GetTempDataAsync<T>(UpdateBDto update, CancellationToken cancellationToken = default) where T : class;
+    Task ClearTempDataAsync(UpdateBDto update, CancellationToken cancellationToken = default);
 }

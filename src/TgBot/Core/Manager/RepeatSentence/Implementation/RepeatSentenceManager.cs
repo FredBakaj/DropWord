@@ -30,21 +30,20 @@ public class RepeatSentenceManager : IRepeatSentenceManager
         _offerResetCountRepeatSentences =
             Convert.ToInt32(configuration.GetSection("UserSettings")["OfferResetCountRepeatSentences"]);
     }
-    
+
     public async Task<int?> GetCountRepetitionSentences(long userId)
     {
-        var countRepetitionSentences = await _sender.Send(new GetCountRepetitionSentencesQuery()
-        {
-            UserId = userId
-        });
+        var countRepetitionSentences = await _sender.Send(new GetCountRepetitionSentencesQuery() { UserId = userId });
         return countRepetitionSentences.Count;
     }
 
     public async Task<bool> IsShowResetCountRepeatSentences(UpdateBDto updateBDto)
     {
         TempSDto? stateDto =
-            await _botStateTreeUserHandler.GetDataAsync<TempSDto>(updateBDto);
-        bool isShowResetCountRepeatSentences = stateDto != null ? stateDto.TempData == TempStateUserEnum.ShowResetCountRepeatSentences : false;
+            await _botStateTreeUserHandler.GetTempDataAsync<TempSDto>(updateBDto);
+        bool isShowResetCountRepeatSentences = stateDto != null
+            ? stateDto.TempData == TempStateUserEnum.ShowResetCountRepeatSentences
+            : false;
         return isShowResetCountRepeatSentences;
     }
 
@@ -60,15 +59,15 @@ public class RepeatSentenceManager : IRepeatSentenceManager
 
     public async Task SaveShowResetCountRepeatSentencesView(UpdateBDto updateBDto)
     {
-        var stateDto = new TempSDto() { TempData = TempStateUserEnum.ShowResetCountRepeatSentences};
-        await _botStateTreeUserHandler.SetDataAndActionAsync(updateBDto, updateBDto.TelegramState!.Action,
-            stateDto);
+        var stateDto = new TempSDto() { TempData = TempStateUserEnum.ShowResetCountRepeatSentences };
+        await _botStateTreeUserHandler.SetTempDataAsync(updateBDto, stateDto);
     }
+
     public async Task ClearShowResetCountRepeatSentencesView(UpdateBDto updateBDto)
     {
-        await _botStateTreeUserHandler.ClearDataAsync(updateBDto);
+        await _botStateTreeUserHandler.ClearTempDataAsync(updateBDto);
     }
-    
+
     public async Task<SentenceForRepeatDto> GetSentencesPairAndSaveInDataAsync(UpdateBDto updateBDto)
     {
         var repeatSentenceDto = await _sender.Send(new GetSentenceForRepeatQuery() { UserId = updateBDto.GetUserId() });

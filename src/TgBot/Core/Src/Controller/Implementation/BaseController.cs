@@ -153,7 +153,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         {
             
             //Оборачиваем отображения пары слов в проверку на кол-во отображонных слов 
-            if (!await _repeatSentenceManager.CanShowResetCountRepeatSentences(updateBDto))
+            if (await _repeatSentenceManager.CanShowResetCountRepeatSentences(updateBDto))
             {
                 await StartSentencesRepetitionByInputAsync(updateBDto);
                 await _repeatSentenceManager.ClearShowResetCountRepeatSentencesView(updateBDto);
