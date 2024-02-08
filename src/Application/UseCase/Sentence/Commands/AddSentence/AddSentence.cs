@@ -1,14 +1,13 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Common.Interfaces.Sentence;
 using DropWord.Domain.Entities;
-using DropWord.Domain.Exceptions;
 
 namespace DropWord.Application.UseCase.Sentence.Commands.AddSentence;
 
-public record AddSentenceCommand : IRequest<IEnumerable<AddSentenceDto>>
+public record AddSentenceCommand : IRequest<AddSentencePairDto>
 {
     public long UserId { get; set; }
-    public string Content { get; set; } = null!;
+    public string Sentence { get; set; } = null!;
 }
 
 public class AddSentenceCommandValidator : AbstractValidator<AddSentenceCommand>
@@ -18,97 +17,93 @@ public class AddSentenceCommandValidator : AbstractValidator<AddSentenceCommand>
     }
 }
 
-public class AddSentenceCommandHandler : IRequestHandler<AddSentenceCommand, IEnumerable<AddSentenceDto>>
+public class AddSentenceCommandHandler : IRequestHandler<AddSentenceCommand, AddSentencePairDto>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IParse _parse;
     private readonly ITranslate _translate;
 
-    public AddSentenceCommandHandler(IApplicationDbContext context, IParse parse, ITranslate translate)
+    public AddSentenceCommandHandler(IApplicationDbContext context, ITranslate translate)
     {
         _context = context;
-        _parse = parse;
         _translate = translate;
     }
 
-    public async Task<IEnumerable<AddSentenceDto>> Handle(AddSentenceCommand request,
+    public async Task<AddSentencePairDto> Handle(AddSentenceCommand request,
         CancellationToken cancellationToken)
     {
-        // Получение из контента предложений
-        var sentencesModel = await _parse.ParseAsync(request.Content);
-        var sentences = sentencesModel.Select(x => x.Sentence);
+        var sentence = request.Sentence;
         // Определение языков предложений
-        var detectLanguage = await _translate.DetectLanguageListAsync(sentences);
+        var detectLanguage = await _translate.DetectLanguageAsync(sentence);
         // Проверка на наличие больше одного языка в контенте
-        var firstSentenceLanguage = detectLanguage.First().Language;
-        if (!detectLanguage.All(x => x.Language == firstSentenceLanguage))
-        {
-            throw new DetectMoreThanOneLanguageException("more than one language is detected in the sentences");
-        }
+        var firstSentenceLanguage = detectLanguage.Language;
+
         //Перевод предложений
         var userSettings = await _context.UserSettings.FirstAsync(x => x.UserId == request.UserId);
         var translateTo = firstSentenceLanguage == userSettings.MainLanguage
             ? userSettings.LearnLanguage
             : userSettings.MainLanguage;
 
-        var translateSentences = await _translate.TranslateListAsync(sentences, firstSentenceLanguage, translateTo);
-        //Сохранение предложений в БД
-        var sentencesPair = new List<SentencesPairEntity>();
-        foreach (var item in translateSentences)
-        {
-            var originalSentence =
-                new SentenceEntity()
-                {
-                    Language = item.OriginalLanguage, 
-                    Sentence = item.OriginalSentence
-                };
-            var translateSentence =
-                new SentenceEntity()
-                {
-                    Language = item.TranslateLanguage, 
-                    Sentence = item.TranslateSentence
-                };
+        var translateSentences = await _translate.TranslateAsync(sentence, firstSentenceLanguage, translateTo);
 
-            SentencesPairEntity sentencePair = null!;
-            if (item.OriginalLanguage == userSettings.MainLanguage)
+        //Сохранение предложений в БД
+        var originalSentence =
+            new SentenceEntity()
             {
-                sentencePair = new SentencesPairEntity()
-                {
-                    FirstSentence = originalSentence,
-                    SecondSentence = translateSentence,
-                    FirstLanguage = item.OriginalLanguage,
-                    SecondLanguage = item.TranslateLanguage,
-                    UserId = request.UserId
-                };
-            }
-            else if (item.TranslateLanguage == userSettings.MainLanguage)
+                Language = translateSentences.OriginalLanguage, Sentence = translateSentences.OriginalSentence
+            };
+        var translateSentence =
+            new SentenceEntity()
             {
-                sentencePair = new SentencesPairEntity()
-                {
-                    FirstSentence = translateSentence,
-                    SecondSentence = originalSentence,
-                    FirstLanguage = item.TranslateLanguage,
-                    SecondLanguage = item.OriginalLanguage,
-                    UserId = request.UserId
-                };
-            }
-            _context.SentencesPair.Add(sentencePair);
-            sentencesPair.Add(sentencePair);
+                Language = translateSentences.TranslateLanguage, Sentence = translateSentences.TranslateSentence
+            };
+
+        SentencesPairEntity sentencePair = null!;
+        if (translateSentences.OriginalLanguage == userSettings.MainLanguage)
+        {
+            sentencePair = new SentencesPairEntity()
+            {
+                FirstSentence = originalSentence,
+                SecondSentence = translateSentence,
+                FirstLanguage = translateSentences.OriginalLanguage,
+                SecondLanguage = translateSentences.TranslateLanguage,
+                UserId = request.UserId
+            };
         }
+        else if (translateSentences.TranslateLanguage == userSettings.MainLanguage)
+        {
+            sentencePair = new SentencesPairEntity()
+            {
+                FirstSentence = translateSentence,
+                SecondSentence = originalSentence,
+                FirstLanguage = translateSentences.TranslateLanguage,
+                SecondLanguage = translateSentences.OriginalLanguage,
+                UserId = request.UserId
+            };
+        }
+
+        _context.SentencesPair.Add(sentencePair);
 
         await _context.SaveChangesAsync(cancellationToken);
         //Генирация результата
-        var result = new List<AddSentenceDto>();
-        foreach (var item in sentencesPair)
-        {
-            result.Add(new AddSentenceDto()
-            {
-                Id = item.Id,
-                FirstSentence = item.FirstSentence.Sentence,
-                SecondSentence = item.SecondSentence.Sentence
-            });
-        }
 
+        var firstSentence = new SentenceDto()
+        {
+            Id = sentencePair.FirstSentence.Id,
+            Language = sentencePair.FirstSentence.Language,
+            Sentence = sentencePair.FirstSentence.Sentence,
+        };
+        var secondSentence = new SentenceDto()
+        {
+            Id = sentencePair.SecondSentence.Id,
+            Language = sentencePair.SecondSentence.Language,
+            Sentence = sentencePair.SecondSentence.Sentence,
+        };
+
+        var result = new AddSentencePairDto()
+        {
+            Id = sentencePair.Id, FirstSentence = firstSentence, SecondSentence = secondSentence
+        };
+        
         return result;
     }
 }

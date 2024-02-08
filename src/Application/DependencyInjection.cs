@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
 using DropWord.Application.Common.Behaviours;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace DropWord.Application;
 
 public static class DependencyInjection
 {

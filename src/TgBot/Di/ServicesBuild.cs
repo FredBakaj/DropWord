@@ -1,4 +1,6 @@
-﻿using DropWord.TgBot.Core.Service;
+﻿using DropWord.Application;
+using DropWord.Infrastructure;
+using DropWord.TgBot.Core.Service;
 using DropWord.TgBot.Core.Service.Implementation;
 using DropWord.TgBot.Di.Command;
 using DropWord.TgBot.Di.Controller;

@@ -1,4 +1,4 @@
-﻿namespace DropWord.Application.UseCase.Sentence.Queries.DiffSentenceWithMarkup;
+﻿namespace DropWord.Application.UseCase.Sentence.Queries.GetDiffSentenceWithMarkup;
 
 public class DiffSentenceWithMarkupDto
 {

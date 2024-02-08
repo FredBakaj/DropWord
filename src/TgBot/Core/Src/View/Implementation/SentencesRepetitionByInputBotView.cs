@@ -5,7 +5,6 @@ using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.ViewDto;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DropWord.TgBot.Core.Src.View.Implementation;

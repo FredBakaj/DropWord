@@ -39,7 +39,8 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
             {
                 State = request.State, 
                 Action = request.Action,
-                JsonData = String.Empty
+                JsonData = String.Empty,
+                JsonTempData = String.Empty,
             };
             var userSettings = new UserSettingsEntity()
             {

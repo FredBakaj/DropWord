@@ -11,4 +11,9 @@ public abstract class BaseViewField
     public const string ConfirmResetCountRepeatSentence = nameof(ConfirmResetCountRepeatSentence);
     public const string ResetOutOfSentencesToRepeat = nameof(ResetOutOfSentencesToRepeat);
     public const string EmptyCollectionOfSentencesToRepeat = nameof(EmptyCollectionOfSentencesToRepeat);
+    public const string EditSentence = nameof(EditSentence);
+    public const string InputEditSentence = nameof(InputEditSentence);
+    public const string DeleteAddedSentence = nameof(DeleteAddedSentence);
+    public const string CancelEditAddedSentence = nameof(CancelEditAddedSentence);
+    public const string DeleteAddedSentenceCollection = nameof(DeleteAddedSentenceCollection);
 }

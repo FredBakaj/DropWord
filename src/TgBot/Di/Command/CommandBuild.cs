@@ -8,5 +8,6 @@ public class CommandBuild
     public static void BuildService(IServiceCollection services)
     {
         services.AddScoped<IBotCommand, StartCommand>();
+        services.AddScoped<IBotCommand, ReloadCommand>();
     }
 }

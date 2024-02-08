@@ -4,9 +4,9 @@ using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Model;
+using DropWord.TgBot.Core.Utils;
 using DropWord.TgBot.Core.ViewDto;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DropWord.TgBot.Core.Src.View.Implementation
@@ -28,23 +28,113 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         }
 
         [BotView(BaseViewField.AddSentences)]
-        public async Task AddSentences(AddSentencesVDto sentences)
+        public async Task AddSentences(AddCollectionSentencesVDto collectionSentences)
         {
-            var text = "Було збережено наступні речення";
-            foreach (var item in sentences.Sentences)
+            var text = "Добавлено нові речення \u2795 \u2795 \u2795";
+            foreach (var item in collectionSentences.Sentences)
             {
-                text += $"# {item.FirstSentence}\n= {item.SecondSentence}\n\n";
+                text += $"# {item.FirstSentence.Sentence}\n= {item.SecondSentence.Sentence}\n\n";
             }
 
-            await MainMenuAsync(sentences.Update, text);
+            InlineKeyboardMarkup inlineKeyboard = new(new[]
+            {
+                // first row
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: "Видалити",
+                        callbackData: BaseField.DeleteAddedSentencesCallback + ":" +
+                                      collectionSentences.CollectionId),
+                }
+            });
+            await _botClient.SendTextMessageAsync(collectionSentences.Update.GetUserId(), text,
+                replyMarkup: inlineKeyboard);
         }
 
         [BotView(BaseViewField.AddSentence)]
-        public async Task AddSentence(AddSentencesVDto sentences)
+        public async Task AddSentence(AddedSentenceVDto sentence)
         {
-            var sentence = sentences.Sentences.First();
-            var text = $"{sentence.FirstSentence}\n\n {sentence.SecondSentence}";
-            await MainMenuAsync(sentences.Update, text);
+            var viewElements = AddSentenceElements(sentence.SentencePairId, sentence.FirstSentence.Sentence,
+                sentence.SecondSentence.Sentence);
+
+            var text = viewElements.Item1;
+
+            InlineKeyboardMarkup inlineKeyboard = viewElements.Item2;
+
+            await _botClient.SendTextMessageAsync(sentence.Update.GetUserId(), text,
+                replyMarkup: inlineKeyboard);
+        }
+
+
+        [BotView(BaseViewField.EditSentence)]
+        public async Task EditSentence(EditSentenceVDto editSentenceVDto)
+        {
+            var text =
+                $"Оберить мову речення яке хочете зминити 🪚 \n" +
+                $" {editSentenceVDto.FirstSentence.Sentence}\n\n" +
+                $" {editSentenceVDto.SecondSentence.Sentence}";
+
+            var firstLangEmojy = CustomConvert.LanguageToEmoji(editSentenceVDto.FirstSentence.Language);
+            var secondLangEmojy = CustomConvert.LanguageToEmoji(editSentenceVDto.SecondSentence.Language);
+            InlineKeyboardMarkup inlineKeyboard = new(new[]
+            {
+                // first row
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: firstLangEmojy,
+                        callbackData: BaseField.SelectEditAddedSentenceLanguageCallback + ":" +
+                                      editSentenceVDto.FirstSentence.Id),
+                    InlineKeyboardButton.WithCallbackData(text: secondLangEmojy,
+                        callbackData: BaseField.SelectEditAddedSentenceLanguageCallback + ":" +
+                                      editSentenceVDto.SecondSentence.Id),
+                },
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: "Повернутись",
+                        callbackData: BaseField.CancelEditSingleAddedSentenceCallback + ":" +
+                                      editSentenceVDto.Id),
+                }
+            });
+            await _botClient.EditMessageTextAsync(editSentenceVDto.Update.GetUserId(),
+                editSentenceVDto.Update.GetMessage().MessageId, text,
+                replyMarkup: inlineKeyboard);
+        }
+
+        [BotView(BaseViewField.InputEditSentence)]
+        public async Task InputEditSentence(UpdateBDto updateBDto)
+        {
+            var text = "Введіть речення ✏️";
+            var textEditMessage = updateBDto.GetMessage().Text;
+            await _botClient.EditMessageTextAsync(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId,
+                textEditMessage!);
+            await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        }
+
+        [BotView(BaseViewField.CancelEditAddedSentence)]
+        public async Task CancelEditAddedSentence(CancelEditAddedSentenceVDto viewDto)
+        {
+            var viewElements = AddSentenceElements(viewDto.SentencePairId, viewDto.FirstSentence.Sentence,
+                viewDto.SecondSentence.Sentence);
+
+            var text = viewElements.Item1;
+
+            InlineKeyboardMarkup inlineKeyboard = viewElements.Item2;
+
+            await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
+                text, replyMarkup: inlineKeyboard);
+        }
+
+        [BotView(BaseViewField.DeleteAddedSentence)]
+        public async Task DeleteAddedSentence(UpdateBDto updateBDto)
+        {
+            var text = "Речення було видалено 🖐";
+            await _botClient.EditMessageTextAsync(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId, text);
+        }
+
+        [BotView(BaseViewField.DeleteAddedSentenceCollection)]
+        public async Task DeleteAddedSentenceCollection(UpdateBDto updateBDto)
+        {
+            var text = "колекцію речень видалено 📄🖐";
+            await _botClient.EditMessageTextAsync(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId, text);
         }
 
         [BotView(BaseViewField.NewSentence)]
@@ -126,7 +216,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 text = $"{firstSentence} \n\n" +
                        $"||{secondSentence}||";
             }
-            
+
             return text;
         }
 
@@ -142,6 +232,28 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 }
             });
             await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: inlineKeyboard);
+        }
+
+        private (string, InlineKeyboardMarkup) AddSentenceElements(int sentencePairId, string firstSentence,
+            string secondSentence)
+        {
+            var text =
+                $"Добавлено нове речення \u2795 \n" +
+                $" {firstSentence}\n\n" +
+                $" {secondSentence}";
+            InlineKeyboardMarkup inlineKeyboard = new(new[]
+            {
+                // first row
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: "Видалити",
+                        callbackData: BaseField.DeleteSingleAddedSentenceCallback + ":" + sentencePairId),
+                    InlineKeyboardButton.WithCallbackData(text: "Змінити",
+                        callbackData: BaseField.EditSingleAddedSentenceCallback + ":" + sentencePairId),
+                }
+            });
+
+            return (text, inlineKeyboard);
         }
     }
 }

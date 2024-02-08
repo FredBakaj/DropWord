@@ -1,5 +1,4 @@
 ﻿using DropWord.Application.Common.Interfaces.Sentence;
-using DropWord.Application.UseCase.Sentence.Queries.DiffSentenceWithMarkup;
 
 namespace DropWord.Application.UseCase.Sentence.Queries.GetDiffSentenceWithMarkup;
 
