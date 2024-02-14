@@ -62,7 +62,8 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
                 return CreateResponse(usingSentencesPair.Id,
                     sentencesPair.FirstSentence.Sentence,
                     sentencesPair.SecondSentence.Sentence,
-                    user.UserSettings.LearnSentencesModeEnum);
+                    user.UserSettings.LearnSentencesModeEnum,
+                    usingSentencesPair!.IsLearning);
             }
             //Если нету слов которые были добавленны после текущего в тотже день
             else
@@ -88,7 +89,8 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
                     return CreateResponse(usingSentencesPairId.UsingSentencesPairId,
                         sentencesPair.FirstSentence.Sentence,
                         sentencesPair.SecondSentence.Sentence,
-                        user.UserSettings.LearnSentencesModeEnum);
+                        user.UserSettings.LearnSentencesModeEnum,
+                        usingSentencesPair!.IsLearning);
                 }
                 else
                 {
@@ -121,17 +123,21 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
                 return CreateResponse(usingSentencesPair!.Id,
                     sentencesPair!.FirstSentence.Sentence,
                     sentencesPair.SecondSentence.Sentence,
-                    user.UserSettings.LearnSentencesModeEnum);
+                    user.UserSettings.LearnSentencesModeEnum,
+                    usingSentencesPair!.IsLearning);
             }
 
             throw new EmptyCollectionOfSentencesToRepeatException("Not have a sentence");
         }
     }
 
+    //TODO костыль нужно вынести в менеджер
     private SentenceForRepeatDto CreateResponse(int usingSentencesPairId, string firstSentence, string secondSentence,
-        LearnSentencesModeEnum learnSentencesModeEnum)
+        LearnSentencesModeEnum learnSentencesModeEnum, bool isLearning)
     {
-        var sentenceToLearnLabel = SentenceToLearnLabelEnum.First; //добавить логику определения sentenceToLearnLabel по learnSentencesModeEnum
+        var sentenceToLearnLabel =
+            DetectSentenceToLearnLabel(isLearning,
+                learnSentencesModeEnum); 
         return new SentenceForRepeatDto()
         {
             UsingSentencesPairId = usingSentencesPairId,
@@ -139,5 +145,47 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
             SecondSentence = secondSentence,
             SentenceToLearnLabel = sentenceToLearnLabel
         };
+    }
+    //TODO Костыль нужно вынести в менеджер
+    private SentenceToLearnLabelEnum DetectSentenceToLearnLabel(bool isLearning,
+        LearnSentencesModeEnum learnSentencesModeEnum)
+    {
+        if (learnSentencesModeEnum == LearnSentencesModeEnum.MainLanguage)
+        {
+            return SentenceToLearnLabelEnum.Second;
+        }
+        else if (learnSentencesModeEnum == LearnSentencesModeEnum.LearnLanguage)
+        {
+            return SentenceToLearnLabelEnum.First;
+        }
+        else if (learnSentencesModeEnum == LearnSentencesModeEnum.Random)
+        {
+            List<SentenceToLearnLabelEnum> label = new List<SentenceToLearnLabelEnum>()
+            {
+                SentenceToLearnLabelEnum.First, SentenceToLearnLabelEnum.Second
+            };
+            Random random = new Random();
+
+            // Генерируем случайный индекс
+            int randomIndex = random.Next(0, label.Count);
+
+            // Получаем элемент списка по случайному индексу
+            SentenceToLearnLabelEnum randomElement = label[randomIndex];
+
+            return randomElement;
+        }
+        else if (learnSentencesModeEnum == LearnSentencesModeEnum.Learned)
+        {
+            if (isLearning)
+            {
+                return SentenceToLearnLabelEnum.Second;
+            }
+            else
+            {
+                return SentenceToLearnLabelEnum.First;
+            }
+        }
+
+        throw new ArgumentException("not correct learnSentencesModeEnum value");
     }
 }

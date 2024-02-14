@@ -1,5 +1,3 @@
-using DropWord.TgBot.Core.Handler;
-using DropWord.TgBot.Core.Handler.Implementation;
 using DropWord.TgBot.Core.Src.View;
 using DropWord.TgBot.Core.Src.View.Implementation;
 
@@ -12,5 +10,6 @@ public class ViewBuild
         services.AddTransient<IBotView, BaseBotView>();
         services.AddTransient<IBotView, StartBotView>();
         services.AddTransient<IBotView, SentencesRepetitionByInputBotView>();
+        services.AddTransient<IBotView, SettingsBotView>();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 
-namespace DropWord.Application.UseCase.Language.Commands.ChangeLanguagePair;
+namespace DropWord.Application.UseCase.UserSettings.Commands.ChangeLanguagePair;
 
 public record ChangeLanguagePairCommand : IRequest
 {

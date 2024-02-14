@@ -11,6 +11,8 @@ using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
 using DropWord.Application.UseCase.Sentence.Queries.GetSentencesPair;
 using DropWord.Application.UseCase.SentencesCollection.Commands.AddCollection;
 using DropWord.Application.UseCase.SentencesCollection.Commands.DeleteAddedSentenceCollection;
+using DropWord.Application.UseCase.User.Queries.GetUser;
+using DropWord.Application.UseCase.UserSettings.Commands.ChangeLearnSentencesMode;
 using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
@@ -32,6 +34,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
         private readonly IRepeatSentenceManager _repeatSentenceManager;
         private readonly IMapper _mapper;
+
 
         public string Name() => BaseField.BaseState;
 
@@ -80,6 +83,11 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
             _botStateTreeHandler.AddAction(BaseField.InputEditSentenceAction, InputEditAddedSentenceActionAsync);
             _botStateTreeHandler.AddAction(BaseField.ReloadAction, ReloadAction);
+
+            _botStateTreeHandler.AddKeyboard(BaseField.BaseAction, BaseField.SettingsKeyboard,
+                SettingsMenuKeyboardAsync);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeLearnSentencesModeCallback,
+                ChangeLearnSentencesModeCallbackAsync);
         }
 
         //Добавление предложений в базу 
@@ -318,6 +326,35 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         {
             await _sender.Send(new ResetCountRepeatSentenceCommand() { UserId = updateBDto.GetUserId() });
             await _botViewHandler.SendAsync(BaseViewField.ConfirmResetCountRepeatSentence, updateBDto);
+        }
+
+        //открывает настройки по нажатию кнопки на нижней панели
+        private async Task SettingsMenuKeyboardAsync(UpdateBDto updateBDto)
+        {
+            var user = await _sender.Send(new GetUserQuery() { UserId = updateBDto.GetUserId() });
+            var viewDto = new SettingsMenuKeyboardVDto()
+            {
+                Update = updateBDto,
+                ChangeModeIcon = _repeatSentenceManager.GetChangeModeIcons(user.UserSettings.MainLanguage,
+                    user.UserSettings.LearnLanguage, user.UserSettings.LearnSentencesModeEnum)
+            };
+            await _botViewHandler.SendAsync(SettingsViewField.SettingsMenu, viewDto);
+        }
+
+        //калбек на нажатие кнопки изменить режим отображения слов
+        private async Task ChangeLearnSentencesModeCallbackAsync(UpdateBDto updateBDto)
+        {
+            var user =
+                await _sender.Send(new ChangeLearnSentencesModeCommand() { UserId = updateBDto.GetUserId() });
+
+            var viewDto = new ChangeLearnSentencesModeCallbackVDto()
+            {
+                Update = updateBDto, 
+                ChangeModeIcon = _repeatSentenceManager.GetChangeModeIcons(user.UserSettings.MainLanguage,
+                    user.UserSettings.LearnLanguage, user.UserSettings.LearnSentencesModeEnum)
+            };
+
+            await _botViewHandler.SendAsync(SettingsViewField.ChangeLearnSentencesModeCallback, viewDto);
         }
     }
 }

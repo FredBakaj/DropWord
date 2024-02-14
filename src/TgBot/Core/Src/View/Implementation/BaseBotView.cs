@@ -193,10 +193,9 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             {
                 new KeyboardButton[]
                 {
-                    BaseField.RepeatSentenceKeyboard, BaseField.SentencesRepetitionByInputKeyboard,
-                    BaseField.NewSentenceButton
+                    BaseField.RepeatSentenceKeyboard, BaseField.NewSentenceButton
                 },
-                new KeyboardButton[] { "🇬🇧 🔃 🇬🇧", "⚙️" }
+                new KeyboardButton[] { BaseField.SentencesRepetitionByInputKeyboard,BaseField.SettingsKeyboard }
             }) { ResizeKeyboard = true };
 
             await _botClient.SendTextMessageAsync(update.GetUserId(), text, replyMarkup: replyMarkup);

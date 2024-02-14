@@ -7,7 +7,7 @@ using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Handler;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.StateDto;
-using DropWord.TgBot.Core.ViewDto;
+using DropWord.TgBot.Core.Utils;
 using MediatR;
 
 namespace DropWord.TgBot.Core.Manager.RepeatSentence.Implementation;
@@ -68,6 +68,25 @@ public class RepeatSentenceManager : IRepeatSentenceManager
         await _botStateTreeUserHandler.ClearTempDataAsync(updateBDto);
     }
 
+    public string GetChangeModeIcons(string mainLanguage, string learnLanguage,
+        LearnSentencesModeEnum learnSentencesModeEnum)
+    {
+        var changeModeIcons = new Dictionary<LearnSentencesModeEnum, string>()
+        {
+            {
+                LearnSentencesModeEnum.MainLanguage,
+                CustomConvert.LanguageToEmoji(mainLanguage)
+            },
+            {
+                LearnSentencesModeEnum.LearnLanguage,
+                CustomConvert.LanguageToEmoji(learnLanguage)
+            },
+            { LearnSentencesModeEnum.Learned, "🧠" },
+            { LearnSentencesModeEnum.Random, "🎲" },
+        };
+        return changeModeIcons[learnSentencesModeEnum];
+    }
+
     public async Task<SentenceForRepeatDto> GetSentencesPairAndSaveInDataAsync(UpdateBDto updateBDto)
     {
         var repeatSentenceDto = await _sender.Send(new GetSentenceForRepeatQuery() { UserId = updateBDto.GetUserId() });
@@ -77,7 +96,7 @@ public class RepeatSentenceManager : IRepeatSentenceManager
             UsingSentencesPairId = repeatSentenceDto.UsingSentencesPairId,
             FirstSentence = repeatSentenceDto.FirstSentence,
             SecondSentence = repeatSentenceDto.SecondSentence,
-            SentenceToLearnLabelEnum = SentenceToLearnLabelEnum.First //TODO должно подставляться из repeatSentenceDto
+            SentenceToLearnLabelEnum = repeatSentenceDto.SentenceToLearnLabel
         };
         await _botStateTreeUserHandler.SetDataAndActionAsync(updateBDto,
             SentencesRepetitionByInputField.Action,

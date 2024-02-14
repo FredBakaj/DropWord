@@ -1,4 +1,4 @@
-﻿using DropWord.Application.UseCase.Language.Commands.ChangeLanguagePair;
+﻿using DropWord.Application.UseCase.UserSettings.Commands.ChangeLanguagePair;
 using DropWord.Domain.Constants;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
