@@ -1,4 +1,6 @@
-﻿namespace DropWord.TgBot.Core.Utils;
+﻿using DropWord.Domain.Constants;
+
+namespace DropWord.TgBot.Core.Utils;
 
 public static class CustomConvert
 {
@@ -6,8 +8,11 @@ public static class CustomConvert
     {
         var dictEmoji = new Dictionary<string,string>()
         {
-            {"uk", "🇺🇦"},
-            {"en", "🇺🇸"},
+            {LanguageConst.Ukrainian, "🇺🇦"},
+            {LanguageConst.English, "🇺🇸"},
+            {LanguageConst.German, "🇩🇪"},
+            {LanguageConst.Polish, "🇵🇱"},
+            {LanguageConst.French, "🇫🇷"},
         };
         return dictEmoji[language.ToLower()];
     }

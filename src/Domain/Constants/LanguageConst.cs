@@ -7,8 +7,5 @@ public abstract class LanguageConst
     public const string German = "de"; 
     public const string Polish = "pl"; 
     public const string French = "fr"; 
-
-
-
-
+    
 }

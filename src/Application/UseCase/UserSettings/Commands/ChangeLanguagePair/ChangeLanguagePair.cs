@@ -29,11 +29,15 @@ public class ChangeLanguagePairCommandHandler : IRequestHandler<ChangeLanguagePa
     {
         var user = await _context.Users
             .Include(x => x.UserSettings)
+            .Include(x => x.UserLearningInfo)
             .Where(x => x.Id == request.UserId)
             .FirstAsync(cancellationToken);
 
         user.UserSettings.MainLanguage = request.MainLanguage;
         user.UserSettings.LearnLanguage = request.LearnLanguage;
+
+        user.UserLearningInfo.LastUseForDaySentencesId = null;
+        user.UserLearningInfo.CountUseForDaySentences = null;
 
         await _context.SaveChangesAsync(cancellationToken: cancellationToken);
     }

@@ -3,5 +3,6 @@
 public abstract class SettingsViewField
 {
     public const string SettingsMenu = nameof(SettingsMenu);
-    public const string ChangeLearnSentencesModeCallback = nameof(ChangeLearnSentencesModeCallback);
+    public const string EditSettingsMenu = nameof(EditSettingsMenu);
+    public const string OpenChangeLearnLanguagePairCallback = nameof(OpenChangeLearnLanguagePairCallback);
 }

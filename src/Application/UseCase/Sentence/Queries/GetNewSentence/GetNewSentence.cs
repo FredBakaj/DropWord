@@ -37,7 +37,9 @@ public class GetNewSentenceQueryHandler : IRequestHandler<GetNewSentenceQuery, N
         var sentencesPair = await userCollection
             .SelectMany(x => x.SentencesPairs)
             .Where(x => !x.UsingSentencesPairs
-                .Any(y => y.SentencesPairId == x.Id))
+                .Any(y => y.SentencesPairId == x.Id)
+                && x.FirstLanguage == userSettings.MainLanguage
+                && x.SecondLanguage == userSettings.LearnLanguage)
             .FirstAsync();
 
         var sentences = await _context.SentencesPair

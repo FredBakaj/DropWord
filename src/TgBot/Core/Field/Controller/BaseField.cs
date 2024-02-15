@@ -29,6 +29,8 @@
 
         //Settings
         public const string ChangeLearnSentencesModeCallback = nameof(ChangeLearnSentencesModeCallback);
-
+        public const string OpenChangeLearnLanguagePairCallback = nameof(OpenChangeLearnLanguagePairCallback);
+        public const string ChangeLearnLanguagePairCallback = nameof(ChangeLearnLanguagePairCallback);
+        public const string BackToSettingsMenuCallback = nameof(BackToSettingsMenuCallback);
     }
 }

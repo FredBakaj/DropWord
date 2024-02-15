@@ -15,6 +15,4 @@ public interface IRepeatSentenceManager
     public Task<bool> CanShowResetCountRepeatSentences(UpdateBDto updateBDto);
     public Task SaveShowResetCountRepeatSentencesView(UpdateBDto updateBDto);
     public Task ClearShowResetCountRepeatSentencesView(UpdateBDto updateBDto);
-    public string GetChangeModeIcons(string mainLanguage, string learnLanguage, //TODO создать отельный интерфейс под этот метод
-        LearnSentencesModeEnum learnSentencesModeEnum);
 }

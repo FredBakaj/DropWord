@@ -12,15 +12,19 @@ using DropWord.Application.UseCase.Sentence.Queries.GetSentencesPair;
 using DropWord.Application.UseCase.SentencesCollection.Commands.AddCollection;
 using DropWord.Application.UseCase.SentencesCollection.Commands.DeleteAddedSentenceCollection;
 using DropWord.Application.UseCase.User.Queries.GetUser;
+using DropWord.Application.UseCase.UserSettings.Commands.ChangeLanguagePair;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeLearnSentencesMode;
+using DropWord.Domain.Constants;
 using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Handler;
 using DropWord.TgBot.Core.Manager.RepeatSentence;
+using DropWord.TgBot.Core.Manager.Settings;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.StateDto;
+using DropWord.TgBot.Core.Utils;
 using DropWord.TgBot.Core.ViewDto;
 using MediatR;
 
@@ -33,6 +37,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private readonly ISender _sender;
         private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
         private readonly IRepeatSentenceManager _repeatSentenceManager;
+        private readonly IMenuSettingsManager _menuSettingsManager;
         private readonly IMapper _mapper;
 
 
@@ -40,13 +45,16 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
         public BaseController(IBotStateTreeHandler botStateTreeHandler, IBotViewHandler botViewHandler, ISender sender,
             IBotStateTreeUserHandler botStateTreeUserHandler,
-            IRepeatSentenceManager repeatSentenceManager, IMapper mapper)
+            IRepeatSentenceManager repeatSentenceManager,
+            IMenuSettingsManager menuSettingsManager,
+            IMapper mapper)
         {
             _botStateTreeHandler = botStateTreeHandler;
             _botViewHandler = botViewHandler;
             _sender = sender;
             _botStateTreeUserHandler = botStateTreeUserHandler;
             _repeatSentenceManager = repeatSentenceManager;
+            _menuSettingsManager = menuSettingsManager;
             _mapper = mapper;
 
 
@@ -88,6 +96,13 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 SettingsMenuKeyboardAsync);
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeLearnSentencesModeCallback,
                 ChangeLearnSentencesModeCallbackAsync);
+            
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.OpenChangeLearnLanguagePairCallback,
+                OpenChangeLearnLanguagePairCallbackAsync);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeLearnLanguagePairCallback,
+                ChangeLearnLanguagePairCallbackAsync);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.BackToSettingsMenuCallback,
+                BackToSettingsMenuCallbackAsync);
         }
 
         //Добавление предложений в базу 
@@ -331,30 +346,57 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         //открывает настройки по нажатию кнопки на нижней панели
         private async Task SettingsMenuKeyboardAsync(UpdateBDto updateBDto)
         {
-            var user = await _sender.Send(new GetUserQuery() { UserId = updateBDto.GetUserId() });
-            var viewDto = new SettingsMenuKeyboardVDto()
-            {
-                Update = updateBDto,
-                ChangeModeIcon = _repeatSentenceManager.GetChangeModeIcons(user.UserSettings.MainLanguage,
-                    user.UserSettings.LearnLanguage, user.UserSettings.LearnSentencesModeEnum)
-            };
+            var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
             await _botViewHandler.SendAsync(SettingsViewField.SettingsMenu, viewDto);
         }
 
         //калбек на нажатие кнопки изменить режим отображения слов
         private async Task ChangeLearnSentencesModeCallbackAsync(UpdateBDto updateBDto)
         {
-            var user =
-                await _sender.Send(new ChangeLearnSentencesModeCommand() { UserId = updateBDto.GetUserId() });
+            await _sender.Send(new ChangeLearnSentencesModeCommand() { UserId = updateBDto.GetUserId() });
+            var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
+            await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);
+        }
 
-            var viewDto = new ChangeLearnSentencesModeCallbackVDto()
+        //калбек на открытие меню изменение пары языков
+        private async Task OpenChangeLearnLanguagePairCallbackAsync(UpdateBDto updateBDto)
+        {
+            var user = await _sender.Send(new GetUserQuery() { UserId = updateBDto.GetUserId() });
+            var mainLanguage = user.UserSettings.MainLanguage;
+            var learnLanguages = new List<string>()
             {
-                Update = updateBDto, 
-                ChangeModeIcon = _repeatSentenceManager.GetChangeModeIcons(user.UserSettings.MainLanguage,
-                    user.UserSettings.LearnLanguage, user.UserSettings.LearnSentencesModeEnum)
+                LanguageConst.English, LanguageConst.German, LanguageConst.French, LanguageConst.Polish,
             };
+            learnLanguages = learnLanguages.Where(x => x != user.UserSettings.LearnLanguage).ToList();
 
-            await _botViewHandler.SendAsync(SettingsViewField.ChangeLearnSentencesModeCallback, viewDto);
+            var learnLanguagesDict = learnLanguages.ToDictionary(x => x,
+                x => $"{CustomConvert.LanguageToEmoji(mainLanguage)}{CustomConvert.LanguageToEmoji(x)}");
+
+            var viewDto = new ChangeLearnLanguagePairCallbackVDto()
+            {
+                Update = updateBDto, MainLanguage = mainLanguage, LearnLanguageVariants = learnLanguagesDict
+            };
+            await _botViewHandler.SendAsync(SettingsViewField.OpenChangeLearnLanguagePairCallback, viewDto);
+        }
+
+        //калбек на изменение пары языков 
+        private async Task ChangeLearnLanguagePairCallbackAsync(UpdateBDto updateBDto)
+        {
+            var newLearnLanguagePair = updateBDto.CallbackData.Split("|");
+            await _sender.Send(new ChangeLanguagePairCommand()
+            {
+                UserId = updateBDto.GetUserId(),
+                MainLanguage = newLearnLanguagePair[0],
+                LearnLanguage = newLearnLanguagePair[1]
+            });
+            var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
+            await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);
+        }
+
+        private async Task BackToSettingsMenuCallbackAsync(UpdateBDto updateBDto)
+        {
+            var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
+            await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);
         }
     }
 }

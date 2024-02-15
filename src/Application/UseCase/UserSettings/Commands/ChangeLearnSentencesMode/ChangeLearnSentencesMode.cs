@@ -4,7 +4,7 @@ using DropWord.Domain.Exceptions;
 
 namespace DropWord.Application.UseCase.UserSettings.Commands.ChangeLearnSentencesMode;
 
-public record ChangeLearnSentencesModeCommand : IRequest<UserDto>
+public record ChangeLearnSentencesModeCommand : IRequest
 {
     public long UserId { get; set; }
 }
@@ -16,7 +16,7 @@ public class ChangeLearnSentencesModeCommandValidator : AbstractValidator<Change
     }
 }
 
-public class ChangeLearnSentencesModeCommandHandler : IRequestHandler<ChangeLearnSentencesModeCommand, UserDto>
+public class ChangeLearnSentencesModeCommandHandler : IRequestHandler<ChangeLearnSentencesModeCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -27,7 +27,7 @@ public class ChangeLearnSentencesModeCommandHandler : IRequestHandler<ChangeLear
         _mapper = mapper;
     }
 
-    public async Task<UserDto> Handle(ChangeLearnSentencesModeCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ChangeLearnSentencesModeCommand request, CancellationToken cancellationToken)
     {
         var changeModeDict = new Dictionary<LearnSentencesModeEnum, LearnSentencesModeEnum>()
         {
@@ -49,6 +49,5 @@ public class ChangeLearnSentencesModeCommandHandler : IRequestHandler<ChangeLear
 
         user.UserSettings.LearnSentencesModeEnum = changeModeDict[user.UserSettings.LearnSentencesModeEnum];
         await _context.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<UserDto>(user);
     }
 }

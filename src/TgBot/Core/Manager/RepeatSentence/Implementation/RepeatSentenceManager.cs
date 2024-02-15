@@ -68,24 +68,7 @@ public class RepeatSentenceManager : IRepeatSentenceManager
         await _botStateTreeUserHandler.ClearTempDataAsync(updateBDto);
     }
 
-    public string GetChangeModeIcons(string mainLanguage, string learnLanguage,
-        LearnSentencesModeEnum learnSentencesModeEnum)
-    {
-        var changeModeIcons = new Dictionary<LearnSentencesModeEnum, string>()
-        {
-            {
-                LearnSentencesModeEnum.MainLanguage,
-                CustomConvert.LanguageToEmoji(mainLanguage)
-            },
-            {
-                LearnSentencesModeEnum.LearnLanguage,
-                CustomConvert.LanguageToEmoji(learnLanguage)
-            },
-            { LearnSentencesModeEnum.Learned, "🧠" },
-            { LearnSentencesModeEnum.Random, "🎲" },
-        };
-        return changeModeIcons[learnSentencesModeEnum];
-    }
+    
 
     public async Task<SentenceForRepeatDto> GetSentencesPairAndSaveInDataAsync(UpdateBDto updateBDto)
     {
