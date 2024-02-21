@@ -29,14 +29,15 @@ public class Translate : ITranslate
     {
         var originalText = String.Empty;
         var sentencesList = sentences.ToList();
-        foreach (var item in sentencesList)
+        var spliter = "~~~";
+        foreach (var item in sentencesList.SkipLast(1))
         {
-            originalText += $"{item} #$% ";
+            originalText += $"{item} {spliter} ";
         }
+        originalText += sentencesList.Last();
 
-        originalText = originalText.Substring(0, originalText.Length - 3);
         string translateText = await TranslatorAsync(originalText, originalLanguage, translateLanguage);
-        string[] splitText = translateText.Split("#$%");
+        string[] splitText = translateText.Split(spliter);
         List<TranslateSentenceModel> result = new List<TranslateSentenceModel>();
 
         for (int i = 0; i < splitText.Length; i++)
