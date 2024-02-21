@@ -126,8 +126,13 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 {
                     UserId = update.GetUserId(), Sentences = sentenceParse.Sentences, Description = "Text"
                 });
+                var userSettings = await _sender.Send(new GetUserQuery() { UserId = update.GetUserId() });
+                
                 var viewDto = _mapper.Map<AddCollectionSentencesVDto>(addedSentences);
+                viewDto.FirstLanguageEmoji = CustomConvert.LanguageToEmoji(userSettings.UserSettings.MainLanguage);
+                viewDto.SecondLanguageEmoji = CustomConvert.LanguageToEmoji(userSettings.UserSettings.LearnLanguage);
                 viewDto.Update = update;
+                
                 await _botViewHandler.SendAsync(BaseViewField.AddSentences, viewDto);
             }
         }

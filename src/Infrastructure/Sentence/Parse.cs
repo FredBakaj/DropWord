@@ -25,7 +25,7 @@ public class Parse : IParse
         {
             content = content.Substring(0, content.Length - 1);
         }
-        if (content.Any(x => x == '.'))
+        if (content.Any(x => x == '.') || content.Any(x => x == '\n'))
         {
             result = ParseText(content);
         }
@@ -46,7 +46,11 @@ public class Parse : IParse
     private IEnumerable<ParseSentenceModel> ParseText(string content)
     {
         var result = new List<ParseSentenceModel>();
-        var splitContent = content.Split(".");
+        var splitContent = content
+            .Split('.')
+            .SelectMany(x => x.Split('\n'))
+            .Where(x => x.Length > 0)
+            .ToArray();
         if (splitContent.Length > _maxCountSentences)
         {
             throw new MaxCountSentencesException("text had so match sentences");

@@ -34,6 +34,7 @@ public class Translate : ITranslate
         {
             originalText += $"{item} {spliter} ";
         }
+
         originalText += sentencesList.Last();
 
         string translateText = await TranslatorAsync(originalText, originalLanguage, translateLanguage);
@@ -54,29 +55,31 @@ public class Translate : ITranslate
         return result;
     }
 
-
     public Task<DetectLanguageModel> DetectLanguageAsync(string sentence)
     {
-        var LangDetector = new LanguageDetector();
-        LangDetector.AddAllLanguages();
-        var detectLanguage = ConvertLanguageCode(LangDetector.Detect(sentence)!);
+        var detectLanguage = ConvertLanguageCode(DetectLang(sentence)!);
         var result = new DetectLanguageModel() { Language = detectLanguage, Sentence = sentence };
         return Task.FromResult(result);
     }
 
     public Task<IEnumerable<DetectLanguageModel>> DetectLanguageListAsync(IEnumerable<string> sentence)
     {
-        var LangDetector = new LanguageDetector();
-        LangDetector.AddAllLanguages();
         var result = new List<DetectLanguageModel>();
         foreach (var item in sentence)
         {
-            var detectLanguage = ConvertLanguageCode(LangDetector.Detect(item)!);
+            var detectLanguage = ConvertLanguageCode(DetectLang(item));
             var resultItem = new DetectLanguageModel() { Language = detectLanguage, Sentence = item };
             result.Add(resultItem);
         }
 
         return Task.FromResult<IEnumerable<DetectLanguageModel>>(result);
+    }
+
+    private string DetectLang(string sentence)
+    {
+        var langDetector = new LanguageDetector();
+        langDetector.AddLanguages("ukr", "fra", "eng", "deu", "pol");
+        return langDetector.Detect(sentence);
     }
 
     private async Task<String> TranslatorAsync(string input, string languageFrom, string languageTo)

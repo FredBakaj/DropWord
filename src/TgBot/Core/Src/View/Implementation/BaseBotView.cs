@@ -7,6 +7,7 @@ using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.Utils;
 using DropWord.TgBot.Core.ViewDto;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DropWord.TgBot.Core.Src.View.Implementation
@@ -30,10 +31,11 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         [BotView(BaseViewField.AddSentences)]
         public async Task AddSentences(AddCollectionSentencesVDto collectionSentences)
         {
-            var text = "Добавлено нові речення \u2795 \u2795 \u2795";
+            var text = "<b>Добавлено нові речення</b> \u2795 \u2795 \u2795 \n";
             foreach (var item in collectionSentences.Sentences)
             {
-                text += $"# {item.FirstSentence.Sentence}\n= {item.SecondSentence.Sentence}\n\n";
+                text += $"{collectionSentences.FirstLanguageEmoji} {item.FirstSentence.Sentence}\n" +
+                        $"{collectionSentences.SecondLanguageEmoji} {item.SecondSentence.Sentence}\n\n";
             }
 
             InlineKeyboardMarkup inlineKeyboard = new(new[]
@@ -47,7 +49,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 }
             });
             await _botClient.SendTextMessageAsync(collectionSentences.Update.GetUserId(), text,
-                replyMarkup: inlineKeyboard);
+                replyMarkup: inlineKeyboard, parseMode:ParseMode.Html);
         }
 
         [BotView(BaseViewField.AddSentence)]

@@ -8,6 +8,9 @@ public class AddCollectionSentencesVDto : BaseVDto
     public int CollectionId { get; set; }
     public IEnumerable<AddedSentenceVDto> Sentences { get; set; } = null!;
 
+    public string FirstLanguageEmoji { get; set; } = null!;
+    public string SecondLanguageEmoji { get; set; } = null!;
+    
     private class Mapping : Profile
     {
         public Mapping()
