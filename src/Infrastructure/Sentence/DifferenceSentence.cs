@@ -46,49 +46,20 @@ public class DifferenceSentence : IDifferenceSentence
     }
     private double CalculateSimilarity(string str1, string str2)
     {
-        // Приведение строк к нижнему регистру (регистронезависимый анализ)
-        str1 = str1.ToLower();
-        str2 = str2.ToLower();
-
-        // Вычисление расстояния Левенштейна
-        int levenshteinDistance = ComputeLevenshteinDistance(str1, str2);
-
-        // Вычисление максимальной длины строки
-        int maxLength = Math.Max(str1.Length, str2.Length);
-
-        // Вычисление процента совпадения
-        double similarityPercentage = ((double)(maxLength - levenshteinDistance) / maxLength) * 100;
-
-        return similarityPercentage;
-    }
-
-    private int ComputeLevenshteinDistance(string str1, string str2)
-    {
-        int[,] distanceMatrix = new int[str1.Length + 1, str2.Length + 1];
-
-        for (int i = 0; i <= str1.Length; i++)
+        diff_match_patch dmp = new diff_match_patch();
+        List<Diff> diff = dmp.diff_main(str1, str2);
+        
+        string diffTextEquals = string.Empty;
+        foreach (var item in diff.Where(x => x.operation == Operation.EQUAL && x.text.Length > 1).Select(x => x.text).ToList())
         {
-            for (int j = 0; j <= str2.Length; j++)
-            {
-                if (i == 0)
-                {
-                    distanceMatrix[i, j] = j;
-                }
-                else if (j == 0)
-                {
-                    distanceMatrix[i, j] = i;
-                }
-                else
-                {
-                    int cost = (str1[i - 1] == str2[j - 1]) ? 0 : 1;
-                    distanceMatrix[i, j] = Math.Min(Math.Min(
-                            distanceMatrix[i - 1, j] + 1,
-                            distanceMatrix[i, j - 1] + 1),
-                        distanceMatrix[i - 1, j - 1] + cost);
-                }
-            }
+            diffTextEquals += item;
         }
 
-        return distanceMatrix[str1.Length, str2.Length];
+        var maxLeng = Math.Max(str1.Length, diffTextEquals.Length);
+        var minLeng = Math.Min(str1.Length, diffTextEquals.Length);
+        
+        double result = minLeng * 100 / maxLeng;
+        
+        return result;
     }
 }
