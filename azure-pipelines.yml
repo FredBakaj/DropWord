@@ -61,4 +61,4 @@ steps:
     WebAppName: 'web-drop-word-test'
     packageForLinux: '$(Build.ArtifactStagingDirectory)/$test.zip'
     RuntimeStack: 'DOTNETCORE|7.0'
-    StartupCommand: 'dotnet run src/TgBot/TgBot.csproj'
+    StartupCommand: 'dotnet /src/TgBot/bin/Debug/net8.0/DropWord.TgBot.dll'
