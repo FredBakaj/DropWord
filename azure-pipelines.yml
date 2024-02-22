@@ -53,12 +53,20 @@ steps:
 #     packageForLinux: '$(Build.ArtifactStagingDirectory)/$test.zip'
 #     RuntimeStack: 'DOTNETCORE|7.0'
 
+# - task: AzureRmWebAppDeployment@4
+#   inputs:
+#     ConnectionType: 'AzureRM'
+#     azureSubscription: 'DropWordPipline'
+#     appType: 'webAppLinux'
+#     WebAppName: 'web-drop-word-test'
+#     packageForLinux: '$(Build.ArtifactStagingDirectory)/$test.zip'
+#     RuntimeStack: 'DOTNETCORE|7.0'
+#     StartupCommand: 'dotnet /src/TgBot/bin/Debug/net8.0/DropWord.TgBot.dll'
+
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
     azureSubscription: 'DropWordPipline'
-    appType: 'webAppLinux'
-    WebAppName: 'web-drop-word-test'
+    appType: 'webApp'
+    WebAppName: 'web-drop-word-test-win'
     packageForLinux: '$(Build.ArtifactStagingDirectory)/$test.zip'
-    RuntimeStack: 'DOTNETCORE|7.0'
-    StartupCommand: 'dotnet /src/TgBot/bin/Debug/net8.0/DropWord.TgBot.dll'
