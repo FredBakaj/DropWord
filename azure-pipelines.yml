@@ -50,4 +50,4 @@ steps:
     appType: 'webAppLinux'
     WebAppName: 'web-drop-word-test'
     packageForLinux: '$(Build.ArtifactStagingDirectory)/$test.zip'
-    RuntimeStack: 'DOTNETCORE|2.1'
+    RuntimeStack: 'DOTNETCORE|7.0'
