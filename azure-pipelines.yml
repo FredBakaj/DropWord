@@ -45,5 +45,5 @@ steps:
     azureSubscription: 'DropWordPipline'
     appType: 'webAppLinux'
     WebAppName: 'web-drop-word-test'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
     RuntimeStack: 'DOTNETCORE|2.1'
