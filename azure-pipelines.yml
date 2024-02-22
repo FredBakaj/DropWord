@@ -32,12 +32,16 @@ steps:
 #   inputs:
 #     platform: '$(buildPlatform)'
 #     configuration: '$(buildConfiguration)'
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)'
+    Contents: 'test.zip'
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.BinariesDirectory)'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$test.zip'
     replaceExistingArchive: true
 - task: AzureRmWebAppDeployment@4
   inputs:
@@ -45,5 +49,5 @@ steps:
     azureSubscription: 'DropWordPipline'
     appType: 'webAppLinux'
     WebAppName: 'web-drop-word-test'
-    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/$test.zip'
     RuntimeStack: 'DOTNETCORE|2.1'
