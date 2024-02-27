@@ -3,16 +3,16 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-trigger:
-- master
-
+# trigger:
+# - master
+name: "DropWordStaging"
 pool:
   vmImage: 'windows-latest'
 
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
-  buildConfiguration: 'Development'
+  buildConfiguration: 'Staging'
 
 steps:
 - task: NuGetToolInstaller@1
