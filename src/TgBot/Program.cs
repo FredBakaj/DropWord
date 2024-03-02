@@ -7,6 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 ServicesBuild.BuildService(builder);
 
+builder.Logging.AddConfiguration(builder.Configuration);
+builder.Logging.AddAzureWebAppDiagnostics();
+builder.Configuration.AddEnvironmentVariables(prefix: "DropWord_");
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
