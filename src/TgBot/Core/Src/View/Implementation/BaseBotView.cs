@@ -1,4 +1,5 @@
 ﻿using DropWord.Domain.Enums;
+using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
@@ -139,6 +140,24 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             await _botClient.EditMessageTextAsync(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId, text);
         }
 
+        [BotView(BaseViewField.MaxCountSentencesException)]
+        public async Task MaxCountSentencesException(MaxCountSentencesExceptionVDto viewDto)
+        {
+            var text = $"Перевищена межа кількості речень у тексті." +
+                       $" Максимальна кількість речень {viewDto.MaxCountSentences} " +
+                       $"(Зверніть увагу, що перенесення рядка, так само як і крапка," +
+                       $" вважається новим реченням.)";
+            await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
+        }
+        
+        [BotView(BaseViewField.MaxLengthSentenceException)]
+        public async Task MaxLengthSentenceException(MaxLengthSentenceExceptionVDto viewDto)
+        {
+            var text = $"Перевищена межа кількості символів у реченні." +
+                       $" Максимальна кількість символів {viewDto.MaxLengthSentence} ";
+            await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
+        }
+        
         [BotView(BaseViewField.NewSentence)]
         public async Task NewSentence(NewSentenceVDto sentence)
         {

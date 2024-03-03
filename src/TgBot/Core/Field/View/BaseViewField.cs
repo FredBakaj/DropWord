@@ -16,4 +16,6 @@ public abstract class BaseViewField
     public const string DeleteAddedSentence = nameof(DeleteAddedSentence);
     public const string CancelEditAddedSentence = nameof(CancelEditAddedSentence);
     public const string DeleteAddedSentenceCollection = nameof(DeleteAddedSentenceCollection);
+    public const string MaxCountSentencesException = nameof(MaxCountSentencesException);
+    public const string MaxLengthSentenceException = nameof(MaxLengthSentenceException);
 }

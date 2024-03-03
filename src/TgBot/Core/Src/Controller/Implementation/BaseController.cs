@@ -39,6 +39,8 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private readonly IRepeatSentenceManager _repeatSentenceManager;
         private readonly IMenuSettingsManager _menuSettingsManager;
         private readonly IMapper _mapper;
+        private readonly int _maxSentenceLength;
+        private readonly int _maxCountSentences;
 
 
         public string Name() => BaseField.BaseState;
@@ -47,7 +49,8 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             IBotStateTreeUserHandler botStateTreeUserHandler,
             IRepeatSentenceManager repeatSentenceManager,
             IMenuSettingsManager menuSettingsManager,
-            IMapper mapper)
+            IMapper mapper,
+            IConfiguration configuration)
         {
             _botStateTreeHandler = botStateTreeHandler;
             _botViewHandler = botViewHandler;
@@ -57,6 +60,10 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             _menuSettingsManager = menuSettingsManager;
             _mapper = mapper;
 
+            _maxSentenceLength =
+                Convert.ToInt32(configuration.GetSection("SentencesSettings")["MaxLengthSentenceForSave"]);
+            _maxCountSentences =
+                Convert.ToInt32(configuration.GetSection("SentencesSettings")["MaxCountSentencesForSave"]);
 
             Initialize();
         }
@@ -96,7 +103,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 SettingsMenuKeyboardAsync);
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeLearnSentencesModeCallback,
                 ChangeLearnSentencesModeCallbackAsync);
-            
+
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.OpenChangeLearnLanguagePairCallback,
                 OpenChangeLearnLanguagePairCallbackAsync);
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeLearnLanguagePairCallback,
@@ -108,32 +115,47 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         //Добавление предложений в базу 
         private async Task BaseAction(UpdateBDto update)
         {
-            var sentenceParse = await _sender.Send(new ParseSentencesCommand() { Content = update.GetMessage().Text! });
+            try
+            {
+                var sentenceParse =
+                    await _sender.Send(new ParseSentencesCommand() { Content = update.GetMessage().Text! });
 
-            if (sentenceParse.Sentences.Count() == 1)
-            {
-                var addedSentence = await _sender.Send(new AddSentenceCommand()
+                if (sentenceParse.Sentences.Count() == 1)
                 {
-                    UserId = update.GetUserId(), Sentence = sentenceParse.Sentences.First()
-                });
-                var viewDto = _mapper.Map<AddedSentenceVDto>(addedSentence);
-                viewDto.Update = update;
-                await _botViewHandler.SendAsync(BaseViewField.AddSentence, viewDto);
+                    var addedSentence = await _sender.Send(new AddSentenceCommand()
+                    {
+                        UserId = update.GetUserId(), Sentence = sentenceParse.Sentences.First()
+                    });
+                    var viewDto = _mapper.Map<AddedSentenceVDto>(addedSentence);
+                    viewDto.Update = update;
+                    await _botViewHandler.SendAsync(BaseViewField.AddSentence, viewDto);
+                }
+                else if (sentenceParse.Sentences.Count() > 1)
+                {
+                    var addedSentences = await _sender.Send(new AddCollectionCommand()
+                    {
+                        UserId = update.GetUserId(), Sentences = sentenceParse.Sentences, Description = "Text"
+                    });
+                    var userSettings = await _sender.Send(new GetUserQuery() { UserId = update.GetUserId() });
+
+                    var viewDto = _mapper.Map<AddCollectionSentencesVDto>(addedSentences);
+                    viewDto.FirstLanguageEmoji = CustomConvert.LanguageToEmoji(userSettings.UserSettings.MainLanguage);
+                    viewDto.SecondLanguageEmoji =
+                        CustomConvert.LanguageToEmoji(userSettings.UserSettings.LearnLanguage);
+                    viewDto.Update = update;
+
+                    await _botViewHandler.SendAsync(BaseViewField.AddSentences, viewDto);
+                }
             }
-            else if (sentenceParse.Sentences.Count() > 1)
+            catch (MaxCountSentencesException)
             {
-                var addedSentences = await _sender.Send(new AddCollectionCommand()
-                {
-                    UserId = update.GetUserId(), Sentences = sentenceParse.Sentences, Description = "Text"
-                });
-                var userSettings = await _sender.Send(new GetUserQuery() { UserId = update.GetUserId() });
-                
-                var viewDto = _mapper.Map<AddCollectionSentencesVDto>(addedSentences);
-                viewDto.FirstLanguageEmoji = CustomConvert.LanguageToEmoji(userSettings.UserSettings.MainLanguage);
-                viewDto.SecondLanguageEmoji = CustomConvert.LanguageToEmoji(userSettings.UserSettings.LearnLanguage);
-                viewDto.Update = update;
-                
-                await _botViewHandler.SendAsync(BaseViewField.AddSentences, viewDto);
+                var viewDto = new MaxCountSentencesExceptionVDto() {Update = update, MaxCountSentences = _maxCountSentences };
+                await _botViewHandler.SendAsync(BaseViewField.MaxCountSentencesException, viewDto);
+            }
+            catch (MaxLengthSentenceException)
+            {
+                var viewDto = new MaxLengthSentenceExceptionVDto(){Update = update, MaxLengthSentence = _maxSentenceLength };
+                await _botViewHandler.SendAsync(BaseViewField.MaxLengthSentenceException, viewDto);
             }
         }
 
