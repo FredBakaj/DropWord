@@ -5,12 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-ServicesBuild.BuildService(builder);
-
 builder.Logging.AddConfiguration(builder.Configuration);
 builder.Logging.AddAzureWebAppDiagnostics();
 builder.Configuration.AddEnvironmentVariables(prefix: "DropWord_");
 
+ServicesBuild.BuildService(builder);
 
 var app = builder.Build();
 
@@ -22,7 +21,7 @@ if (true)
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
     await app.InitialiseDatabaseAsync();
 }

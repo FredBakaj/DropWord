@@ -85,20 +85,19 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
                 // если есть слова которые были добавленны в предедущие дни чем текущее слово
                 if (usingSentencesPairId != null)
                 {
-                    var sentencesPair = await usingSentencesPairQuery
+                    var usingSentencesPairOtherDay = await usingSentencesPairQuery
                         .Where(x => x.Id == usingSentencesPairId.UsingSentencesPairId)
                         .Include(x => x.SentencesPair.FirstSentence)
                         .Include(x => x.SentencesPair.SecondSentence)
-                        .Select(x => x.SentencesPair)
                         .FirstAsync();
                     //получение пары слов
 
 
                     return CreateResponse(usingSentencesPairId.UsingSentencesPairId,
-                        sentencesPair.FirstSentence.Sentence,
-                        sentencesPair.SecondSentence.Sentence,
+                        usingSentencesPairOtherDay.SentencesPair.FirstSentence.Sentence,
+                        usingSentencesPairOtherDay.SentencesPair.SecondSentence.Sentence,
                         user.UserSettings.LearnSentencesModeEnum,
-                        usingSentencesPair!.IsLearning);
+                        usingSentencesPairOtherDay.IsLearning);
                 }
                 else
                 {
