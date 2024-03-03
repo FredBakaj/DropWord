@@ -38,10 +38,10 @@ public class Translate : ITranslate
         originalText += sentencesList.Last();
 
         string translateText = await TranslatorAsync(originalText, originalLanguage, translateLanguage);
-        string[] splitText = translateText.Split(spliter);
+        var splitText = translateText.Split(spliter).Select(str => str.Trim()).ToList();
         List<TranslateSentenceModel> result = new List<TranslateSentenceModel>();
 
-        for (int i = 0; i < splitText.Length; i++)
+        for (int i = 0; i < splitText.Count; i++)
         {
             result.Add(new TranslateSentenceModel()
             {
