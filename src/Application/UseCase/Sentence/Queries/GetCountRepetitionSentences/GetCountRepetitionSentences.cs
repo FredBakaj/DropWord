@@ -27,6 +27,7 @@ public class GetCountRepetitionSentencesQueryHandler : IRequestHandler<GetCountR
     {
         var user = await _context.Users
             .Include(x => x.UserLearningInfo)
+            .Where(x => x.Id == request.UserId)
             .FirstOrDefaultAsync();
         var result = new CountRepetitionSentencesDto() { Count = user!.UserLearningInfo.CountUseForDaySentences };
         return result;

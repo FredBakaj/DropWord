@@ -79,8 +79,9 @@ public class SentencesRepetitionByInputBotView : ABotView
     [BotView(SentencesRepetitionByInputViewField.RightInputAndResetCountSentence)]
     public async Task RightInputAndResetCountSentence(RightInputAndResetCountSentenceVDto resetCountSentenceVDto)
     {
-        var text = $"* Все правельно * 💪 \n\n " +
-                   $"*Ви повторили {resetCountSentenceVDto.CountSentence} речень, повернутись на початок?*\n";
+        var text = $"* Все правельно * 💪\n" +
+                   $"*Наступне речення* ✍️\n {resetCountSentenceVDto.NextSentence} \n\n " +
+                   $"*Ви повторили {resetCountSentenceVDto.CountSentence} речень, повернутись на початок?*\n\n";
 
         await ResetRepeatSentencesAsync(resetCountSentenceVDto.Update, text);
     }
@@ -103,7 +104,7 @@ public class SentencesRepetitionByInputBotView : ABotView
         var text = $"*Майже вірно* 🤏 \n\n" +
                    $" *Як правельно* 🤔\n {inputWithErrorsVDto.RightSentence} \n\n" +
                    $" *Де були помилки* 👀\n {inputWithErrorsVDto.CorrectedSentence}\n\n " +
-                   $"*Наступне речення* ✍️\n ||{inputWithErrorsVDto.NextSentence}||" +
+                   $"*Наступне речення* ✍️\n ||{inputWithErrorsVDto.NextSentence}||\n\n" +
                    $"*Ви повторили {inputWithErrorsVDto.CountSentence} речень, повернутись на початок?*\n";
         await ResetRepeatSentencesAsync(inputWithErrorsVDto.Update, text);
     }
@@ -124,10 +125,10 @@ public class SentencesRepetitionByInputBotView : ABotView
     {
         var text = $"*Неправильний переклад* ☹️ \n\n" +
                    $"* Як правельно* 🤔\n {incorrectInputVDto.RightSentence} \n\n" +
-                   $" *Наступне речення* ✍️\n ||{incorrectInputVDto.NextSentence}||" +
+                   $" *Наступне речення* ✍️\n ||{incorrectInputVDto.NextSentence}||\n\n" +
                    $"*Ви повторили {incorrectInputVDto.CountSentence} речень, повернутись на початок?*\n";
 
-        await _botClient.SendTextMessageMarkdown2Async(incorrectInputVDto.Update.GetUserId(), text);
+        await ResetRepeatSentencesAsync(incorrectInputVDto.Update, text);
     }
 
     private async Task ResetRepeatSentencesAsync(UpdateBDto updateBDto, string text)

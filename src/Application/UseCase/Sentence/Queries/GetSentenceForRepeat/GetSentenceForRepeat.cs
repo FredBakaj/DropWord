@@ -45,14 +45,17 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
 
         //Получение ид последнего слова которое повторял пользователь
         var lastUseForDaySentenceId = user.UserLearningInfo.LastUseForDaySentencesId;
+        //получение пары предложений по lastUseForDaySentenceId
+        var sentencePair = await usingSentencesPairQuery.FirstOrDefaultAsync(x => x.Id == lastUseForDaySentenceId);
         //Если в базе есть ид последнего слова
-        if (lastUseForDaySentenceId != null)
+        if (lastUseForDaySentenceId != null && 
+            sentencePair != null)
         {
             //Получить дату последнего слова
             var usingSentencesPairCreatedDate = await usingSentencesPairQuery
                 .Where(y => y.Id == lastUseForDaySentenceId)
-                .Select(y => y.Created.Date).FirstAsync();
-
+                .Select(y => y.Created.Date).FirstOrDefaultAsync();
+            
             // получить слово которое было добавлено после текущего и в тойже дате что и текущее
             var usingSentencesPair = await usingSentencesPairQuery
                 .Where(x => x.Id > lastUseForDaySentenceId)
