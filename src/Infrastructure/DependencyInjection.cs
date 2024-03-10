@@ -2,6 +2,7 @@
 using DropWord.Domain.Constants;
 using DropWord.Infrastructure.Data;
 using DropWord.Infrastructure.Data.Interceptors;
+using DropWord.Infrastructure.DI.Manager;
 using DropWord.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,9 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
             options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
-
+        
+        ManagerBuild.BuildService(services);
+        
         return services;
     }
 }

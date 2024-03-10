@@ -1,7 +1,8 @@
 ﻿using DropWord.Application.Strategy.SentencesForRepeat;
 using DropWord.Application.Strategy.SentencesForRepeat.Implementation;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace DropWord.TgBot.Di.Strategy;
+namespace DropWord.Application.DI.Strategy;
 
 public class StrategyBuild 
 {

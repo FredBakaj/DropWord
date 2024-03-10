@@ -1,4 +1,5 @@
 ﻿using DropWord.Application;
+using DropWord.Application.DI.Strategy;
 using DropWord.Infrastructure;
 using DropWord.TgBot.Core.Service;
 using DropWord.TgBot.Core.Service.Implementation;
@@ -8,7 +9,6 @@ using DropWord.TgBot.Di.Factory;
 using DropWord.TgBot.Di.Handler;
 using DropWord.TgBot.Di.Manager;
 using DropWord.TgBot.Di.Middleware;
-using DropWord.TgBot.Di.Strategy;
 using DropWord.TgBot.Di.View;
 using DropWord.TgBot.Mapping;
 using Telegram.Bot;

@@ -1,6 +1,4 @@
-﻿using DropWord.TgBot.Core.Handler;
-using DropWord.TgBot.Core.Handler.Implementation;
-using DropWord.TgBot.Core.Src.Middleware;
+﻿using DropWord.TgBot.Core.Src.Middleware;
 using DropWord.TgBot.Core.Src.Middleware.Implementation;
 
 namespace DropWord.TgBot.Di.Middleware

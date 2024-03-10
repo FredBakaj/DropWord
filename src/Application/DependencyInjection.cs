@@ -1,5 +1,8 @@
 ﻿using System.Reflection;
 using DropWord.Application.Common.Behaviours;
+using DropWord.Application.DI.Factory;
+using DropWord.Application.DI.Manager;
+using DropWord.Application.DI.Strategy;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DropWord.Application;
@@ -19,6 +22,10 @@ public static class DependencyInjection
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             // cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
         });
+        
+        FactoryBuild.BuildService(services);
+        StrategyBuild.BuildService(services);
+        ManagerBuild.BuildService(services);
 
         return services;
     }
