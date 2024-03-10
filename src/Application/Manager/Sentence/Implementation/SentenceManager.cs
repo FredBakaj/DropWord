@@ -1,14 +1,19 @@
 ﻿using DropWord.Application.Common.Interfaces;
+using DropWord.Application.Factory.Sentence;
+using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+using DropWord.Domain.Enums;
 
 namespace DropWord.Application.Manager.Sentence.Implementation;
 
 public class SentenceManager : ISentenceManager
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISentencesFactory _sentencesFactory;
 
-    public SentenceManager(IApplicationDbContext context)
+    public SentenceManager(IApplicationDbContext context, ISentencesFactory sentencesFactory)
     {
         _context = context;
+        _sentencesFactory = sentencesFactory;
     }
 
     public async Task RepeatSentenceAsync(long userId, bool isLearn, int usingSentencesPairId,
@@ -46,5 +51,12 @@ public class SentenceManager : ISentenceManager
 
             await _context.SaveChangesAsync(cancellationToken);
         }
+    }
+
+    public async Task<SentenceForRepeatDto> GetSentenceForRepeatAsync(long userId, SentenceForRepeatModeEnum mode)
+    {
+        var sentencesForRepeat =
+            await _sentencesFactory.CreateSentencesForRepeatAsync(mode);
+        return await sentencesForRepeat.Exec(userId);
     }
 }

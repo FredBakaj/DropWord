@@ -8,6 +8,7 @@ using DropWord.TgBot.Di.Factory;
 using DropWord.TgBot.Di.Handler;
 using DropWord.TgBot.Di.Manager;
 using DropWord.TgBot.Di.Middleware;
+using DropWord.TgBot.Di.Strategy;
 using DropWord.TgBot.Di.View;
 using DropWord.TgBot.Mapping;
 using Telegram.Bot;
@@ -54,6 +55,7 @@ namespace DropWord.TgBot.Di
             ViewBuild.BuildService(services);
             CommandBuild.BuildService(services);
             FactoryBuild.BuildService(services);
+            StrategyBuild.BuildService(services);
             HandlerBuild.BuildService(services);
         }
     }
