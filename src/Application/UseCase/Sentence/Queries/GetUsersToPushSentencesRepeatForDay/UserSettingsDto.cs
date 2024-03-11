@@ -1,8 +1,9 @@
-﻿using DropWord.Domain.Enums;
+﻿using DropWord.Domain.Entities;
+using DropWord.Domain.Enums;
 
-namespace DropWord.Domain.Entities;
+namespace DropWord.Application.UseCase.Sentence.Queries.GetUsersToPushSentencesRepeatForDay;
 
-public class UserSettingsEntity : BaseAuditableEntity<int>
+public class UserSettingsDto
 {
  
     public string InterfaceLanguage { get; set; } = null!;
@@ -11,5 +12,13 @@ public class UserSettingsEntity : BaseAuditableEntity<int>
     public string LearnLanguage { get; set; } = null!;
     public SentencesRepeatForDayModeEnum SentencesRepeatForDayModeEnum { get; set; }
     public long UserId { get; set; }
-    public UserEntity User { get; set; } = null!;
+    
+    
+    private class Mapping : Profile
+    {
+        public Mapping()
+        {
+            CreateMap<UserSettingsEntity, UserSettingsDto>();
+        }
+    }
 }

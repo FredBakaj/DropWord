@@ -30,7 +30,7 @@ public class DeleteAddedSentenceCommandHandler : IRequestHandler<DeleteAddedSent
             .Where(x => x.UserId == request.UserId && x.Id == request.SentencesPairId)
             .FirstOrDefaultAsync();
 
-        sentencesPair!.WhenDeleted = DateTimeOffset.Now;
+        sentencesPair!.WhenDeleted = DateTimeOffset.UtcNow;
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

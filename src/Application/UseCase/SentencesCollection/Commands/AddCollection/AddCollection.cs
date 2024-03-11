@@ -1,8 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Common.Interfaces.Sentence;
-using DropWord.Application.Common.Models.Sentence;
 using DropWord.Domain.Entities;
-using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
 
 namespace DropWord.Application.UseCase.SentencesCollection.Commands.AddCollection;
@@ -97,7 +95,7 @@ public class AddCollectionCommandHandler : IRequestHandler<AddCollectionCommand,
                 FirstLanguage = userSettings.MainLanguage,
                 SecondLanguage = userSettings.LearnLanguage,
                 Description = request.Description,
-                Created = DateTimeOffset.Now,
+                Created = DateTimeOffset.UtcNow,
                 SentencesPairs = sentencesPairs
             });
 

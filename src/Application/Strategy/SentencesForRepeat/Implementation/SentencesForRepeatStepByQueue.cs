@@ -1,5 +1,5 @@
 ﻿using DropWord.Application.Common.Interfaces;
-using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
 
@@ -15,7 +15,7 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
         _context = context;
     }
     
-    public async Task<SentenceForRepeatDto> Exec(long userId)
+    public async Task<SentenceForRepeatModel> Exec(long userId)
     {
          var user = await _context.Users
             .Include(x => x.UserSettings)

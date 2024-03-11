@@ -1,16 +1,17 @@
-﻿using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+﻿using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 
 namespace DropWord.Application.Strategy.SentencesForRepeat.Implementation;
 
 public class ASentencesForRepeat
 {
-    protected SentenceForRepeatDto CreateResponse(int usingSentencesPairId, string firstSentence, string secondSentence,
+    protected SentenceForRepeatModel CreateResponse(int usingSentencesPairId, string firstSentence,
+        string secondSentence,
         LearnSentencesModeEnum learnSentencesModeEnum, bool isLearning)
     {
         var sentenceToLearnLabel = DetectSentenceToLearnLabel(isLearning, learnSentencesModeEnum);
         
-        return new SentenceForRepeatDto()
+        return new SentenceForRepeatModel()
         {
             UsingSentencesPairId = usingSentencesPairId,
             FirstSentence = firstSentence,

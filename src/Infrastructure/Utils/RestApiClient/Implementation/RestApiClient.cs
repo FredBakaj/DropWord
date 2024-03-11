@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 
-namespace DropWord.Infrastructure.Utils;
+namespace DropWord.Infrastructure.Utils.RestApiClient.Implementation;
 
-public class RestApiClient
+public class RestApiClient : IRestApiClient
 {
     public async Task<TOut> PostAsync<TOut>(string apiUrl, Dictionary<string, string> headers, object body)
     {

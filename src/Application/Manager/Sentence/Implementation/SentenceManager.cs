@@ -1,6 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Factory.Sentence;
-using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 
 namespace DropWord.Application.Manager.Sentence.Implementation;
@@ -47,16 +47,16 @@ public class SentenceManager : ISentenceManager
             user.User.UserLearningInfo.LastUseForDaySentencesId = usingSentencesPairId;
             user.UsingSentencesPair.CountUse += 1;
             user.UsingSentencesPair.IsLearning = isLearn;
-            user.UsingSentencesPair.UpdateDate = DateTime.Now;
+            user.UsingSentencesPair.UpdateDate = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
         }
     }
 
-    public async Task<SentenceForRepeatDto> GetSentenceForRepeatAsync(long userId, SentenceForRepeatModeEnum mode)
+    public async Task<SentenceForRepeatModel> GetSentenceForRepeatAsync(long userId, SentenceForRepeatModeEnum mode)
     {
         var sentencesForRepeat =
             await _sentencesFactory.CreateSentencesForRepeatAsync(mode);
-        return await sentencesForRepeat.Exec(userId);
+        return  await sentencesForRepeat.Exec(userId);
     }
 }

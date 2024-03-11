@@ -41,14 +41,14 @@ public class DeleteAddedSentenceCollectionCommandHandler : IRequestHandler<Delet
 
         foreach (var item in collection!.SentencesPairs)
         {
-            item.WhenDeleted = DateTimeOffset.Now;
+            item.WhenDeleted = DateTimeOffset.UtcNow;
             foreach (var secondItem in item.UsingSentencesPairs)
             {
-                secondItem.WhenDeleted = DateTimeOffset.Now;
+                secondItem.WhenDeleted = DateTimeOffset.UtcNow;
             }
         }
 
-        collection.WhenDeleted = DateTimeOffset.Now;
+        collection.WhenDeleted = DateTimeOffset.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
     }

@@ -3,7 +3,7 @@ using DropWord.Application.Common.Models.Sentence;
 using DropWord.Domain.Constants;
 using DropWord.Infrastructure.Sentence.Dto;
 using DropWord.Infrastructure.Sentence.Field.RestApiRequest;
-using DropWord.Infrastructure.Utils;
+using DropWord.Infrastructure.Utils.RestApiClient.Implementation;
 using LanguageDetection;
 
 namespace DropWord.Infrastructure.Sentence;

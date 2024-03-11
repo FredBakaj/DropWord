@@ -1,5 +1,5 @@
 ﻿using DropWord.Application.Common.Interfaces;
-using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 
 namespace DropWord.Application.Strategy.SentencesForRepeat.Implementation;
@@ -14,7 +14,7 @@ public class SentencesForRepeatOldDataMinCount : ASentencesForRepeat, ISentences
         _context = context;
     }
     
-    public async Task<SentenceForRepeatDto> Exec(long userId)
+    public async Task<SentenceForRepeatModel> Exec(long userId)
     {
         var oldUsingSentencePair = await _context.UsingSentencesPair
             .Where(x => x.UserId == userId)

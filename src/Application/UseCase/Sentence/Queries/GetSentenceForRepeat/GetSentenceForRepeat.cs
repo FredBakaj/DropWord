@@ -18,17 +18,19 @@ public record GetSentenceForRepeatQuery : IRequest<SentenceForRepeatDto>
 public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRepeatQuery, SentenceForRepeatDto>
 {
     private readonly ISentenceManager _sentenceManager;
+    private readonly IMapper _mapper;
 
 
-    public GetSentenceForRepeatQueryHandler(ISentenceManager sentenceManager)
+    public GetSentenceForRepeatQueryHandler(ISentenceManager sentenceManager, IMapper mapper)
     {
         _sentenceManager = sentenceManager;
+        _mapper = mapper;
     }
 
     public async Task<SentenceForRepeatDto> Handle(GetSentenceForRepeatQuery request,
         CancellationToken cancellationToken)
     {
         var result = await _sentenceManager.GetSentenceForRepeatAsync(request.UserId, SentenceForRepeatModeEnum.OldDataMinCount);
-        return result;
+        return _mapper.Map<SentenceForRepeatDto>(result);
     }
 }

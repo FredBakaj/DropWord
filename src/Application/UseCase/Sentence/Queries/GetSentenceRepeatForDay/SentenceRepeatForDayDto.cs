@@ -1,9 +1,9 @@
 ﻿using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 
-namespace DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+namespace DropWord.Application.UseCase.Sentence.Queries.GetSentenceRepeatForDay;
 
-public class SentenceForRepeatDto
+public class SentenceRepeatForDayDto
 {
     public int UsingSentencesPairId { get; set; }
     public string FirstSentence { get; set; } = null!;
@@ -14,7 +14,7 @@ public class SentenceForRepeatDto
     {
         public Mapping()
         {
-            CreateMap<SentenceForRepeatModel, SentenceForRepeatDto>();
+            CreateMap<SentenceForRepeatModel, SentenceRepeatForDayDto>();
         }
     }
 }

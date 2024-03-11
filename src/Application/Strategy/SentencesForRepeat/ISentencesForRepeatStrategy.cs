@@ -1,4 +1,4 @@
-﻿using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
+﻿using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 
 namespace DropWord.Application.Strategy.SentencesForRepeat;
@@ -6,5 +6,5 @@ namespace DropWord.Application.Strategy.SentencesForRepeat;
 public interface ISentencesForRepeatStrategy
 {
     SentenceForRepeatModeEnum Mode { get; }
-    Task<SentenceForRepeatDto> Exec(long userId);
+    Task<SentenceForRepeatModel> Exec(long userId);
 }
