@@ -1,11 +1,11 @@
 ﻿using DropWord.Domain.Enums;
-using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.Utils;
+using DropWord.TgBot.Core.ViewComponent;
 using DropWord.TgBot.Core.ViewDto;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
@@ -16,17 +16,19 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
     public class BaseBotView : ABotView
     {
         private readonly ITelegramBotClient _botClient;
+        private readonly IMainMenuComponent _mainMenuComponent;
 
-        public BaseBotView(ITelegramBotClient botClient)
+        public BaseBotView(ITelegramBotClient botClient, IMainMenuComponent mainMenuComponent)
         {
             _botClient = botClient;
+            _mainMenuComponent = mainMenuComponent;
         }
 
         [BotView(BaseViewField.Menu)]
         public async Task Intro(UpdateBDto update)
         {
             var text = "Головне меню";
-            await MainMenuAsync(update, text);
+            await _mainMenuComponent.SendAsync(update, text);
         }
 
         [BotView(BaseViewField.AddSentences)]
@@ -195,7 +197,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         public async Task ConfirmResetCountRepeatSentence(UpdateBDto updateBDto)
         {
             var text = "Ви повернулись на початок, щоб повторит те що могли забути)";
-            await MainMenuAsync(updateBDto, text);
+            await _mainMenuComponent.SendAsync(updateBDto, text);
         }
 
         [BotView(BaseViewField.EmptyCollectionOfSentencesToRepeat)]
@@ -207,20 +209,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 $" це можна зробити натиснувши кнопку \"{BaseField.NewSentenceButton}\"";
             await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
         }
-
-        private async Task MainMenuAsync(UpdateBDto update, string text)
-        {
-            var replyMarkup = new ReplyKeyboardMarkup(new[]
-            {
-                new KeyboardButton[]
-                {
-                    BaseField.RepeatSentenceKeyboard, BaseField.NewSentenceButton
-                },
-                new KeyboardButton[] { BaseField.SentencesRepetitionByInputKeyboard,BaseField.SettingsKeyboard }
-            }) { ResizeKeyboard = true };
-
-            await _botClient.SendTextMessageAsync(update.GetUserId(), text, replyMarkup: replyMarkup);
-        }
+        
 
         private string MakeHideSentencesPairText(SentenceToLearnLabelEnum learnSentencesModeEnum, string firstSentence,
             string secondSentence)

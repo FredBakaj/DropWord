@@ -2,6 +2,7 @@
 using DropWord.Application.UseCase.StateTree.Commands.ClearData;
 using DropWord.Application.UseCase.StateTree.Commands.ClearTempData;
 using DropWord.Application.UseCase.StateTree.Commands.SetAction;
+using DropWord.Application.UseCase.StateTree.Commands.SetData;
 using DropWord.Application.UseCase.StateTree.Commands.SetDataAndAction;
 using DropWord.Application.UseCase.StateTree.Commands.SetStateAndAction;
 using DropWord.Application.UseCase.StateTree.Commands.SetTempData;
@@ -31,12 +32,33 @@ public class BotStateTreeUserHandler : IBotStateTreeUserHandler
             cancellationToken);
     }
 
+    public async Task SetStateAndActionAsync(long userId, string state, string action, CancellationToken cancellationToken = default)
+    {
+        await _sender.Send(new SetStateAndActionCommand() { UserId = userId, State = state, Action = action },
+            cancellationToken);
+    }
+
     public async Task SetDataAndActionAsync<T>(UpdateBDto update, string action, T data,
         CancellationToken cancellationToken = default) where T : class
     {
         var stateDataModel = new StateDataBDto<T>() { DataType = data.GetType().Name, Data = data };
         var userId = update.GetUserId();
         await _sender.Send(new SetDataAndActionCommand() { UserId = userId, Action = action, Data = stateDataModel },
+            cancellationToken);
+    }
+
+    public async Task SetDataAsync<T>(UpdateBDto update, T data, CancellationToken cancellationToken = default) where T : class
+    {
+        var stateDataModel = new StateDataBDto<T>() { DataType = data.GetType().Name, Data = data };
+        var userId = update.GetUserId();
+        await _sender.Send(new SetDataCommand() { UserId = userId, Data = stateDataModel },
+            cancellationToken);
+    }
+
+    public async Task SetDataAsync<T>(long userId, T data, CancellationToken cancellationToken = default) where T : class
+    {
+        var stateDataModel = new StateDataBDto<T>() { DataType = data.GetType().Name, Data = data };
+        await _sender.Send(new SetDataCommand() { UserId = userId, Data = stateDataModel },
             cancellationToken);
     }
 
@@ -84,6 +106,13 @@ public class BotStateTreeUserHandler : IBotStateTreeUserHandler
     {
         var stateDataModel = new StateTempDataBDto<T>() { DataType = tempData.GetType().Name, Data = tempData };
         var userId = update.GetUserId();
+        await _sender.Send(new SetTempDataCommand() { UserId = userId, Data = stateDataModel },
+            cancellationToken);
+    }
+
+    public async Task SetTempDataAsync<T>(long userId, T tempData, CancellationToken cancellationToken = default) where T : class
+    {
+        var stateDataModel = new StateTempDataBDto<T>() { DataType = tempData.GetType().Name, Data = tempData };
         await _sender.Send(new SetTempDataCommand() { UserId = userId, Data = stateDataModel },
             cancellationToken);
     }

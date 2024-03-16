@@ -2,6 +2,7 @@
 using DropWord.Application.UseCase.Sentence.Queries.GetSentenceRepeatForDay;
 using DropWord.Application.UseCase.Sentence.Queries.GetUsersToPushSentencesRepeatForDay;
 using DropWord.Domain.Enums;
+using DropWord.Domain.Exceptions;
 using DropWord.Infrastructure.Utils.RestApiClient;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
@@ -16,14 +17,14 @@ public class RepeatForDayTrigger
     private readonly IRestApiClient _restApiClient;
     private readonly ILogger _logger;
 
-    private readonly string _apiDomain = String.Empty;
+    private readonly string _apiUrl = String.Empty;
     public RepeatForDayTrigger(ILoggerFactory loggerFactory, ISender sender, IRestApiClient restApiClient, IConfiguration configuration)
     {
         _sender = sender;
         _restApiClient = restApiClient;
         _logger = loggerFactory.CreateLogger<RepeatForDayTrigger>();
 
-        _apiDomain = configuration.GetValue<string>("ApiDomain")!;
+        _apiUrl = configuration.GetValue<string>("ApiUrl")!;
     }
 
     [Function("RepeatForDayTrigger")]
@@ -39,15 +40,23 @@ public class RepeatForDayTrigger
             }
         });
         
-        var url = $"http://{_apiDomain}/api/v1/Sentence/RepeatForDay";
+        var url = $"{_apiUrl}/api/v1/Sentence/RepeatForDay";
         
         foreach (var user in queryModel.Users)
         {
-            var sentencePair = await _sender.Send(new GetSentenceRepeatForDayQuery() { UserId = user.Id });
-            await _restApiClient.PostAsync<object>(url, new Dictionary<string, string>(),
-                new { UserId = user.Id, SentenceForRepeatApi = sentencePair });
-            await _sender.Send(new UpdateStatusShowSentencesForRepeatCommand() 
-                {UsingSentencesPairId = sentencePair.UsingSentencesPairId});
+            try
+            {
+                var sentencePair = await _sender.Send(new GetSentenceRepeatForDayQuery() { UserId = user.Id });
+                await _restApiClient.PostAsync<object>(url, new Dictionary<string, string>(),
+                    new { UserId = user.Id, SentenceForRepeatApi = sentencePair });
+                await _sender.Send(new UpdateStatusShowSentencesForRepeatCommand() 
+                    {UsingSentencesPairId = sentencePair.UsingSentencesPairId});
+            }
+            catch(EmptyOldUsingSentencesPairException){}
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
         }
     }
 }

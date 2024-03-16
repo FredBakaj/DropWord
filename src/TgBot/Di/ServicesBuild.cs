@@ -53,6 +53,7 @@ namespace DropWord.TgBot.Di
             MiddlewareBuild.BuildService(services);
             ControllerBuild.BuildService(services);
             ViewBuild.BuildService(services);
+            ViewComponentBuild.BuildService(services);
             CommandBuild.BuildService(services);
             FactoryBuild.BuildService(services);
             StrategyBuild.BuildService(services);

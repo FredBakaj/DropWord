@@ -1,6 +1,4 @@
-﻿using DropWord.TgBot.Core.Handler;
-using DropWord.TgBot.Core.Handler.Implementation;
-using DropWord.TgBot.Core.Src.Controller;
+﻿using DropWord.TgBot.Core.Src.Controller;
 using DropWord.TgBot.Core.Src.Controller.Implementation;
 
 namespace DropWord.TgBot.Di.Controller
@@ -12,6 +10,7 @@ namespace DropWord.TgBot.Di.Controller
             services.AddTransient<IBotController, BaseController>();
             services.AddTransient<IBotController, StartController>();
             services.AddTransient<IBotController, SentencesRepetitionByInputController>();
+            services.AddTransient<IBotController, RepeatForDayController>();
         }
     }
 }
