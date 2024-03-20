@@ -10,6 +10,7 @@ public class UserSettingsEntity : BaseAuditableEntity<int>
     public string MainLanguage { get; set; } = null!;
     public string LearnLanguage { get; set; } = null!;
     public SentencesRepeatForDayModeEnum SentencesRepeatForDayModeEnum { get; set; }
+    public int TimeZone { get; set; }
     public long UserId { get; set; }
     public UserEntity User { get; set; } = null!;
 }

@@ -8,5 +8,6 @@ public class ViewComponentBuild
     public static void BuildService(IServiceCollection services)
     {
         services.AddTransient<IMainMenuComponent, MainMenuComponent>();
+        services.AddTransient<IDynamicButtonCallbackComponent, DynamicButtonCallbackComponent>();
     }
 }

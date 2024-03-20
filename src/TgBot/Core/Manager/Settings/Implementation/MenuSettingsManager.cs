@@ -30,7 +30,9 @@ public class MenuSettingsManager : IMenuSettingsManager
         {
             Update = updateBDto,
             ChangeModeIcon = changeModeIcon,
-            LearnLanguagePairEmoji = learnLanguagePairEmoji
+            LearnLanguagePairEmoji = learnLanguagePairEmoji,
+            TimeZone = CustomConvert.IntToUTC(user.UserSettings.TimeZone),
+            TimesForDay = CustomConvert.TimesForDayToViewText(user.UserSettings.SentencesRepeatForDayModeEnum)
         };
         return viewDto;
     }

@@ -14,7 +14,10 @@ using DropWord.Application.UseCase.SentencesCollection.Commands.DeleteAddedSente
 using DropWord.Application.UseCase.User.Queries.GetUser;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeLanguagePair;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeLearnSentencesMode;
+using DropWord.Application.UseCase.UserSettings.Commands.ChangeSentencesRepeatForDayMode;
+using DropWord.Application.UseCase.UserSettings.Commands.ChangeTimeZone;
 using DropWord.Domain.Constants;
+using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
@@ -110,6 +113,15 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 ChangeLearnLanguagePairCallbackAsync);
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.BackToSettingsMenuCallback,
                 BackToSettingsMenuCallbackAsync);
+            
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.OpenChangeTimeZoneCallback,
+                OpenChangeTimeZoneCallbackAsync);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeTimeZoneCallback,
+                ChangeTimeZoneCallbackAsync);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.OpenChangeTimesForDayCallback,
+                OpenChangeTimesForDayCallback);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeTimesForDayCallback,
+                ChangeTimesForDayCallback);
         }
 
         //Добавление предложений в базу 
@@ -149,12 +161,14 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             }
             catch (MaxCountSentencesException)
             {
-                var viewDto = new MaxCountSentencesExceptionVDto() {Update = update, MaxCountSentences = _maxCountSentences };
+                var viewDto =
+                    new MaxCountSentencesExceptionVDto() { Update = update, MaxCountSentences = _maxCountSentences };
                 await _botViewHandler.SendAsync(BaseViewField.MaxCountSentencesException, viewDto);
             }
             catch (MaxLengthSentenceException)
             {
-                var viewDto = new MaxLengthSentenceExceptionVDto(){Update = update, MaxLengthSentence = _maxSentenceLength };
+                var viewDto =
+                    new MaxLengthSentenceExceptionVDto() { Update = update, MaxLengthSentence = _maxSentenceLength };
                 await _botViewHandler.SendAsync(BaseViewField.MaxLengthSentenceException, viewDto);
             }
         }
@@ -396,7 +410,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             };
             learnLanguages = learnLanguages.Where(x => x != user.UserSettings.LearnLanguage).ToList();
 
-            var learnLanguagesDict = learnLanguages.ToDictionary(x => x,
+            var learnLanguagesDict = learnLanguages.ToDictionary(x => $"{mainLanguage}|{x}",
                 x => $"{CustomConvert.LanguageToEmoji(mainLanguage)}{CustomConvert.LanguageToEmoji(x)}");
 
             var viewDto = new ChangeLearnLanguagePairCallbackVDto()
@@ -419,6 +433,68 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
             await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);
         }
+
+        private async Task OpenChangeTimeZoneCallbackAsync(UpdateBDto updateBDto)
+        {
+            var user = await _sender.Send(new GetUserQuery() { UserId = updateBDto.GetUserId() });
+            var currentTimeZone = CustomConvert.IntToUTC(user.UserSettings.TimeZone);
+
+            var timeZonesDict = TimeZoneForDayConst.TimeZone
+                .ToDictionary(x => x.ToString(), x => CustomConvert.IntToUTC(x));
+
+            var viewDto = new ChangeTimeZoneCallbackVDto()
+            {
+                Update = updateBDto, CurrentTimeZone = currentTimeZone, TimeZoneVariants = timeZonesDict
+            };
+
+            await _botViewHandler.SendAsync(SettingsViewField.OpenChangeTimeZoneCallback, viewDto);
+        }
+
+        private async Task ChangeTimeZoneCallbackAsync(UpdateBDto updateBDto)
+        {
+            var newTimeZone = Convert.ToInt32(updateBDto.CallbackData);
+            await _sender.Send(new ChangeTimeZoneCommand() { UserId = updateBDto.GetUserId(), TimeZone = newTimeZone });
+            var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
+            await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);
+        }
+
+        private async Task OpenChangeTimesForDayCallback(UpdateBDto updateBDto)
+        {
+            var user = await _sender.Send(new GetUserQuery() { UserId = updateBDto.GetUserId() });
+            var currentTimesForDay =
+                CustomConvert.TimesForDayToViewText(user.UserSettings.SentencesRepeatForDayModeEnum);
+
+            var timesForDayArray = new int[]
+            {
+                (int)SentencesRepeatForDayModeEnum.TurnOff, (int)SentencesRepeatForDayModeEnum.Times1InDay,
+                (int)SentencesRepeatForDayModeEnum.Times3InDay, (int)SentencesRepeatForDayModeEnum.Times5InDay,
+                (int)SentencesRepeatForDayModeEnum.Times10InDay
+            };
+
+            var timesForDayDict = timesForDayArray
+                .ToDictionary(x => x.ToString(),
+                    x => CustomConvert.TimesForDayToViewText((SentencesRepeatForDayModeEnum)x));
+
+
+            var viewDto = new ChangeTimesForDayCallbackVDto()
+            {
+                Update = updateBDto, CurrentTimesForDay = currentTimesForDay, TimesForDayVariants = timesForDayDict
+            };
+
+            await _botViewHandler.SendAsync(SettingsViewField.OpenChangeTimesForDayCallback, viewDto);
+        }
+
+        private async Task ChangeTimesForDayCallback(UpdateBDto updateBDto)
+        {
+            var newTimeZone = (SentencesRepeatForDayModeEnum)Convert.ToInt32(updateBDto.CallbackData);
+            await _sender.Send(new ChangeSentencesRepeatForDayModeCommand()
+            {
+                UserId = updateBDto.GetUserId(), SentencesRepeatForDayModeEnum = newTimeZone
+            });
+            var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
+            await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);
+        }
+
 
         private async Task BackToSettingsMenuCallbackAsync(UpdateBDto updateBDto)
         {

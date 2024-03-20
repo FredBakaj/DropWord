@@ -32,5 +32,9 @@
         public const string OpenChangeLearnLanguagePairCallback = nameof(OpenChangeLearnLanguagePairCallback);
         public const string ChangeLearnLanguagePairCallback = nameof(ChangeLearnLanguagePairCallback);
         public const string BackToSettingsMenuCallback = nameof(BackToSettingsMenuCallback);
+        public const string OpenChangeTimeZoneCallback = nameof(OpenChangeTimeZoneCallback);
+        public const string OpenChangeTimesForDayCallback = nameof(OpenChangeTimesForDayCallback);
+        public const string ChangeTimeZoneCallback = nameof(ChangeTimeZoneCallback);
+        public const string ChangeTimesForDayCallback = nameof(ChangeTimesForDayCallback);
     }
 }

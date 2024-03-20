@@ -30,7 +30,7 @@ public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRe
     public async Task<SentenceForRepeatDto> Handle(GetSentenceForRepeatQuery request,
         CancellationToken cancellationToken)
     {
-        var result = await _sentenceManager.GetSentenceForRepeatAsync(request.UserId, SentenceForRepeatModeEnum.OldDataMinCount);
+        var result = await _sentenceManager.GetSentenceForRepeatAsync(request.UserId, SentenceForRepeatModeEnum.StepByQueue);
         return _mapper.Map<SentenceForRepeatDto>(result);
     }
 }
