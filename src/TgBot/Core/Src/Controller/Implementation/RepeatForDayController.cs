@@ -1,4 +1,4 @@
-﻿using DropWord.Application.UseCase.Sentence.Commands.SentencesRepetitionByInput;
+﻿using DropWord.Application.UseCase.Sentence.Commands.SentencesRepeatForDay;
 using DropWord.Application.UseCase.Sentence.Queries.GetDiffSentenceWithMarkup;
 using DropWord.Domain.Enums;
 using DropWord.TgBot.Core.Extension;
@@ -64,7 +64,7 @@ public class RepeatForDayController : IBotController
         var dataModel = await _botStateTreeUserHandler.GetDataAsync<SentencesRepetitionByInputSDto>(updateBDto);
         if (dataModel != null)
         {
-            var responseRepeat = await _sender.Send(new SentencesRepetitionByInputCommand()
+            var responseRepeat = await _sender.Send(new SentencesRepeatForDayCommand()
             {
                 Sentence = messageText,
                 UserId = updateBDto.GetUserId(),

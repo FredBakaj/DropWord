@@ -9,11 +9,13 @@ public class SentenceManager : ISentenceManager
 {
     private readonly IApplicationDbContext _context;
     private readonly ISentencesFactory _sentencesFactory;
+    private readonly IMapper _mapper;
 
-    public SentenceManager(IApplicationDbContext context, ISentencesFactory sentencesFactory)
+    public SentenceManager(IApplicationDbContext context, ISentencesFactory sentencesFactory, IMapper mapper)
     {
         _context = context;
         _sentencesFactory = sentencesFactory;
+        _mapper = mapper;
     }
 
     public async Task RepeatSentenceAsync(long userId, bool isLearn, int usingSentencesPairId,
@@ -34,17 +36,7 @@ public class SentenceManager : ISentenceManager
 
         if (user!.User != null && user!.UsingSentencesPair != null)
         {
-            if (user.User.UserLearningInfo.CountUseForDaySentences == null ||
-                user.User.UserLearningInfo.LastUseForDaySentencesId == null)
-            {
-                user.User.UserLearningInfo.CountUseForDaySentences = 1;
-            }
-            else
-            {
-                user.User.UserLearningInfo.CountUseForDaySentences += 1;
-            }
-
-            user.User.UserLearningInfo.LastUseForDaySentencesId = usingSentencesPairId;
+            
             user.UsingSentencesPair.CountUse += 1;
             user.UsingSentencesPair.IsLearning = isLearn;
             user.UsingSentencesPair.UpdateDate = DateTime.UtcNow;
@@ -58,5 +50,55 @@ public class SentenceManager : ISentenceManager
         var sentencesForRepeat =
             await _sentencesFactory.CreateSentencesForRepeatAsync(mode);
         return  await sentencesForRepeat.Exec(userId);
+    }
+
+    public async Task ChangeLastUseForDaySentenceAsync(long userId, int usingSentencesPairId,
+        CancellationToken cancellationToken)
+    {
+        var user = await _context.Users
+            .Where(x => x.Id == userId)
+            .Include(x => x.UserLearningInfo)
+            .FirstOrDefaultAsync();
+        
+        if (user!.UserLearningInfo.CountUseForDaySentences == null ||
+            user.UserLearningInfo.LastUseForDaySentencesId == null)
+        {
+            user.UserLearningInfo.CountUseForDaySentences = 1;
+        }
+        else
+        {
+            user.UserLearningInfo.CountUseForDaySentences += 1;
+        }
+        
+        user!.UserLearningInfo.LastUseForDaySentencesId = usingSentencesPairId;
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<SentencesPairModel> GetSentencesPairAsync(long userId, int usingSentencesPairId)
+    {
+        var sentencePair = await _context.UsingSentencesPair
+            .Include(x => x.SentencesPair)
+            .ThenInclude(x => x.FirstSentence)
+            .Include(x => x.SentencesPair)
+            .ThenInclude(x => x.SecondSentence)
+            .Where(x => x.UserId == userId && x.Id == usingSentencesPairId)
+            .Select(x => x.SentencesPair)
+            .ProjectTo<SentencesPairModel>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync();
+        return sentencePair!;
+    }
+
+    public string GetSentenceLearnFromPair(SentencesPairModel sentencesPair, SentenceToLearnLabelEnum learnLabel)
+    {
+        var sentenceLearn = string.Empty;
+        if (learnLabel == SentenceToLearnLabelEnum.First)
+        {
+            sentenceLearn = sentencesPair!.FirstSentence.Sentence;
+        }
+        else if (learnLabel == SentenceToLearnLabelEnum.Second)
+        {
+            sentenceLearn = sentencesPair!.SecondSentence.Sentence;
+        }    
+        return sentenceLearn;
     }
 }

@@ -30,6 +30,8 @@ public class RepeatSentenceCommandHandler : IRequestHandler<RepeatSentenceComman
 
     public async Task Handle(RepeatSentenceCommand request, CancellationToken cancellationToken)
     {
+        await _sentenceManager.ChangeLastUseForDaySentenceAsync(request.UserId, request.UsingSentencesPairId,
+            cancellationToken);
         await _sentenceManager.RepeatSentenceAsync(request.UserId, request.IsLearn, request.UsingSentencesPairId,
             cancellationToken);
     }

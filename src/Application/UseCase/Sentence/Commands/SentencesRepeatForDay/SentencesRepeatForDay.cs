@@ -4,9 +4,9 @@ using DropWord.Application.Common.Interfaces.Sentence;
 using DropWord.Application.Manager.Sentence;
 using DropWord.Domain.Enums;
 
-namespace DropWord.Application.UseCase.Sentence.Commands.SentencesRepetitionByInput;
+namespace DropWord.Application.UseCase.Sentence.Commands.SentencesRepeatForDay;
 
-public record SentencesRepetitionByInputCommand : IRequest<StatusOfSentenceInputEnum>
+public record SentencesRepeatForDayCommand : IRequest<StatusOfSentenceInputEnum>
 {
     public long UserId { get; set; }
     public int UsingSentencesPairId { get; set; }
@@ -14,16 +14,14 @@ public record SentencesRepetitionByInputCommand : IRequest<StatusOfSentenceInput
     public string Sentence { get; set; } = null!;
 }
 
-public class SentencesRepetitionByInputCommandValidator : AbstractValidator<SentencesRepetitionByInputCommand>
+public class SentencesRepeatForDayCommandValidator : AbstractValidator<SentencesRepeatForDayCommand>
 {
-    public SentencesRepetitionByInputCommandValidator()
+    public SentencesRepeatForDayCommandValidator()
     {
     }
 }
 
-public class
-    SentencesRepetitionByInputCommandHandler : IRequestHandler<SentencesRepetitionByInputCommand,
-        StatusOfSentenceInputEnum>
+public class SentencesRepeatForDayCommandHandler : IRequestHandler<SentencesRepeatForDayCommand, StatusOfSentenceInputEnum>
 {
     private readonly IApplicationDbContext _context;
     private readonly ISentenceManager _sentenceManager;
@@ -31,25 +29,22 @@ public class
     private readonly IConfig _config;
     private readonly double _coefficientDiffSentencePercent;
 
-    public SentencesRepetitionByInputCommandHandler(IApplicationDbContext context,
+
+    public SentencesRepeatForDayCommandHandler(IApplicationDbContext context,
         ISentenceManager sentenceManager, IDifferenceSentence differenceSentence, IConfig config)
     {
         _context = context;
         _sentenceManager = sentenceManager;
         _differenceSentence = differenceSentence;
         _config = config;
-
         _coefficientDiffSentencePercent = double.Parse(config.GetValue("CoefficientDiffSentencePercent"), CultureInfo.InvariantCulture);
+
     }
 
-    public async Task<StatusOfSentenceInputEnum> Handle(SentencesRepetitionByInputCommand request,
-        CancellationToken cancellationToken)
+    public async Task<StatusOfSentenceInputEnum> Handle(SentencesRepeatForDayCommand request, CancellationToken cancellationToken)
     {
-
         var sentencesPair = await _sentenceManager.GetSentencesPairAsync(request.UserId, request.UsingSentencesPairId);
         var sentenceLearn = _sentenceManager.GetSentenceLearnFromPair(sentencesPair, request.SentenceToLearnLabelEnum);
-
-        await _sentenceManager.ChangeLastUseForDaySentenceAsync(request.UserId, request.UsingSentencesPairId, cancellationToken);
         
         if (sentenceLearn == request.Sentence)
         {
