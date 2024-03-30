@@ -7,6 +7,8 @@ public class SentencesPairDto
     public int Id { get; set; }
     public SentenceDto FirstSentence { get; set; } = null!;
     public SentenceDto SecondSentence { get; set; } = null!;
+    public DateTimeOffset Created { get; set; }
+
     
     private class Mapping : Profile
     {

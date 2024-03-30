@@ -180,6 +180,14 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             var text = $"Зараз у вас немає нових речень для вивчення😔 Щоб додати надішліть повідомлення в бот✍️";
             await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
         }
+        
+        [BotView(BaseViewField.DeleteAddedSentenceFailed)]
+        public async Task DeleteAddedSentenceFailed(UpdateBDto viewDto)
+        {
+            var text = viewDto.GetMessage().Text + "\n\n" +
+                $"🟡 На жаль це речення вже неможливо видалити";
+            await _botClient.EditMessageTextAsync(viewDto.GetUserId(), viewDto.GetMessage().MessageId, text);
+        }
 
         [BotView(BaseViewField.NewSentence)]
         public async Task NewSentence(NewSentenceVDto sentence)

@@ -11,6 +11,7 @@ using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
 using DropWord.Application.UseCase.Sentence.Queries.GetSentencesPair;
 using DropWord.Application.UseCase.SentencesCollection.Commands.AddCollection;
 using DropWord.Application.UseCase.SentencesCollection.Commands.DeleteAddedSentenceCollection;
+using DropWord.Application.UseCase.SentencesCollection.Queries.GetSentencesCollection;
 using DropWord.Application.UseCase.User.Queries.GetUser;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeLanguagePair;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeLearnSentencesMode;
@@ -45,6 +46,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private readonly int _maxSentenceLength;
         private readonly int _maxCountSentences;
         private int _maxCountAddedSentences;
+        private int _maxMinutesForDeleteSentence;
 
 
         public string Name() => BaseField.BaseState;
@@ -70,6 +72,9 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 Convert.ToInt32(configuration.GetSection("SentencesSettings")["MaxCountSentencesForSave"]);
             _maxCountAddedSentences =
                 Convert.ToInt32(configuration.GetSection("ApplicationSettings")["LimitForAddedSentences"]);
+            _maxMinutesForDeleteSentence =
+                Convert.ToInt32(configuration.GetSection("SentencesSettings")["MaxMinutesForDeleteSentence"]);
+
 
             Initialize();
         }
@@ -254,22 +259,46 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private async Task DeleteAddedSentenceCallbackAsync(UpdateBDto updateBDto)
         {
             int sentencesPairId = Convert.ToInt32(updateBDto.CallbackData);
-            await _sender.Send(new DeleteAddedSentenceCommand()
+
+            var sentencesPair = await _sender.Send(new GetSentencesPairQuery()
             {
                 UserId = updateBDto.GetUserId(), SentencesPairId = sentencesPairId
             });
-            await _botViewHandler.SendAsync(BaseViewField.DeleteAddedSentence, updateBDto);
+            if (DateTimeOffset.UtcNow - sentencesPair.Created < TimeSpan.FromMinutes(_maxMinutesForDeleteSentence))
+            {
+                await _sender.Send(new DeleteAddedSentenceCommand()
+                {
+                    UserId = updateBDto.GetUserId(), SentencesPairId = sentencesPairId
+                });
+                await _botViewHandler.SendAsync(BaseViewField.DeleteAddedSentence, updateBDto);
+            }
+            else
+            {
+                await _botViewHandler.SendAsync(BaseViewField.DeleteAddedSentenceFailed, updateBDto);
+            }
         }
 
         private async Task DeleteAddedSentencesCallbackAsync(UpdateBDto updateBDto)
         {
             int sentencesCollectionId = Convert.ToInt32(updateBDto.CallbackData);
 
-            await _sender.Send(new DeleteAddedSentenceCollectionCommand()
+            var sentencesCollection = await _sender.Send(new GetSentencesCollectionQuery()
             {
-                UserId = updateBDto.GetUserId(), CollectionId = sentencesCollectionId
+                SentencesCollectionId = sentencesCollectionId
             });
-            await _botViewHandler.SendAsync(BaseViewField.DeleteAddedSentenceCollection, updateBDto);
+
+            if (DateTimeOffset.UtcNow - sentencesCollection.Created < TimeSpan.FromMinutes(_maxMinutesForDeleteSentence))
+            {
+                await _sender.Send(new DeleteAddedSentenceCollectionCommand()
+                {
+                    UserId = updateBDto.GetUserId(), CollectionId = sentencesCollectionId
+                });
+                await _botViewHandler.SendAsync(BaseViewField.DeleteAddedSentenceCollection, updateBDto);
+            }
+            else
+            {
+                await _botViewHandler.SendAsync(BaseViewField.DeleteAddedSentenceFailed, updateBDto);
+            }
         }
 
         //Отправляет новую пару предложений для изучения

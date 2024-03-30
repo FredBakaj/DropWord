@@ -21,4 +21,5 @@ public abstract class BaseViewField
     public const string SentencesNotValidForAddException = nameof(SentencesNotValidForAddException);
     public const string LimitAddSentencesExceededException = nameof(LimitAddSentencesExceededException);
     public const string NoNewSentenceException = nameof(NoNewSentenceException);
+    public const string DeleteAddedSentenceFailed = nameof(DeleteAddedSentenceFailed);
 }
