@@ -1,5 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Domain.Enums;
+using DropWord.Domain.Exceptions;
 
 namespace DropWord.Application.UseCase.Sentence.Queries.GetNewSentence;
 
@@ -40,8 +41,13 @@ public class GetNewSentenceQueryHandler : IRequestHandler<GetNewSentenceQuery, N
                 .Any(y => y.SentencesPairId == x.Id)
                 && x.FirstLanguage == userSettings.MainLanguage
                 && x.SecondLanguage == userSettings.LearnLanguage)
-            .FirstAsync();
+            .FirstOrDefaultAsync();
 
+        if (sentencesPair == null)
+        {
+            throw new NoNewSentenceException("Could not find a sentence pair");
+        }
+        
         var sentences = await _context.SentencesPair
             .Include(x => x.FirstSentence)
             .Include(x => x.SecondSentence)

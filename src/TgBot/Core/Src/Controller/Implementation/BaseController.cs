@@ -254,7 +254,6 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private async Task DeleteAddedSentenceCallbackAsync(UpdateBDto updateBDto)
         {
             int sentencesPairId = Convert.ToInt32(updateBDto.CallbackData);
-
             await _sender.Send(new DeleteAddedSentenceCommand()
             {
                 UserId = updateBDto.GetUserId(), SentencesPairId = sentencesPairId
@@ -276,15 +275,22 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         //Отправляет новую пару предложений для изучения
         private async Task NewSentenceButton(UpdateBDto update)
         {
-            var newSentenceDto = await _sender.Send(new GetNewSentenceQuery() { UserId = update.GetUserId() });
-
-            var viewDto = new NewSentenceVDto() { Update = update, NewSentence = newSentenceDto };
-            await _botViewHandler.SendAsync(BaseViewField.NewSentence, viewDto);
-
-            await _sender.Send(new LearnNewSentenceCommand()
+            try
             {
-                UserId = update.GetUserId(), SentencePairId = newSentenceDto.SentencePairId
-            });
+                var newSentenceDto = await _sender.Send(new GetNewSentenceQuery() { UserId = update.GetUserId() });
+
+                var viewDto = new NewSentenceVDto() { Update = update, NewSentence = newSentenceDto };
+                await _botViewHandler.SendAsync(BaseViewField.NewSentence, viewDto);
+
+                await _sender.Send(new LearnNewSentenceCommand()
+                {
+                    UserId = update.GetUserId(), SentencePairId = newSentenceDto.SentencePairId
+                });
+            }
+            catch (NoNewSentenceException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.NoNewSentenceException, update);
+            }
         }
 
         //Отправляет уже изученую пару предложений для повторения

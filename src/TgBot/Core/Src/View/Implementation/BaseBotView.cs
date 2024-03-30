@@ -174,6 +174,12 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             var text = $"🔴 У тексті присутні заборонені символи (~ * _)";
             await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
         }
+        [BotView(BaseViewField.NoNewSentenceException)]
+        public async Task NoNewSentenceException(UpdateBDto viewDto)
+        {
+            var text = $"Зараз у вас немає нових речень для вивчення😔 Щоб додати надішліть повідомлення в бот✍️";
+            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+        }
 
         [BotView(BaseViewField.NewSentence)]
         public async Task NewSentence(NewSentenceVDto sentence)
