@@ -405,9 +405,6 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         {
             try
             {
-                await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto,
-                    SentencesRepetitionByInputField.State,
-                    SentencesRepetitionByInputField.Action);
                 //Сохроняет промежуточные данны для сравнения слов между вводами
                 var nextSentencePair = await _repeatSentenceManager.GetSentencesPairAndSaveInDataAsync(updateBDto);
                 var nextSentence = _repeatSentenceManager.GetNextSentence(nextSentencePair);
@@ -416,6 +413,11 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 var viewModel =
                     new StartInputVDto() { Update = updateBDto, Sentence = nextSentence };
                 await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.StartInput, viewModel);
+                
+                //Переход в состояние повтора вводом
+                await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto,
+                    SentencesRepetitionByInputField.State,
+                    SentencesRepetitionByInputField.Action);
             }
             catch (OutOfSentencesToRepeatException)
             {
