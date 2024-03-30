@@ -171,6 +171,12 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                     new MaxLengthSentenceExceptionVDto() { Update = update, MaxLengthSentence = _maxSentenceLength };
                 await _botViewHandler.SendAsync(BaseViewField.MaxLengthSentenceException, viewDto);
             }
+            catch (SentencesNotValidForAddException)
+            {
+                
+                await _botViewHandler.SendAsync(BaseViewField.SentencesNotValidForAddException, update);
+            }
+            
         }
 
         private async Task ReloadAction(UpdateBDto updateBDto)

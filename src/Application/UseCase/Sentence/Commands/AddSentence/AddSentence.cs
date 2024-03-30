@@ -1,6 +1,8 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Common.Interfaces.Sentence;
+using DropWord.Application.Manager.Sentence;
 using DropWord.Domain.Entities;
+using DropWord.Domain.Exceptions;
 
 namespace DropWord.Application.UseCase.Sentence.Commands.AddSentence;
 
@@ -21,16 +23,24 @@ public class AddSentenceCommandHandler : IRequestHandler<AddSentenceCommand, Add
 {
     private readonly IApplicationDbContext _context;
     private readonly ITranslate _translate;
+    private readonly ISentenceManager _sentenceManager;
 
-    public AddSentenceCommandHandler(IApplicationDbContext context, ITranslate translate)
+    public AddSentenceCommandHandler(IApplicationDbContext context, ITranslate translate, ISentenceManager sentenceManager)
     {
         _context = context;
         _translate = translate;
+        _sentenceManager = sentenceManager;
     }
 
     public async Task<AddSentencePairDto> Handle(AddSentenceCommand request,
         CancellationToken cancellationToken)
     {
+        //Проверка валидоно ли предложение для добавления
+        if (!_sentenceManager.IsValidSentenceForAdd(request.Sentence))
+        {
+            throw new SentencesNotValidForAddException("sentence is not valid");
+        }
+        
         var sentence = request.Sentence;
         // Определение языков предложений
         var detectLanguage = await _translate.DetectLanguageAsync(sentence);

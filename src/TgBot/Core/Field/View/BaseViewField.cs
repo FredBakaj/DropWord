@@ -18,4 +18,5 @@ public abstract class BaseViewField
     public const string DeleteAddedSentenceCollection = nameof(DeleteAddedSentenceCollection);
     public const string MaxCountSentencesException = nameof(MaxCountSentencesException);
     public const string MaxLengthSentenceException = nameof(MaxLengthSentenceException);
+    public const string SentencesNotValidForAddException = nameof(SentencesNotValidForAddException);
 }

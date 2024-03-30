@@ -15,4 +15,12 @@ public interface ISentenceManager
     Task<SentencesPairModel> GetSentencesPairAsync(long userId, int usingSentencesPairId);
 
     string GetSentenceLearnFromPair(SentencesPairModel sentencesPair, SentenceToLearnLabelEnum learnLabel);
+
+    /// <summary>
+    /// Проверка валидно ли слово для добавления
+    /// </summary>
+    /// <param name="sentence"></param>
+    /// <returns></returns>
+    bool IsValidSentenceForAdd(string sentence);
+    bool IsValidSentenceForAdd(List<string> sentences);
 }

@@ -1,5 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Common.Interfaces.Sentence;
+using DropWord.Application.Manager.Sentence;
 using DropWord.Domain.Entities;
 using DropWord.Domain.Exceptions;
 
@@ -24,16 +25,25 @@ public class AddCollectionCommandHandler : IRequestHandler<AddCollectionCommand,
     private readonly IApplicationDbContext _context;
     private readonly ITranslate _translate;
     private readonly IMapper _mapper;
+    private readonly ISentenceManager _sentenceManager;
 
-    public AddCollectionCommandHandler(IApplicationDbContext context, ITranslate translate, IMapper mapper)
+    public AddCollectionCommandHandler(IApplicationDbContext context, ITranslate translate, IMapper mapper,
+        ISentenceManager sentenceManager)
     {
         _context = context;
         _translate = translate;
         _mapper = mapper;
+        _sentenceManager = sentenceManager;
     }
 
     public async Task<SentencesCollectionDto> Handle(AddCollectionCommand request, CancellationToken cancellationToken)
     {
+        //Проверка валидоно ли предложения для добавления
+        if (!_sentenceManager.IsValidSentenceForAdd(request.Sentences.ToList()))
+        {
+            throw new SentencesNotValidForAddException("sentence is not valid");
+        }
+
         var detectLanguage = await _translate.DetectLanguageListAsync(request.Sentences);
         // Проверка на наличие больше одного языка в контенте
         var firstSentenceLanguage = detectLanguage.First().Language;

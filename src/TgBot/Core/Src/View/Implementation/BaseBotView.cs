@@ -145,7 +145,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         [BotView(BaseViewField.MaxCountSentencesException)]
         public async Task MaxCountSentencesException(MaxCountSentencesExceptionVDto viewDto)
         {
-            var text = $"Перевищена межа кількості речень у тексті." +
+            var text = $"🔴 Перевищена межа кількості речень у тексті." +
                        $" Максимальна кількість речень {viewDto.MaxCountSentences} " +
                        $"(Зверніть увагу, що перенесення рядка, так само як і крапка," +
                        $" вважається новим реченням.)";
@@ -155,9 +155,16 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         [BotView(BaseViewField.MaxLengthSentenceException)]
         public async Task MaxLengthSentenceException(MaxLengthSentenceExceptionVDto viewDto)
         {
-            var text = $"Перевищена межа кількості символів у реченні." +
+            var text = $"🔴 Перевищена межа кількості символів у реченні." +
                        $" Максимальна кількість символів {viewDto.MaxLengthSentence} ";
             await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
+        }
+        
+        [BotView(BaseViewField.SentencesNotValidForAddException)]
+        public async Task SentencesNotValidForAddException(UpdateBDto viewDto)
+        {
+            var text = $"🔴 У тексті присутні заборонені символи (~ * _)";
+            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
         }
         
         [BotView(BaseViewField.NewSentence)]

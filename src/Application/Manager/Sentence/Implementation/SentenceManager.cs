@@ -101,4 +101,27 @@ public class SentenceManager : ISentenceManager
         }    
         return sentenceLearn;
     }
+    
+    public bool IsValidSentenceForAdd(string sentence)
+    {
+        bool sentenceValid = (
+                sentence.Contains("~")
+                || sentence.Contains("*")
+                || sentence.Contains("_")
+                );
+        return !sentenceValid;
+    }
+
+    public bool IsValidSentenceForAdd(List<string> sentences)
+    {
+        foreach (var sentence in sentences)
+        {
+            if (!IsValidSentenceForAdd(sentence))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
