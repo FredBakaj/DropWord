@@ -44,6 +44,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private readonly IMapper _mapper;
         private readonly int _maxSentenceLength;
         private readonly int _maxCountSentences;
+        private int _maxCountAddedSentences;
 
 
         public string Name() => BaseField.BaseState;
@@ -67,6 +68,8 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 Convert.ToInt32(configuration.GetSection("SentencesSettings")["MaxLengthSentenceForSave"]);
             _maxCountSentences =
                 Convert.ToInt32(configuration.GetSection("SentencesSettings")["MaxCountSentencesForSave"]);
+            _maxCountAddedSentences =
+                Convert.ToInt32(configuration.GetSection("ApplicationSettings")["LimitForAddedSentences"]);
 
             Initialize();
         }
@@ -113,7 +116,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 ChangeLearnLanguagePairCallbackAsync);
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.BackToSettingsMenuCallback,
                 BackToSettingsMenuCallbackAsync);
-            
+
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.OpenChangeTimeZoneCallback,
                 OpenChangeTimeZoneCallbackAsync);
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeTimeZoneCallback,
@@ -171,12 +174,19 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                     new MaxLengthSentenceExceptionVDto() { Update = update, MaxLengthSentence = _maxSentenceLength };
                 await _botViewHandler.SendAsync(BaseViewField.MaxLengthSentenceException, viewDto);
             }
+            catch (LimitAddSentencesExceededException)
+            {
+                var viewDto =
+                    new LimitAddSentencesExceededExceptionVDto()
+                    {
+                        Update = update, MaxCountSentence = _maxCountAddedSentences
+                    };
+                await _botViewHandler.SendAsync(BaseViewField.LimitAddSentencesExceededException, viewDto);
+            }
             catch (SentencesNotValidForAddException)
             {
-                
                 await _botViewHandler.SendAsync(BaseViewField.SentencesNotValidForAddException, update);
             }
-            
         }
 
         private async Task ReloadAction(UpdateBDto updateBDto)

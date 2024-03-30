@@ -41,9 +41,15 @@ public class AddCollectionCommandHandler : IRequestHandler<AddCollectionCommand,
         //Проверка валидоно ли предложения для добавления
         if (!_sentenceManager.IsValidSentenceForAdd(request.Sentences.ToList()))
         {
-            throw new SentencesNotValidForAddException("sentence is not valid");
+            throw new SentencesNotValidForAddException("Sentence is not valid");
         }
-
+        
+        //Проверка привышен ли лимит на добавленние предложений
+        if (! await _sentenceManager.IsLimitAddSentencesExceededAsync(request.UserId))
+        {
+            throw new LimitAddSentencesExceededException("Limit for add sentences is exceeded");
+        }
+        
         var detectLanguage = await _translate.DetectLanguageListAsync(request.Sentences);
         // Проверка на наличие больше одного языка в контенте
         var firstSentenceLanguage = detectLanguage.First().Language;

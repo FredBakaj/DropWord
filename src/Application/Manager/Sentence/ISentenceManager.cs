@@ -22,5 +22,22 @@ public interface ISentenceManager
     /// <param name="sentence"></param>
     /// <returns></returns>
     bool IsValidSentenceForAdd(string sentence);
+
     bool IsValidSentenceForAdd(List<string> sentences);
+
+    /// <summary>
+    /// Получить кол-во добавленных сообщений за определлёный периуд
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <returns></returns>
+    Task<int> GetCountAddedSentencesAsync(long userId, DateTimeOffset startDate, DateTimeOffset endDate);
+
+    /// <summary>
+    /// Привышенн ли лимит на добавленние слов
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<bool> IsLimitAddSentencesExceededAsync(long userId);
 }

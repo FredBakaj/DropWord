@@ -11,11 +11,16 @@ public class SentenceManager : ISentenceManager
     private readonly ISentencesFactory _sentencesFactory;
     private readonly IMapper _mapper;
 
-    public SentenceManager(IApplicationDbContext context, ISentencesFactory sentencesFactory, IMapper mapper)
+    private int _limitForAddedSentences;
+
+    public SentenceManager(IApplicationDbContext context, ISentencesFactory sentencesFactory, IMapper mapper,
+        IConfig config)
     {
         _context = context;
         _sentencesFactory = sentencesFactory;
         _mapper = mapper;
+
+        _limitForAddedSentences = Convert.ToInt16(config.GetValue("LimitForAddedSentences"));
     }
 
     public async Task RepeatSentenceAsync(long userId, bool isLearn, int usingSentencesPairId,
@@ -36,7 +41,6 @@ public class SentenceManager : ISentenceManager
 
         if (user!.User != null && user!.UsingSentencesPair != null)
         {
-            
             user.UsingSentencesPair.CountUse += 1;
             user.UsingSentencesPair.IsLearning = isLearn;
             user.UsingSentencesPair.UpdateDate = DateTime.UtcNow;
@@ -49,7 +53,7 @@ public class SentenceManager : ISentenceManager
     {
         var sentencesForRepeat =
             await _sentencesFactory.CreateSentencesForRepeatAsync(mode);
-        return  await sentencesForRepeat.Exec(userId);
+        return await sentencesForRepeat.Exec(userId);
     }
 
     public async Task ChangeLastUseForDaySentenceAsync(long userId, int usingSentencesPairId,
@@ -59,7 +63,7 @@ public class SentenceManager : ISentenceManager
             .Where(x => x.Id == userId)
             .Include(x => x.UserLearningInfo)
             .FirstOrDefaultAsync();
-        
+
         if (user!.UserLearningInfo.CountUseForDaySentences == null ||
             user.UserLearningInfo.LastUseForDaySentencesId == null)
         {
@@ -69,7 +73,7 @@ public class SentenceManager : ISentenceManager
         {
             user.UserLearningInfo.CountUseForDaySentences += 1;
         }
-        
+
         user!.UserLearningInfo.LastUseForDaySentencesId = usingSentencesPairId;
         await _context.SaveChangesAsync(cancellationToken);
     }
@@ -98,17 +102,18 @@ public class SentenceManager : ISentenceManager
         else if (learnLabel == SentenceToLearnLabelEnum.Second)
         {
             sentenceLearn = sentencesPair!.SecondSentence.Sentence;
-        }    
+        }
+
         return sentenceLearn;
     }
-    
+
     public bool IsValidSentenceForAdd(string sentence)
     {
         bool sentenceValid = (
-                sentence.Contains("~")
-                || sentence.Contains("*")
-                || sentence.Contains("_")
-                );
+            sentence.Contains("~")
+            || sentence.Contains("*")
+            || sentence.Contains("_")
+        );
         return !sentenceValid;
     }
 
@@ -120,6 +125,29 @@ public class SentenceManager : ISentenceManager
             {
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    public async Task<int> GetCountAddedSentencesAsync(long userId, DateTimeOffset startDate, DateTimeOffset endDate)
+    {
+        var countAddedSentences = await _context.SentencesPair
+            .Where(x => x.UserId == userId)
+            .CountAsync(x => x.Created >= startDate && x.Created <= endDate);
+        return countAddedSentences;
+    }
+
+    public async Task<bool> IsLimitAddSentencesExceededAsync(long userId)
+    {
+        DateTimeOffset today = DateTimeOffset.Now.Date;
+        DateTimeOffset todayStart = today.AddHours(0);
+        DateTimeOffset todayEnd = today.AddHours(23).AddMinutes(59).AddSeconds(59);
+        var countAddedSentences = await GetCountAddedSentencesAsync(userId, todayStart, todayEnd);
+
+        if (countAddedSentences > _limitForAddedSentences)
+        {
+            return false;
         }
 
         return true;

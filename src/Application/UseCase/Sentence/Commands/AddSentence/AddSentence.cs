@@ -38,7 +38,13 @@ public class AddSentenceCommandHandler : IRequestHandler<AddSentenceCommand, Add
         //Проверка валидоно ли предложение для добавления
         if (!_sentenceManager.IsValidSentenceForAdd(request.Sentence))
         {
-            throw new SentencesNotValidForAddException("sentence is not valid");
+            throw new SentencesNotValidForAddException("Sentence is not valid");
+        }
+        
+        //Проверка привышен ли лимит на добавленние предложений
+        if (! await _sentenceManager.IsLimitAddSentencesExceededAsync(request.UserId))
+        {
+            throw new LimitAddSentencesExceededException("Limit for add sentences is exceeded");
         }
         
         var sentence = request.Sentence;

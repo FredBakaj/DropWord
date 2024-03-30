@@ -1,4 +1,5 @@
 ﻿using DropWord.Domain.Enums;
+using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
@@ -52,7 +53,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 }
             });
             await _botClient.SendTextMessageAsync(collectionSentences.Update.GetUserId(), text,
-                replyMarkup: inlineKeyboard, parseMode:ParseMode.Html);
+                replyMarkup: inlineKeyboard, parseMode: ParseMode.Html);
         }
 
         [BotView(BaseViewField.AddSentence)]
@@ -151,7 +152,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                        $" вважається новим реченням.)";
             await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
         }
-        
+
         [BotView(BaseViewField.MaxLengthSentenceException)]
         public async Task MaxLengthSentenceException(MaxLengthSentenceExceptionVDto viewDto)
         {
@@ -159,14 +160,21 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                        $" Максимальна кількість символів {viewDto.MaxLengthSentence} ";
             await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
         }
-        
+
+        [BotView(BaseViewField.LimitAddSentencesExceededException)]
+        public async Task LimitAddSentencesExceededException(LimitAddSentencesExceededExceptionVDto viewDto)
+        {
+            var text = $"🔴 Перевищено денний ліміт на додавання речень. Денний ліміт {viewDto.MaxCountSentence}";
+            await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
+        }
+
         [BotView(BaseViewField.SentencesNotValidForAddException)]
         public async Task SentencesNotValidForAddException(UpdateBDto viewDto)
         {
             var text = $"🔴 У тексті присутні заборонені символи (~ * _)";
             await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
         }
-        
+
         [BotView(BaseViewField.NewSentence)]
         public async Task NewSentence(NewSentenceVDto sentence)
         {
@@ -216,7 +224,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 $" це можна зробити натиснувши кнопку \"{BaseField.NewSentenceButton}\"";
             await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
         }
-        
+
 
         private string MakeHideSentencesPairText(SentenceToLearnLabelEnum learnSentencesModeEnum, string firstSentence,
             string secondSentence)
