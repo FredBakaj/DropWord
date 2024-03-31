@@ -167,6 +167,11 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                     await _botViewHandler.SendAsync(BaseViewField.AddSentences, viewDto);
                 }
             }
+            catch (InvalidDataException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.InvalidDataException, update);
+
+            }
             catch (MaxCountSentencesException)
             {
                 var viewDto =

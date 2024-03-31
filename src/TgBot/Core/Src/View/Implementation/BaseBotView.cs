@@ -181,6 +181,13 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
         }
         
+        [BotView(BaseViewField.InvalidDataException)]
+        public async Task InvalidDataException(UpdateBDto viewDto)
+        {
+            var text = $"🔴 Сталася помилка під час спроби розбити текст на окремі речення";
+            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+        }
+        
         [BotView(BaseViewField.DeleteAddedSentenceFailed)]
         public async Task DeleteAddedSentenceFailed(UpdateBDto viewDto)
         {
