@@ -7,7 +7,7 @@ public class SentencesPairEntity : BaseAuditableEntity<int>
     public string FirstLanguage { get; set; } = null!;
     public string SecondLanguage { get; set; } = null!;
 
-    public long UserId { get; set; }
+    public long? UserId { get; set; }
     [ForeignKey("UserId")]
     public UserEntity User { get; set; } = null!;
     public int FirstSentenceId { get; set; }

@@ -15,6 +15,6 @@ public class UserLearningInfoConfig : BaseConfig, IEntityTypeConfiguration<UserL
         builder.HasOne(x => x.User)
             .WithOne(x => x.UserLearningInfo)
             .HasForeignKey<UserLearningInfoEntity>(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

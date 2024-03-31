@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DropWord.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitMigration : Migration
+    public partial class FirstMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,7 +48,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstLanguage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SecondLanguage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: true),
                     FirstSentenceId = table.Column<int>(type: "int", nullable: false),
                     SecondSentenceId = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -71,7 +71,8 @@ namespace DropWord.Infrastructure.Data.Migrations
                         name: "FK_SentencesPair_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -83,6 +84,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     JsonData = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JsonTempData = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     WhenDeleted = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
@@ -94,7 +96,8 @@ namespace DropWord.Infrastructure.Data.Migrations
                         name: "FK_StateTree_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -103,8 +106,8 @@ namespace DropWord.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    LastUseForDaySentencesId = table.Column<int>(type: "int", nullable: false),
-                    CountUseForDaySentences = table.Column<int>(type: "int", nullable: false),
+                    LastUseForDaySentencesId = table.Column<int>(type: "int", nullable: true),
+                    CountUseForDaySentences = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     WhenDeleted = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
@@ -116,7 +119,8 @@ namespace DropWord.Infrastructure.Data.Migrations
                         name: "FK_UserLearningInfo_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,7 +143,8 @@ namespace DropWord.Infrastructure.Data.Migrations
                         name: "FK_UserSentencesCollection_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,9 +154,11 @@ namespace DropWord.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InterfaceLanguage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HideLanguageEnum = table.Column<int>(type: "int", nullable: false),
-                    FirstLanguage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SecondLanguage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LearnSentencesModeEnum = table.Column<int>(type: "int", nullable: false),
+                    MainLanguage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LearnLanguage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SentencesRepeatForDayModeEnum = table.Column<int>(type: "int", nullable: false),
+                    TimeZone = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     WhenDeleted = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
@@ -163,7 +170,8 @@ namespace DropWord.Infrastructure.Data.Migrations
                         name: "FK_UserSettings_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -176,7 +184,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     CountUse = table.Column<int>(type: "int", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    SentencesPairId = table.Column<int>(type: "int", nullable: false),
+                    SentencesPairId = table.Column<int>(type: "int", nullable: true),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     WhenDeleted = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
@@ -187,12 +195,14 @@ namespace DropWord.Infrastructure.Data.Migrations
                         name: "FK_UsingSentencesPair_SentencesPair_SentencesPairId",
                         column: x => x.SentencesPairId,
                         principalTable: "SentencesPair",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UsingSentencesPair_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

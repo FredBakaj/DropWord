@@ -15,7 +15,7 @@ public class SentencesPairConfig : BaseConfig, IEntityTypeConfiguration<Sentence
         builder.HasOne(x => x.User)
             .WithMany(x => x.SentencesPairs)
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(x => x.FirstSentence)
             .WithMany(x => x.FirstSentencesPairs)

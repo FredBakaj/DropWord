@@ -15,11 +15,11 @@ public class UsingSentencesPairConfig : BaseConfig, IEntityTypeConfiguration<Usi
         builder.HasOne(x => x.User)
             .WithMany(x => x.UsingSentencesPairs)
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.SentencesPair)
             .WithMany(x => x.UsingSentencesPairs)
             .HasForeignKey(x => x.SentencesPairId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -8,6 +8,6 @@ public class UsingSentencesPairEntity : BaseAuditableEntity<int>
 
     public long UserId { get; set; }
     public UserEntity User { get; set; } = null!;
-    public int SentencesPairId { get; set; }
+    public int? SentencesPairId { get; set; }
     public SentencesPairEntity SentencesPair { get; set; } = null!;
 }

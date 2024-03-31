@@ -17,31 +17,31 @@ public class UserConfig : BaseConfig, IEntityTypeConfiguration<UserEntity>
         builder.HasOne(x => x.StateTree)
             .WithOne(x => x.User)
             .HasForeignKey<StateTreeEntity>(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.UserSettings)
             .WithOne(x => x.User)
             .HasForeignKey<UserSettingsEntity>(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.UserLearningInfo)
             .WithOne(x => x.User)
             .HasForeignKey<UserLearningInfoEntity>(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(x => x.SentencesPairs)
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasMany(x => x.UsingSentencesPairs)
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(x => x.UserSentencesCollections)
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

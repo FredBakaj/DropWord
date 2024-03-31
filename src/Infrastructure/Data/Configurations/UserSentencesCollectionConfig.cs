@@ -15,7 +15,7 @@ public class UserSentencesCollectionConfig : BaseConfig, IEntityTypeConfiguratio
         builder.HasOne(x => x.User)
             .WithMany(x => x.UserSentencesCollections)
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(x => x.SentencesPairs)
             .WithMany(x => x.UserSentencesCollections)

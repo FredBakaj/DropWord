@@ -8,10 +8,8 @@
 
         public const string ResetCountRepeatSentencesCallback = nameof(ResetCountRepeatSentencesCallback);
         
-        public const string RepeatSentenceKeyboard = "Повтор";
-        public const string RepeatWordWriteKeyboard = nameof(RepeatWordWriteKeyboard);
+        public const string RepeatSentenceKeyboard = "Повтор 🎴";
         public const string NewSentenceButton = "Нове";
-        public const string SwitchLanguageKeyboard = nameof(SwitchLanguageKeyboard);
         public const string SettingsKeyboard = "⚙️";
         public const string SentencesRepetitionByInputKeyboard = "Повтор ✍️";
         public const string DeleteSingleAddedSentenceCallback = nameof(DeleteSingleAddedSentenceCallback);

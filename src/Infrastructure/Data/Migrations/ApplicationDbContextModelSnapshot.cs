@@ -74,7 +74,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.Property<int>("SecondSentenceId")
                         .HasColumnType("int");
 
-                    b.Property<long>("UserId")
+                    b.Property<long?>("UserId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset?>("WhenDeleted")
@@ -278,7 +278,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.Property<bool>("IsLearning")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SentencesPairId")
+                    b.Property<int?>("SentencesPairId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdateDate")
@@ -331,8 +331,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
                         .WithMany("SentencesPairs")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("FirstSentence");
 
@@ -346,7 +345,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
                         .WithOne("StateTree")
                         .HasForeignKey("DropWord.Domain.Entities.StateTreeEntity", "UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -357,7 +356,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
                         .WithOne("UserLearningInfo")
                         .HasForeignKey("DropWord.Domain.Entities.UserLearningInfoEntity", "UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -368,7 +367,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
                         .WithMany("UserSentencesCollections")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -379,7 +378,7 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
                         .WithOne("UserSettings")
                         .HasForeignKey("DropWord.Domain.Entities.UserSettingsEntity", "UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -390,13 +389,12 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.HasOne("DropWord.Domain.Entities.SentencesPairEntity", "SentencesPair")
                         .WithMany("UsingSentencesPairs")
                         .HasForeignKey("SentencesPairId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
                         .WithMany("UsingSentencesPairs")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("SentencesPair");

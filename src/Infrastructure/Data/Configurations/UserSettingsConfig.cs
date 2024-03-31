@@ -15,6 +15,6 @@ public class UserSettingsConfig : BaseConfig, IEntityTypeConfiguration<UserSetti
         builder.HasOne(x => x.User)
             .WithOne(x => x.UserSettings)
             .HasForeignKey<UserSettingsEntity>(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

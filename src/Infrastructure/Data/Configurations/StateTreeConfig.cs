@@ -15,6 +15,6 @@ public class StateTreeConfig : BaseConfig, IEntityTypeConfiguration<StateTreeEnt
         builder.HasOne(x => x.User)
             .WithOne(x => x.StateTree)
             .HasForeignKey<StateTreeEntity>(x => x.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
