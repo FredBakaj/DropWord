@@ -13,7 +13,7 @@ using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Model;
 using MediatR;
 
-namespace DropWord.TgBot.Core.Handler.Implementation;
+namespace DropWord.TgBot.Core.Handler.BotStateTreeUserHandler.Implementation;
 
 public class BotStateTreeUserHandler : IBotStateTreeUserHandler
 {

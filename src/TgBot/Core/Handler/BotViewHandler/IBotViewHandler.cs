@@ -1,4 +1,4 @@
-namespace DropWord.TgBot.Core.Handler;
+namespace DropWord.TgBot.Core.Handler.BotViewHandler;
 
 public interface IBotViewHandler
 {

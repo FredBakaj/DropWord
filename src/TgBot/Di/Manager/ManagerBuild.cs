@@ -2,6 +2,8 @@ using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Common.Interfaces.Sentence;
 using DropWord.Infrastructure.Config;
 using DropWord.Infrastructure.Sentence;
+using DropWord.TgBot.Core.Manager.Analytics;
+using DropWord.TgBot.Core.Manager.Analytics.Implementation;
 using DropWord.TgBot.Core.Manager.RepeatSentence;
 using DropWord.TgBot.Core.Manager.RepeatSentence.Implementation;
 using DropWord.TgBot.Core.Manager.Settings;
@@ -19,5 +21,6 @@ public class ManagerBuild
         services.AddScoped<IDifferenceSentence, DifferenceSentence>();
         services.AddScoped<IRepeatSentenceManager, RepeatSentenceManager>();
         services.AddScoped<IMenuSettingsManager, MenuSettingsManager>();
+        services.AddScoped<IAnalyticsManager, AnalyticsManager>();
     }
 }

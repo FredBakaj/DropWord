@@ -1,6 +1,6 @@
 using DropWord.TgBot.Core.Src.View;
 
-namespace DropWord.TgBot.Core.Handler.Implementation;
+namespace DropWord.TgBot.Core.Handler.BotViewHandler.Implementation;
 
 public class BotViewHandler : IBotViewHandler
 {

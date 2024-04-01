@@ -1,6 +1,6 @@
 ﻿using DropWord.TgBot.Core.Model;
 
-namespace DropWord.TgBot.Core.Handler.Implementation
+namespace DropWord.TgBot.Core.Handler.BotStateTreeHandler.Implementation
 {
     public class BotStateTreeHandler : IBotStateTreeHandler
     {

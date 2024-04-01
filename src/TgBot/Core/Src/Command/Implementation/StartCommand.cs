@@ -2,7 +2,7 @@ using DropWord.Application.UseCase.User.Queries.GetUser;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field;
 using DropWord.TgBot.Core.Field.Controller;
-using DropWord.TgBot.Core.Handler;
+using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
 using DropWord.TgBot.Core.Model;
 using MediatR;
 

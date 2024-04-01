@@ -1,6 +1,6 @@
 ﻿using DropWord.TgBot.Core.Model;
 
-namespace DropWord.TgBot.Core.Handler
+namespace DropWord.TgBot.Core.Handler.MiddlewareHandler
 {
     /// <summary>
     /// Формування ланцюжка обовязків (патерн)

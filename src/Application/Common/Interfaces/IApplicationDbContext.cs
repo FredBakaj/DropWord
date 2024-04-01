@@ -12,5 +12,6 @@ public interface IApplicationDbContext
     public DbSet<UserLearningInfoEntity> UserLearningInfo {get;}
     public DbSet<UserSentencesCollectionEntity> UserSentencesCollection {get;}
     public DbSet<UsingSentencesPairEntity> UsingSentencesPair {get;}
+    public DbSet<AnalyticsUserActionEntity> AnalyticsUserAction { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

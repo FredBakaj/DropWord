@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using DropWord.Application.Common.Interfaces;
 using DropWord.Domain.Entities;
-using DropWord.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DropWord.Infrastructure.Data;
@@ -18,6 +16,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<UserLearningInfoEntity> UserLearningInfo => Set<UserLearningInfoEntity>();
     public DbSet<UserSentencesCollectionEntity> UserSentencesCollection => Set<UserSentencesCollectionEntity>();
     public DbSet<UsingSentencesPairEntity> UsingSentencesPair => Set<UsingSentencesPairEntity>();
+    public DbSet<AnalyticsUserActionEntity> AnalyticsUserAction => Set<AnalyticsUserActionEntity>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

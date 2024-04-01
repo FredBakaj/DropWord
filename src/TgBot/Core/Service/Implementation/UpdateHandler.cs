@@ -1,5 +1,5 @@
 using AutoMapper;
-using DropWord.TgBot.Core.Handler;
+using DropWord.TgBot.Core.Handler.MiddlewareHandler;
 using DropWord.TgBot.Core.Model;
 using Telegram.Bot;
 using Telegram.Bot.Types;

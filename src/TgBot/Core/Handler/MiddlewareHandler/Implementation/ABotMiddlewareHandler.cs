@@ -1,7 +1,7 @@
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.Src.Middleware;
 
-namespace DropWord.TgBot.Core.Handler.Implementation
+namespace DropWord.TgBot.Core.Handler.MiddlewareHandler.Implementation
 {
     public abstract class ABotMiddlewareHandler : IBotMiddlewareHandler
     {

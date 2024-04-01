@@ -1,6 +1,6 @@
 ﻿using DropWord.TgBot.Core.Model;
 
-namespace DropWord.TgBot.Core.Handler
+namespace DropWord.TgBot.Core.Handler.BotStateTreeHandler
 {
     /// <summary>
     /// Отвечает за вызов нужного метода в контролерах состяний

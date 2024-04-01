@@ -3,7 +3,9 @@ using DropWord.Domain.Constants;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
-using DropWord.TgBot.Core.Handler;
+using DropWord.TgBot.Core.Handler.BotStateTreeHandler;
+using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
+using DropWord.TgBot.Core.Handler.BotViewHandler;
 using DropWord.TgBot.Core.Model;
 using MediatR;
 

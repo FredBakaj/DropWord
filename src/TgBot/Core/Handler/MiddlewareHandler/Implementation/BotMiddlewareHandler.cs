@@ -2,7 +2,7 @@
 using DropWord.TgBot.Core.Src.Middleware.Implementation;
 using DropWord.TgBot.Extension;
 
-namespace DropWord.TgBot.Core.Handler.Implementation
+namespace DropWord.TgBot.Core.Handler.MiddlewareHandler.Implementation
 {
     public class BotMiddlewareHandler : ABotMiddlewareHandler
     {
