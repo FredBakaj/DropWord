@@ -9,12 +9,12 @@ public record GetSentenceRepeatForDayQuery : IRequest<SentenceRepeatForDayDto>
     public long UserId { get; set; }
 }
 
-public class GetSentenceRepeatForDayQueryValidator : AbstractValidator<GetSentenceRepeatForDayQuery>
-{
-    public GetSentenceRepeatForDayQueryValidator()
-    {
-    }
-}
+// public class GetSentenceRepeatForDayQueryValidator : AbstractValidator<GetSentenceRepeatForDayQuery>
+// {
+//     public GetSentenceRepeatForDayQueryValidator()
+//     {
+//     }
+// }
 
 public class
     GetSentenceRepeatForDayQueryHandler : IRequestHandler<GetSentenceRepeatForDayQuery, SentenceRepeatForDayDto>
