@@ -6,7 +6,7 @@ namespace DropWord.Application.UseCase.UserSettings.Commands.ChangeSentencesRepe
 public record ChangeSentencesRepeatForDayModeCommand : IRequest
 {
     public long UserId { get; set; }
-    public SentencesRepeatForDayModeEnum SentencesRepeatForDayModeEnum { get; set; }
+    public SentencesRepeatForDayTimesModeEnum SentencesRepeatForDayTimesModeEnum { get; set; }
 }
 
 public class ChangeSentencesRepeatForDayModeCommandValidator : AbstractValidator<ChangeSentencesRepeatForDayModeCommand>
@@ -28,7 +28,7 @@ public class ChangeSentencesRepeatForDayModeCommandHandler : IRequestHandler<Cha
     public async Task Handle(ChangeSentencesRepeatForDayModeCommand request, CancellationToken cancellationToken)
     {
         var userSettings = await _context.UserSettings.FirstAsync(x => x.UserId == request.UserId);
-        userSettings.SentencesRepeatForDayModeEnum = request.SentencesRepeatForDayModeEnum;
+        userSettings.SentencesRepeatForDayTimesModeEnum = request.SentencesRepeatForDayTimesModeEnum;
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

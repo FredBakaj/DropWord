@@ -48,6 +48,9 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
                 LearnLanguage = String.Empty,
                 InterfaceLanguage = request.InterfaceLanguage,
                 LearnSentencesModeEnum = LearnSentencesModeEnum.MainLanguage,
+                SentencesRepeatForDayTimesModeEnum = SentencesRepeatForDayTimesModeEnum.Times1InDay,
+                SentencesRepeatForDayModeEnum = SentencesRepeatForDayModeEnum.Card
+                
             };
 
             var userLearningInfo = new UserLearningInfoEntity()

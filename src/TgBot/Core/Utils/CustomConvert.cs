@@ -34,42 +34,42 @@ public static class CustomConvert
         }
     }
 
-    public static int TimesForDayToCount(SentencesRepeatForDayModeEnum timesForDay)
+    public static int TimesForDayToCount(SentencesRepeatForDayTimesModeEnum timesForDayTimes)
     {
-        var dictTimesForDay = new Dictionary<SentencesRepeatForDayModeEnum, int>()
+        var dictTimesForDay = new Dictionary<SentencesRepeatForDayTimesModeEnum, int>()
         {
-            {SentencesRepeatForDayModeEnum.TurnOff, 0},
-            {SentencesRepeatForDayModeEnum.Times1InDay, 1},
-            {SentencesRepeatForDayModeEnum.Times3InDay, 3},
-            {SentencesRepeatForDayModeEnum.Times5InDay, 5},
-            {SentencesRepeatForDayModeEnum.Times10InDay, 10},
+            {SentencesRepeatForDayTimesModeEnum.TurnOff, 0},
+            {SentencesRepeatForDayTimesModeEnum.Times1InDay, 1},
+            {SentencesRepeatForDayTimesModeEnum.Times3InDay, 3},
+            {SentencesRepeatForDayTimesModeEnum.Times5InDay, 5},
+            {SentencesRepeatForDayTimesModeEnum.Times10InDay, 10},
         };
-        return dictTimesForDay[timesForDay];
+        return dictTimesForDay[timesForDayTimes];
     }
     
-    public static string TimesForDayToViewText(SentencesRepeatForDayModeEnum timesForDay)
+    public static string TimesForDayToViewText(SentencesRepeatForDayTimesModeEnum timesForDayTimes)
     {
-        var timesForDayDict = new Dictionary<SentencesRepeatForDayModeEnum, string>()
+        var timesForDayDict = new Dictionary<SentencesRepeatForDayTimesModeEnum, string>()
         {
-            { SentencesRepeatForDayModeEnum.TurnOff, "❌" },
+            { SentencesRepeatForDayTimesModeEnum.TurnOff, "❌" },
             {
-                SentencesRepeatForDayModeEnum.Times1InDay,
-                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayModeEnum.Times1InDay)} раз"
+                SentencesRepeatForDayTimesModeEnum.Times1InDay,
+                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayTimesModeEnum.Times1InDay)} раз"
             },
             {
-                SentencesRepeatForDayModeEnum.Times3InDay,
-                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayModeEnum.Times3InDay)} рази"
+                SentencesRepeatForDayTimesModeEnum.Times3InDay,
+                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayTimesModeEnum.Times3InDay)} рази"
             },
             {
-                SentencesRepeatForDayModeEnum.Times5InDay,
-                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayModeEnum.Times5InDay)} разів"
+                SentencesRepeatForDayTimesModeEnum.Times5InDay,
+                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayTimesModeEnum.Times5InDay)} разів"
             },
             {
-                SentencesRepeatForDayModeEnum.Times10InDay,
-                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayModeEnum.Times10InDay)} разів"
+                SentencesRepeatForDayTimesModeEnum.Times10InDay,
+                $"{CustomConvert.TimesForDayToCount(SentencesRepeatForDayTimesModeEnum.Times10InDay)} разів"
             },
         };
-        return timesForDayDict[(timesForDay)];
+        return timesForDayDict[(timesForDayTimes)];
     }
     
 }

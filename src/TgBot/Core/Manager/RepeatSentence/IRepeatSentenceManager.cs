@@ -1,5 +1,4 @@
 ﻿using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
-using DropWord.Domain.Enums;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.StateDto;
 
@@ -11,6 +10,7 @@ public interface IRepeatSentenceManager
     Task<SentenceForRepeatDto> GetSentencesPairAndSaveInDataAsync(UpdateBDto updateBDto);
     string GetNextSentence(SentenceForRepeatDto sentenceForRepeatDto);
     string GetOriginalSentence(SentencesRepetitionByInputSDto sentenceForRepeatDto);
+    string GetOriginalSentence(SentenceForRepeatDto sentenceForRepeatDto);
     public Task<int?> GetCountRepetitionSentences(long userId);
     public Task<bool> CanShowResetCountRepeatSentences(UpdateBDto updateBDto);
     public Task SaveShowResetCountRepeatSentencesView(UpdateBDto updateBDto);

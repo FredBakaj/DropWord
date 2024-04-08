@@ -32,7 +32,7 @@ public class MenuSettingsManager : IMenuSettingsManager
             ChangeModeIcon = changeModeIcon,
             LearnLanguagePairEmoji = learnLanguagePairEmoji,
             TimeZone = CustomConvert.IntToUTC(user.UserSettings.TimeZone),
-            TimesForDay = CustomConvert.TimesForDayToViewText(user.UserSettings.SentencesRepeatForDayModeEnum)
+            TimesForDay = CustomConvert.TimesForDayToViewText(user.UserSettings.SentencesRepeatForDayTimesModeEnum)
         };
         return viewDto;
     }

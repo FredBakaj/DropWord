@@ -21,6 +21,16 @@ public class RepeatForDayBotView : ABotView
         _mainMenuComponent = mainMenuComponent;
     }
 
+    [BotView(RepeatForDayViewField.RepeatForDayCard)]
+    public async Task RepeatForDayCard(RepeatForDayCardVDto viewModel)
+    {
+        var text = $"*Повторення дня* ⏰ {viewModel.FirstLangEmoji}{viewModel.SecondLangEmoji}\n\n" +
+                   $"{viewModel.FirstSentence}\n\n" +
+                   $"||{viewModel.SecondSentence}||\n";
+        
+        await _botClient.SendTextMessageMarkdown2Async(viewModel.UserId, text);
+    }
+    
     [BotView(RepeatForDayViewField.StartInputRepeatForDay)]
     public async Task StartInput(RepeatForDayStartInputVDto viewModel)
     {

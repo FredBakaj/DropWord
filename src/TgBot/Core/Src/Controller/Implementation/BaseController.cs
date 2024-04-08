@@ -522,18 +522,18 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         {
             var user = await _sender.Send(new GetUserQuery() { UserId = updateBDto.GetUserId() });
             var currentTimesForDay =
-                CustomConvert.TimesForDayToViewText(user.UserSettings.SentencesRepeatForDayModeEnum);
+                CustomConvert.TimesForDayToViewText(user.UserSettings.SentencesRepeatForDayTimesModeEnum);
 
             var timesForDayArray = new int[]
             {
-                (int)SentencesRepeatForDayModeEnum.TurnOff, (int)SentencesRepeatForDayModeEnum.Times1InDay,
-                (int)SentencesRepeatForDayModeEnum.Times3InDay, (int)SentencesRepeatForDayModeEnum.Times5InDay,
-                (int)SentencesRepeatForDayModeEnum.Times10InDay
+                (int)SentencesRepeatForDayTimesModeEnum.TurnOff, (int)SentencesRepeatForDayTimesModeEnum.Times1InDay,
+                (int)SentencesRepeatForDayTimesModeEnum.Times3InDay, (int)SentencesRepeatForDayTimesModeEnum.Times5InDay,
+                (int)SentencesRepeatForDayTimesModeEnum.Times10InDay
             };
 
             var timesForDayDict = timesForDayArray
                 .ToDictionary(x => x.ToString(),
-                    x => CustomConvert.TimesForDayToViewText((SentencesRepeatForDayModeEnum)x));
+                    x => CustomConvert.TimesForDayToViewText((SentencesRepeatForDayTimesModeEnum)x));
 
 
             var viewDto = new ChangeTimesForDayCallbackVDto()
@@ -546,10 +546,10 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
         private async Task ChangeTimesForDayCallback(UpdateBDto updateBDto)
         {
-            var newTimeZone = (SentencesRepeatForDayModeEnum)Convert.ToInt32(updateBDto.CallbackData);
+            var newTimeZone = (SentencesRepeatForDayTimesModeEnum)Convert.ToInt32(updateBDto.CallbackData);
             await _sender.Send(new ChangeSentencesRepeatForDayModeCommand()
             {
-                UserId = updateBDto.GetUserId(), SentencesRepeatForDayModeEnum = newTimeZone
+                UserId = updateBDto.GetUserId(), SentencesRepeatForDayTimesModeEnum = newTimeZone
             });
             var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
             await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);

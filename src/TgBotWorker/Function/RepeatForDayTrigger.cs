@@ -33,14 +33,14 @@ public class RepeatForDayTrigger
     [Function("RepeatForDayTrigger")]
     public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer)
     {
-        var sentencesForDayTimeZones = new Dictionary<SentencesRepeatForDayModeEnum, TimeSpan[]>()
+        var sentencesForDayTimeZones = new Dictionary<SentencesRepeatForDayTimesModeEnum, TimeSpan[]>()
         {
-            { SentencesRepeatForDayModeEnum.Times1InDay, 
+            { SentencesRepeatForDayTimesModeEnum.Times1InDay, 
                 new[]
                 {
                     new TimeSpan(11, 0, 0)
                 } },
-            { SentencesRepeatForDayModeEnum.Times3InDay,
+            { SentencesRepeatForDayTimesModeEnum.Times3InDay,
                 new[]
                 {
                     new TimeSpan(11, 0, 0),
@@ -48,7 +48,7 @@ public class RepeatForDayTrigger
                     new TimeSpan(19, 0, 0)
                 }
             },
-            { SentencesRepeatForDayModeEnum.Times5InDay,
+            { SentencesRepeatForDayTimesModeEnum.Times5InDay,
                 new[]
                 {
                     new TimeSpan(11, 0, 0),
@@ -58,7 +58,7 @@ public class RepeatForDayTrigger
                     new TimeSpan(19, 0, 0)
                 }
             },
-            { SentencesRepeatForDayModeEnum.Times10InDay,
+            { SentencesRepeatForDayTimesModeEnum.Times10InDay,
                 new[]
                 {
                     new TimeSpan(10, 0, 0),
@@ -70,7 +70,9 @@ public class RepeatForDayTrigger
                     new TimeSpan(16, 0, 0),
                     new TimeSpan(17, 0, 0),
                     new TimeSpan(18, 0, 0),
-                    new TimeSpan(19, 0, 0)
+                    new TimeSpan(19, 0, 0),
+                    new TimeSpan(22, 0, 0)
+
                 }
             },
             
@@ -92,7 +94,7 @@ public class RepeatForDayTrigger
         }
     }
 
-    private async Task PushToUserSentencesForDayAsync(int timeZone, List<SentencesRepeatForDayModeEnum> modes)
+    private async Task PushToUserSentencesForDayAsync(int timeZone, List<SentencesRepeatForDayTimesModeEnum> modes)
     {
         //TODO добавить Try
         var queryModel = await _sender.Send(new GetUsersToPushSentencesRepeatForDayQuery()

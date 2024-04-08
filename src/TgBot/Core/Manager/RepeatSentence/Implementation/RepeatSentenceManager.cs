@@ -31,6 +31,7 @@ public class RepeatSentenceManager : IRepeatSentenceManager
         _offerResetCountRepeatSentences =
             Convert.ToInt32(configuration.GetSection("UserSettings")["OfferResetCountRepeatSentences"]);
     }
+    
 
     public async Task<int?> GetCountRepetitionSentences(long userId)
     {
@@ -103,13 +104,25 @@ public class RepeatSentenceManager : IRepeatSentenceManager
         throw new ArgumentException("Convert enum error");
     }
 
-    public string GetOriginalSentence(SentencesRepetitionByInputSDto sentenceForRepeatDto)
+    public string GetOriginalSentence(SentencesRepetitionByInputSDto sentencesRepetitionByInputSDto)
     {
-        if (sentenceForRepeatDto.SentenceToLearnLabelEnum == SentenceToLearnLabelEnum.First)
+        var sentenceForRepeatDto = new SentenceForRepeatDto()
+        {
+            UsingSentencesPairId = sentencesRepetitionByInputSDto.UsingSentencesPairId,
+            FirstSentence = sentencesRepetitionByInputSDto.FirstSentence,
+            SecondSentence = sentencesRepetitionByInputSDto.SecondSentence,
+            SentenceToLearnLabel = sentencesRepetitionByInputSDto.SentenceToLearnLabelEnum
+        };
+        return GetOriginalSentence(sentenceForRepeatDto);
+    }
+    
+    public string GetOriginalSentence(SentenceForRepeatDto sentenceForRepeatDto)
+    {
+        if (sentenceForRepeatDto.SentenceToLearnLabel == SentenceToLearnLabelEnum.First)
         {
             return sentenceForRepeatDto.FirstSentence;
         }
-        else if (sentenceForRepeatDto.SentenceToLearnLabelEnum == SentenceToLearnLabelEnum.Second)
+        else if (sentenceForRepeatDto.SentenceToLearnLabel == SentenceToLearnLabelEnum.Second)
         {
             return sentenceForRepeatDto.SecondSentence;
         }

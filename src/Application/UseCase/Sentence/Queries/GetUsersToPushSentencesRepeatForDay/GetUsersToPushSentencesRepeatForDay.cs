@@ -6,7 +6,7 @@ namespace DropWord.Application.UseCase.Sentence.Queries.GetUsersToPushSentencesR
 public record GetUsersToPushSentencesRepeatForDayQuery : IRequest<UsersToPushSentencesRepeatForDayDto>
 {
     public int TimeZone { get; set; }
-    public List<SentencesRepeatForDayModeEnum> SentencesForDayMode { get; set; } = null!;
+    public List<SentencesRepeatForDayTimesModeEnum> SentencesForDayMode { get; set; } = null!;
 }
 
 public class
@@ -36,7 +36,7 @@ public class
         var users = await _context.Users
             .Include(x => x.UserSettings)
             .Include(x => x.UserLearningInfo)
-            .Where(x => request.SentencesForDayMode.Contains(x.UserSettings.SentencesRepeatForDayModeEnum)
+            .Where(x => request.SentencesForDayMode.Contains(x.UserSettings.SentencesRepeatForDayTimesModeEnum)
                         && x.UserSettings.TimeZone == request.TimeZone)
             .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
