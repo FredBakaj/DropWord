@@ -3,5 +3,5 @@
 public abstract class StartViewField
 {
     public const string Start = nameof(Start);
-    public const string SelectLanguage = nameof(SelectLanguage);
+    public const string FirstShowMenu = nameof(FirstShowMenu);
 }

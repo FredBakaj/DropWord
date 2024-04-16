@@ -1,5 +1,3 @@
-using DropWord.Application.UseCase.User.Queries.GetUser;
-using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
@@ -23,17 +21,7 @@ public class StartCommand : IBotCommand
 
     public async Task Exec(UpdateBDto telegramUpdate)
     {
-        var user = await _sender.Send(new GetUserQuery() { UserId = telegramUpdate.GetUserId() });
-
-        if (user.UserSettings.LearnLanguage == String.Empty || user.UserSettings.MainLanguage == String.Empty)
-        {
-            await _botStateTreeUserHandler.SetStateAndActionAsync(telegramUpdate, StartField.StartState,
-                StartField.StartAction);
-        }
-        else
-        {
-            await _botStateTreeUserHandler.SetStateAndActionAsync(telegramUpdate, BaseField.BaseState,
-                BaseField.ReloadAction);
-        }
+        await _botStateTreeUserHandler.SetStateAndActionAsync(telegramUpdate, StartField.StartState,
+            StartField.StartAction);
     }
 }

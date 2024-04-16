@@ -1,7 +1,4 @@
-﻿using DropWord.Application.UseCase.UserSettings.Commands.ChangeLanguagePair;
-using DropWord.Domain.Constants;
-using DropWord.TgBot.Core.Extension;
-using DropWord.TgBot.Core.Field.Controller;
+﻿using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Handler.BotStateTreeHandler;
 using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
@@ -36,15 +33,7 @@ public class StartController : IBotController
     private void Initialize()
     {
         _botStateTreeHandler.AddAction(StartField.StartAction, StartActionAsync);
-
-        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
-            StartField.UkrainianEnglishLanguageButton, UkrainianEnglishLanguageButtonAsync);
-        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
-            StartField.UkrainianGermanLanguageButton, UkrainianGermanLanguageButtonAsync);
-        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
-            StartField.UkrainianPolishLanguageButton, UkrainianPolishLanguageButtonAsync);
-        _botStateTreeHandler.AddKeyboard(StartField.SelectLanguageAction,
-            StartField.UkrainianFrenchLanguageButton, UkrainianFrenchLanguageButtonAsync);
+        _botStateTreeHandler.AddAction(StartField.CompleteStartAction, OnCompleteStartActionAsync);
     }
 
     public async Task Exec(UpdateBDto update)
@@ -55,44 +44,13 @@ public class StartController : IBotController
     private async Task StartActionAsync(UpdateBDto update)
     {
         await _botViewHandler.SendAsync(StartViewField.Start, update);
-        await _botStateTreeUserHandler.SetActionAsync(update, StartField.SelectLanguageAction);
+        await _botStateTreeUserHandler.SetActionAsync(update, StartField.CompleteStartAction);
     }
 
-
-    private async Task UkrainianEnglishLanguageButtonAsync(UpdateBDto update)
+    private async Task OnCompleteStartActionAsync(UpdateBDto update)
     {
-        var secondLanguage = LanguageConst.English;
-        await ChangeLanguagePair(update, secondLanguage);
-    }
-
-    private async Task UkrainianGermanLanguageButtonAsync(UpdateBDto update)
-    {
-        var secondLanguage = LanguageConst.German;
-        await ChangeLanguagePair(update, secondLanguage);
-    }
-
-    private async Task UkrainianPolishLanguageButtonAsync(UpdateBDto update)
-    {
-        var secondLanguage = LanguageConst.Polish;
-        await ChangeLanguagePair(update, secondLanguage);
-    }
-
-    private async Task UkrainianFrenchLanguageButtonAsync(UpdateBDto update)
-    {
-        var secondLanguage = LanguageConst.French;
-        await ChangeLanguagePair(update, secondLanguage);
-    }
-
-    private async Task ChangeLanguagePair(UpdateBDto update, string secondLanguage)
-    {
-        var firstLanguage = LanguageConst.Ukrainian;
-        await _sender.Send(new ChangeLanguagePairCommand()
-        {
-            UserId = update.GetUserId(), MainLanguage = firstLanguage, LearnLanguage = secondLanguage
-        });
-
         await _botStateTreeUserHandler.SetStateAndActionAsync(update, BaseField.BaseState,
             BaseField.BaseAction);
-        await _botViewHandler.SendAsync(BaseViewField.Menu, update);
+        await _botViewHandler.SendAsync(StartViewField.FirstShowMenu, update);
     }
 }

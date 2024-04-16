@@ -114,11 +114,6 @@ public class SettingsBotView : ABotView
             },
             new[]
             {
-                InlineKeyboardButton.WithCallbackData(text: $"Змінити {learnLanguagePairEmoji}",
-                    callbackData: BaseField.OpenChangeLearnLanguagePairCallback),
-            },
-            new[]
-            {
             InlineKeyboardButton.WithCallbackData(text: $"Змінити {timeZone} 🌐⏰",
             callbackData: BaseField.OpenChangeTimeZoneCallback),
             },

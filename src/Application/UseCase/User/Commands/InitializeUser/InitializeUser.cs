@@ -1,4 +1,5 @@
 ﻿using DropWord.Application.Common.Interfaces;
+using DropWord.Domain.Constants;
 using DropWord.Domain.Entities;
 using DropWord.Domain.Enums;
 
@@ -44,8 +45,8 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
             };
             var userSettings = new UserSettingsEntity()
             {
-                MainLanguage = String.Empty,
-                LearnLanguage = String.Empty,
+                MainLanguage = LanguageConst.Ukrainian,
+                LearnLanguage = LanguageConst.English,
                 InterfaceLanguage = request.InterfaceLanguage,
                 LearnSentencesModeEnum = LearnSentencesModeEnum.MainLanguage,
                 SentencesRepeatForDayTimesModeEnum = SentencesRepeatForDayTimesModeEnum.Times1InDay,
