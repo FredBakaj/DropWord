@@ -58,5 +58,6 @@ public class StartController : IBotController
             BaseField.BaseAction);
         var viewDto = new FirstShowMenuVDto() { Update = update, TutorialText = _infoManager.TutorialText };
         await _botViewHandler.SendAsync(StartViewField.FirstShowMenu, viewDto);
+        await _infoManager.SendBotCommandToUserAsync();
     }
 }

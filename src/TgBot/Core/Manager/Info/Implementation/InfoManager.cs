@@ -1,10 +1,18 @@
-﻿using DropWord.TgBot.Core.Field.Controller;
-using DropWord.TgBot.Core.Manager.Info;
+﻿using DropWord.TgBot.Core.Field;
+using DropWord.TgBot.Core.Field.Controller;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace DropWord.TgBot.Core.Manager.Info.Implementation;
 
 public class InfoManager : IInfoManager
 {
+    private readonly ITelegramBotClient _client;
+
+    public InfoManager(ITelegramBotClient client)
+    {
+        _client = client;
+    }
     public string TutorialText => "*Головне меню* 📺\n\n"+
 
                                   "⚪️ Щоб додати нове речення, просто напишіть його в чаті. Бот автоматично перекладе та збереже його для вас, а ви зможете повторювати матеріал.\n\n"+
@@ -20,4 +28,14 @@ public class InfoManager : IInfoManager
                                   "   🔘 *Мова відображення* 🇺🇦 => Дозволяє вибрати, яка мова має бути ||прихованою|| під час повторення.\n"+
                                   "   🔘 *Кількість повторень* 🔃⏰ => Дозволяє вибрати, скільки разів на день вам надсилати повідомлення повтору.\n"+
                                   "   🔘 *Часовий пояс* 🌐⏰ => Дозволяє встановити часовий пояс, у якому ви перебуваєте. Це необхідно для визначення часу надсилання повідомлень повтору.\n";
+
+    public async Task SendBotCommandToUserAsync()
+    {
+        List<BotCommand> commands = new List<BotCommand>()
+        {
+            new BotCommand(){Command = CommandField.Reload, Description = "Перезавантажити бот"},
+            new BotCommand(){Command = CommandField.Tutorial, Description = "Керівництво керування ботом"}
+        };
+        await _client.SetMyCommandsAsync(commands);
+    }
 }
