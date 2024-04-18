@@ -134,17 +134,17 @@ public class SettingsBotView : ABotView
         {
             new[]
             {
-                InlineKeyboardButton.WithCallbackData(text: $"Змінити {ChangeLanguageEmojiButton}",
+                InlineKeyboardButton.WithCallbackData(text: $"Мова відображення => {ChangeLanguageEmojiButton}",
                     callbackData: BaseField.ChangeLearnSentencesModeCallback),
             },
             new[]
             {
-            InlineKeyboardButton.WithCallbackData(text: $"Змінити {timeZone} 🌐⏰",
+            InlineKeyboardButton.WithCallbackData(text: $"Часовий пояс => {timeZone} 🌐⏰",
             callbackData: BaseField.OpenChangeTimeZoneCallback),
             },
             new[]
             {
-                InlineKeyboardButton.WithCallbackData(text: $"Змінити {timesForDay} в день 🔃⏰",
+                InlineKeyboardButton.WithCallbackData(text: $"Кількість повторень => {timesForDay} в день 🔃⏰",
                     callbackData: BaseField.OpenChangeTimesForDayCallback),
             },
             new[]

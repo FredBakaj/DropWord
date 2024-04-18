@@ -27,7 +27,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         [BotView(BaseViewField.Menu)]
         public async Task Intro(UpdateBDto update)
         {
-            var text = "Головне меню";
+            var text = "Головне меню 📺";
             await _mainMenuComponent.SendAsync(update, text);
         }
 
@@ -245,10 +245,8 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         [BotView(BaseViewField.EmptyCollectionOfSentencesToRepeat)]
         public async Task EmptyCollectionOfSentencesToRepeat(UpdateBDto updateBDto)
         {
-            var text =
-                $"Наразі у вас порожній список для повторення ☹️," +
-                $" поповнити його можна за допомогою вивчення нових слів," +
-                $" це можна зробити натиснувши кнопку \"{BaseField.NewSentenceButton}\"";
+            var text = 
+                $"Додати пропозицію в чергу за допомогою кнопки \"{BaseField.NewSentenceButton}\"";
             await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
         }
 
