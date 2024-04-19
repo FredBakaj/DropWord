@@ -152,4 +152,26 @@ public class SentenceManager : ISentenceManager
 
         return true;
     }
+
+    public bool IsNotOneWord(string sentence)
+    {
+        if (sentence.Contains(" "))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsNotOneWord(List<string> sentences)
+    {
+        foreach (var sentence in sentences)
+        {
+            if (!IsNotOneWord(sentence))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }

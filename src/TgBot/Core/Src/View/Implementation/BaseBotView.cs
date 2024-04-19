@@ -188,6 +188,13 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
         }
         
+        [BotView(BaseViewField.TryAddOneWordException)]
+        public async Task TryAddOneWordException(UpdateBDto viewDto)
+        {
+            var text = $"🔴 зараз немає можливості додавати одне слово. Напишіть речення, що складається з кількох слів, розділених пропусками";
+            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+        }
+        
         [BotView(BaseViewField.DeleteAddedSentenceFailed)]
         public async Task DeleteAddedSentenceFailed(UpdateBDto viewDto)
         {

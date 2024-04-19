@@ -13,6 +13,8 @@ namespace DropWord.TgBot.Core.Handler.MiddlewareHandler.Implementation
         protected override void Bind()
         {
             //Последовательность вызовов AddMiddleware важна!
+            //Спам блокер 
+            AddMiddleware(_serviceProvider.GetSpecificService<IBotMiddleware, SpamBlockerMiddleware>());
             //Реализует первичную инициализацию телеграмм аккаунта при запуске бота
             AddMiddleware(_serviceProvider.GetSpecificService<IBotMiddleware, InitializationMiddleware>());
             // Обработчик команд (пример: /start)

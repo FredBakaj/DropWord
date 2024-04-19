@@ -35,6 +35,10 @@ public class AddSentenceCommandHandler : IRequestHandler<AddSentenceCommand, Add
     public async Task<AddSentencePairDto> Handle(AddSentenceCommand request,
         CancellationToken cancellationToken)
     {
+        if (!_sentenceManager.IsNotOneWord(request.Sentence))
+        {
+            throw new TryAddOneWordException("User try added one word");
+        }
         //Проверка валидоно ли предложение для добавления
         if (!_sentenceManager.IsValidSentenceForAdd(request.Sentence))
         {

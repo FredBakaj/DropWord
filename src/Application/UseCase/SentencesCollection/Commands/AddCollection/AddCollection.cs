@@ -38,6 +38,10 @@ public class AddCollectionCommandHandler : IRequestHandler<AddCollectionCommand,
 
     public async Task<SentencesCollectionDto> Handle(AddCollectionCommand request, CancellationToken cancellationToken)
     {
+        if (!_sentenceManager.IsNotOneWord(request.Sentences.ToList()))
+        {
+            throw new TryAddOneWordException("User try added one word");
+        }
         //Проверка валидоно ли предложения для добавления
         if (!_sentenceManager.IsValidSentenceForAdd(request.Sentences.ToList()))
         {

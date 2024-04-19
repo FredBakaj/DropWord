@@ -40,4 +40,12 @@ public interface ISentenceManager
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<bool> IsLimitAddSentencesExceededAsync(long userId);
+
+    /// <summary>
+    /// Предложение из одного слова
+    /// </summary>
+    /// <param name="sentence"></param>
+    /// <returns></returns>
+    bool IsNotOneWord(string sentence);
+    bool IsNotOneWord(List<string> sentences);
 }

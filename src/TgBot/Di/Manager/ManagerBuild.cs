@@ -8,6 +8,8 @@ using DropWord.TgBot.Core.Manager.RepeatSentence;
 using DropWord.TgBot.Core.Manager.RepeatSentence.Implementation;
 using DropWord.TgBot.Core.Manager.Settings;
 using DropWord.TgBot.Core.Manager.Settings.Implementation;
+using DropWord.TgBot.Core.Manager.UserFilter;
+using DropWord.TgBot.Core.Manager.UserFilter.Implementation;
 
 namespace DropWord.TgBot.Di.Manager;
 
@@ -22,5 +24,6 @@ public class ManagerBuild
         services.AddScoped<IRepeatSentenceManager, RepeatSentenceManager>();
         services.AddScoped<IMenuSettingsManager, MenuSettingsManager>();
         services.AddScoped<IAnalyticsManager, AnalyticsManager>();
+        services.AddSingleton<ISpamQueryManager, SpamQueryManager>();
     }
 }

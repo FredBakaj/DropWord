@@ -199,6 +199,11 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             {
                 await _botViewHandler.SendAsync(BaseViewField.SentencesNotValidForAddException, update);
             }
+            catch (TryAddOneWordException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.TryAddOneWordException, update);
+
+            }
         }
 
         private async Task ReloadAction(UpdateBDto updateBDto)
