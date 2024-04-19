@@ -1,5 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Manager.Sentence.Implementation.Model;
+using DropWord.Domain.Entities;
 using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
 
@@ -29,31 +30,56 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
         //Получение ид последнего слова которое повторял пользователь
         var lastUseForDaySentenceId = user.UserLearningInfo.LastUseForDaySentencesId;
         
-        var resultUsingPair = await _context.UsingSentencesPair
-            .Include(x => x.SentencesPair)
-            .ThenInclude(x => x.FirstSentence)
-            .Include(x => x.SentencesPair)
-            .ThenInclude(x => x.SecondSentence)
-            .Where(x => x.UserId == userId
-                        && x.SentencesPair.FirstLanguage == user.UserSettings.MainLanguage
-                        && x.SentencesPair.SecondLanguage == user.UserSettings.LearnLanguage
-                        && lastUseForDaySentenceId != null ? x.Id < lastUseForDaySentenceId : true)
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefaultAsync();
+        UsingSentencesPairEntity? resultUsingPair = null;
+        if (lastUseForDaySentenceId != null)
+        {
+            DateTimeOffset? lastIdDate = await _context.UsingSentencesPair
+                .Where(u => u.Id == lastUseForDaySentenceId)
+                .Select(u => u.Created)
+                .FirstOrDefaultAsync();
+            
+            resultUsingPair = await _context.UsingSentencesPair
+                .Include(x => x.SentencesPair)
+                .ThenInclude(x => x.FirstSentence)
+                .Include(x => x.SentencesPair)
+                .ThenInclude(x => x.SecondSentence)
+                .Where(u => u.UserId == userId &&
+                            u.Created.Date <= lastIdDate.Value.Date &&
+                            u.Created.TimeOfDay > lastIdDate.Value.TimeOfDay &&
+                            u.Id != lastUseForDaySentenceId &&
+                            u.SentencesPair.FirstLanguage == user.UserSettings.MainLanguage &&
+                            u.SentencesPair.SecondLanguage == user.UserSettings.LearnLanguage)
+                .OrderByDescending(u => u.Created.Date)
+                .ThenBy(u => u.Created.TimeOfDay)
+                .FirstOrDefaultAsync();   
+        }
+        else
+        {
+            resultUsingPair = await _context.UsingSentencesPair
+                .Include(x => x.SentencesPair)
+                .ThenInclude(x => x.FirstSentence)
+                .Include(x => x.SentencesPair)
+                .ThenInclude(x => x.SecondSentence)
+                .Where(u => u.UserId == userId &&
+                            u.SentencesPair.FirstLanguage == user.UserSettings.MainLanguage &&
+                            u.SentencesPair.SecondLanguage == user.UserSettings.LearnLanguage)
+                .OrderByDescending(u => u.Created.Date)
+                .ThenBy(u => u.Created.TimeOfDay)
+                .FirstOrDefaultAsync();
+        }
+            
 
         if (resultUsingPair == null && lastUseForDaySentenceId != null)
         {
             throw new OutOfSentencesToRepeatException("Finished all the sentences for repetition");
-            
         }
 
-        if(resultUsingPair == null)
+        if (resultUsingPair == null)
         {
             throw new EmptyCollectionOfSentencesToRepeatException("Not have a sentence");
         }
 
-        
-        
+
         return CreateResponse(resultUsingPair.Id, resultUsingPair.SentencesPair.FirstSentence.Sentence,
             resultUsingPair.SentencesPair.SecondSentence.Sentence, user.UserSettings.LearnSentencesModeEnum,
             resultUsingPair.IsLearning);
