@@ -13,5 +13,7 @@ public interface IApplicationDbContext
     public DbSet<UserSentencesCollectionEntity> UserSentencesCollection {get;}
     public DbSet<UsingSentencesPairEntity> UsingSentencesPair {get;}
     public DbSet<AnalyticsUserActionEntity> AnalyticsUserAction { get; }
+    public DbSet<FeedbackEntity> Feedback { get; }
+    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

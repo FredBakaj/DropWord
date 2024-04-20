@@ -7,4 +7,6 @@ public abstract class SettingsViewField
     public const string OpenChangeLearnLanguagePairCallback = nameof(OpenChangeLearnLanguagePairCallback);
     public const string OpenChangeTimeZoneCallback = nameof(OpenChangeTimeZoneCallback);
     public const string OpenChangeTimesForDayCallback = nameof(OpenChangeTimesForDayCallback);
+    public const string StartInputFeedback = nameof(StartInputFeedback);
+    public const string SendFeedback = nameof(SendFeedback);
 }

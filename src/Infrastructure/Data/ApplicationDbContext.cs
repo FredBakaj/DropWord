@@ -17,6 +17,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<UserSentencesCollectionEntity> UserSentencesCollection => Set<UserSentencesCollectionEntity>();
     public DbSet<UsingSentencesPairEntity> UsingSentencesPair => Set<UsingSentencesPairEntity>();
     public DbSet<AnalyticsUserActionEntity> AnalyticsUserAction => Set<AnalyticsUserActionEntity>();
+    public DbSet<FeedbackEntity> Feedback => Set<FeedbackEntity>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

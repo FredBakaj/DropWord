@@ -34,5 +34,8 @@
         public const string OpenChangeTimesForDayCallback = nameof(OpenChangeTimesForDayCallback);
         public const string ChangeTimeZoneCallback = nameof(ChangeTimeZoneCallback);
         public const string ChangeTimesForDayCallback = nameof(ChangeTimesForDayCallback);
+        public const string InputFeedbackAction = nameof(InputFeedbackAction);
+        public const string CancelInputFeedbackKeyboard = "Скасувати ❌";
+        public const string InputFeedbackCallback = nameof(InputFeedbackCallback);
     }
 }

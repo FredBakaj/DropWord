@@ -2,6 +2,7 @@
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
+using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.ViewComponent;
 using DropWord.TgBot.Core.ViewDto;
 using Telegram.Bot;
@@ -13,11 +14,15 @@ public class SettingsBotView : ABotView
 {
     private readonly ITelegramBotClient _botClient;
     private readonly IDynamicButtonCallbackComponent _dynamicButtonCallbackComponent;
+    private readonly IMainMenuComponent _mainMenuComponent;
 
-    public SettingsBotView(ITelegramBotClient botClient, IDynamicButtonCallbackComponent dynamicButtonCallbackComponent)
+    public SettingsBotView(ITelegramBotClient botClient, 
+        IDynamicButtonCallbackComponent dynamicButtonCallbackComponent,
+        IMainMenuComponent mainMenuComponent)
     {
         _botClient = botClient;
         _dynamicButtonCallbackComponent = dynamicButtonCallbackComponent;
+        _mainMenuComponent = mainMenuComponent;
     }
 
     [BotView(SettingsViewField.SettingsMenu)]
@@ -99,6 +104,26 @@ public class SettingsBotView : ABotView
             text, replyMarkup: new InlineKeyboardMarkup(buttons.ToArray()));
     }
     
+    [BotView(SettingsViewField.StartInputFeedback)]
+    public async Task StartInputFeedback(UpdateBDto updateBDto)
+    {
+        var text = "Введіть відгук/скаргу 📝";
+
+        var replyMarkup = new ReplyKeyboardMarkup(new[]
+        {
+            new KeyboardButton[] { BaseField.CancelInputFeedbackKeyboard }
+        }) { ResizeKeyboard = true };
+
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: replyMarkup);
+    }
+
+    [BotView(SettingsViewField.SendFeedback)]
+    public async Task SendFeedback(UpdateBDto updateBDto)
+    {
+        var text = "Ваше повідомлення відправлено ✅";
+        await _mainMenuComponent.SendAsync(updateBDto, text);
+    }
+    
     private (string, InlineKeyboardMarkup) SettingsMenuItem(string changeEmojiButton, string learnLanguagePairEmoji,
     string timeZone, string timesForDay)
     {
@@ -121,6 +146,11 @@ public class SettingsBotView : ABotView
             {
                 InlineKeyboardButton.WithCallbackData(text: $"Змінити {timesForDay} в день 🔃⏰",
                     callbackData: BaseField.OpenChangeTimesForDayCallback),
+            },
+            new[]
+            {
+                InlineKeyboardButton.WithCallbackData(text: $"Надіслати відгук/скаргу 📝",
+                    callbackData: BaseField.InputFeedbackCallback),
             }
         });
         return (text, inlineKeyboard);

@@ -17,6 +17,7 @@ using DropWord.Application.UseCase.UserSettings.Commands.ChangeLanguagePair;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeLearnSentencesMode;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeSentencesRepeatForDayMode;
 using DropWord.Application.UseCase.UserSettings.Commands.ChangeTimeZone;
+using DropWord.Application.UseCase.UserSettings.Commands.SendFeedback;
 using DropWord.Domain.Constants;
 using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
@@ -132,6 +133,12 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 OpenChangeTimesForDayCallback);
             _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.ChangeTimesForDayCallback,
                 ChangeTimesForDayCallback);
+
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.InputFeedbackCallback,
+                OnInputFeedbackAsync);
+            _botStateTreeHandler.AddAction(BaseField.InputFeedbackAction, InputFeedbackAction);
+            _botStateTreeHandler.AddKeyboard(BaseField.InputFeedbackAction, BaseField.CancelInputFeedbackKeyboard,
+                OnCancelInputFeedbackAsync);
         }
 
         //Добавление предложений в базу 
@@ -565,6 +572,26 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         {
             var viewDto = await _menuSettingsManager.CreateSettingsMenuVDto(updateBDto);
             await _botViewHandler.SendAsync(SettingsViewField.EditSettingsMenu, viewDto);
+        }
+
+        private async Task OnInputFeedbackAsync(UpdateBDto updateBDto)
+        {
+            await _botStateTreeUserHandler.SetActionAsync(updateBDto, BaseField.InputFeedbackAction);
+            await _botViewHandler.SendAsync(SettingsViewField.StartInputFeedback, updateBDto);
+        }
+
+        private async Task InputFeedbackAction(UpdateBDto updateBDto)
+        {
+            var text = updateBDto.GetMessage().Text;
+            await _sender.Send(new SendFeedbackCommand() { UserId = updateBDto.GetUserId(), Text = text! });
+            await _botStateTreeUserHandler.SetActionAsync(updateBDto, BaseField.BaseAction);
+            await _botViewHandler.SendAsync(SettingsViewField.SendFeedback, updateBDto);
+        }
+
+        private async Task OnCancelInputFeedbackAsync(UpdateBDto updateBDto)
+        {
+            await _botStateTreeUserHandler.SetActionAsync(updateBDto, BaseField.BaseAction);
+            await _botViewHandler.SendAsync(BaseViewField.Menu, updateBDto);
         }
     }
 }

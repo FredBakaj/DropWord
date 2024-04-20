@@ -1,5 +1,4 @@
 ﻿using DropWord.Domain.Enums;
-using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field.Controller;
