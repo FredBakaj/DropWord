@@ -4,7 +4,7 @@ namespace DropWord.TgBot.Core.Manager.UserFilter
 {
     public interface ISpamQueryManager
     {
-        bool IsNoReachLimit(long userId);
-        void AddRecord(SpamQueryBDto spamQuery);
+        Task<bool> IsNoReachLimit(long userId);
+        Task AddRecord(SpamQueryBDto spamQuery);
     }
 }

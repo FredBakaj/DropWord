@@ -21,13 +21,13 @@ public class SpamBlockerMiddleware : ABotMiddleware
     }
     public override async Task Next(UpdateBDto telegramUpdate)
     {
-        _spamManager.AddRecord(new SpamQueryBDto()
+        await _spamManager.AddRecord(new SpamQueryBDto()
             {
                 UserId = telegramUpdate.GetUserId(),
                 CreateRecord = DateTime.UtcNow
             });
         
-        if (_spamManager.IsNoReachLimit(telegramUpdate.GetUserId()))
+        if (await _spamManager.IsNoReachLimit(telegramUpdate.GetUserId()))
         {
             await base.Next(telegramUpdate);
         }

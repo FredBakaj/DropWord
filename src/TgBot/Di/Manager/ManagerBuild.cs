@@ -24,6 +24,6 @@ public class ManagerBuild
         services.AddScoped<IRepeatSentenceManager, RepeatSentenceManager>();
         services.AddScoped<IMenuSettingsManager, MenuSettingsManager>();
         services.AddScoped<IAnalyticsManager, AnalyticsManager>();
-        services.AddSingleton<ISpamQueryManager, SpamQueryManager>();
+        services.AddScoped<ISpamQueryManager, SpamQueryManager>();
     }
 }
