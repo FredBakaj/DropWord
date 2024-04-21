@@ -15,5 +15,5 @@ public abstract class StartField
     // public const string UkrainianPolishLanguageButton = "🇺🇦 🇵🇱";
     // public const string UkrainianFrenchLanguageButton = "🇺🇦 🇫🇷";
 
-    public const string CompleteStartButton = "✅";
+    public const string CompleteStartButton = "Далі ➡️";
 }

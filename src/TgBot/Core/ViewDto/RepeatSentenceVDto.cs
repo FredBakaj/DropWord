@@ -7,4 +7,6 @@ public class RepeatSentenceVDto : BaseVDto
     public SentenceToLearnLabelEnum SentenceToLearnLabel { get; set; }
     public string FirstSentence { get; set; } = null!;
     public string SecondSentence { get; set; } = null!;
+    public string FirstLanguage { get; set; } = null!;
+    public string SecondLanguage { get; set; } = null!;
 }

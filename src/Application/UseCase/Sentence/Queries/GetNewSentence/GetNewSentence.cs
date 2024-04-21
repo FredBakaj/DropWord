@@ -59,6 +59,8 @@ public class GetNewSentenceQueryHandler : IRequestHandler<GetNewSentenceQuery, N
             SentencePairId = sentences.Id,
             FirstSentence = sentences.FirstSentence.Sentence,
             SecondSentence = sentences.SecondSentence.Sentence,
+            FirstLanguage = sentences.FirstSentence.Language,
+            SecondLanguage = sentences.SecondSentence.Language,
             SentenceToLearnLabel = SentenceToLearnLabelEnum.First
             
         };

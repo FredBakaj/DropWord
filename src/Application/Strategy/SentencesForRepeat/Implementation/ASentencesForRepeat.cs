@@ -6,7 +6,7 @@ namespace DropWord.Application.Strategy.SentencesForRepeat.Implementation;
 public class ASentencesForRepeat
 {
     protected SentenceForRepeatModel CreateResponse(int usingSentencesPairId, string firstSentence,
-        string secondSentence,
+        string secondSentence, string firstLang, string secondLang,
         LearnSentencesModeEnum learnSentencesModeEnum, bool isLearning)
     {
         var sentenceToLearnLabel = DetectSentenceToLearnLabel(isLearning, learnSentencesModeEnum);
@@ -16,6 +16,8 @@ public class ASentencesForRepeat
             UsingSentencesPairId = usingSentencesPairId,
             FirstSentence = firstSentence,
             SecondSentence = secondSentence,
+            FirstLanguage = firstLang,
+            SecondLanguage = secondLang,
             SentenceToLearnLabel = sentenceToLearnLabel
         };
     }

@@ -43,6 +43,8 @@ public class SentencesForRepeatOldDataMinCount : ASentencesForRepeat, ISentences
         return CreateResponse(oldUsingSentencePair!.Id,
             sentencesPair!.FirstSentence.Sentence,
             sentencesPair!.SecondSentence.Sentence,
+            sentencesPair!.FirstSentence.Language,
+            sentencesPair!.SecondSentence.Language,
             userSettings!.LearnSentencesModeEnum,
             oldUsingSentencePair.IsLearning);
     }
