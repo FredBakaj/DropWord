@@ -94,7 +94,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 },
                 new[]
                 {
-                    InlineKeyboardButton.WithCallbackData(text: "Повернутись ⬅️",
+                    InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
                         callbackData: BaseField.CancelEditSingleAddedSentenceCallback + ":" +
                                       editSentenceVDto.Id),
                 }
@@ -224,7 +224,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             
             var text = $"{hideSentences}";
             
-            await _botClient.SendTextMessageAsync(repeatSentence.Update.GetUserId(), text);
+            await _botClient.SendTextMessageMarkdown2Async(repeatSentence.Update.GetUserId(), text);
         }
 
         [BotView(BaseViewField.ResetCountRepeatSentence)]
@@ -286,7 +286,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 // first row
                 new[]
                 {
-                    InlineKeyboardButton.WithCallbackData(text: "Повернутись ⬅️",
+                    InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
                         callbackData: BaseField.ResetCountRepeatSentencesCallback),
                 }
             });

@@ -7,8 +7,7 @@ public abstract class SentencesRepetitionByInputField
     public const string State = "SentencesRepetitionByInputState";
     public const string Action = "SentencesRepetitionByInputAction";
 
-    public const string LanguageChangeModeDynamicKeyboard = "▶️ 🇺🇸 ◀️";
-    public const string BackKeyboard = "Вийти";
+    public const string BackKeyboard = "Закінчити ⬅️";
     
     public const string ResetCountRepeatSentencesCallback = nameof(ResetCountRepeatSentencesCallback);
 }

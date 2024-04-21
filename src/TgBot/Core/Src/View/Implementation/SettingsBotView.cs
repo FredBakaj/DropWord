@@ -58,7 +58,7 @@ public class SettingsBotView : ABotView
         
         //алогоритм преоброзования линейного словоря в матрицу кнопок калбека
         
-        buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися",
+        buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
             callbackData: BaseField.BackToSettingsMenuCallback)});
 
         await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
@@ -78,7 +78,7 @@ public class SettingsBotView : ABotView
             BaseField.ChangeTimeZoneCallback);
         
         //алогоритм преоброзования линейного словоря в матрицу кнопок калбека
-        buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися",
+        buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
             callbackData: BaseField.BackToSettingsMenuCallback)});
 
         await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
@@ -97,7 +97,7 @@ public class SettingsBotView : ABotView
             BaseField.ChangeTimesForDayCallback);
         
         //алогоритм преоброзования линейного словоря в матрицу кнопок калбека
-        buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися",
+        buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
             callbackData: BaseField.BackToSettingsMenuCallback)});
 
         await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
@@ -120,7 +120,7 @@ public class SettingsBotView : ABotView
     [BotView(SettingsViewField.SendFeedback)]
     public async Task SendFeedback(UpdateBDto updateBDto)
     {
-        var text = "Ваше повідомлення відправлено ✅";
+        var text = "Ваше повідомлення відправлено ✉️";
         await _mainMenuComponent.SendAsync(updateBDto, text);
     }
     
@@ -134,17 +134,17 @@ public class SettingsBotView : ABotView
         {
             new[]
             {
-                InlineKeyboardButton.WithCallbackData(text: $"Мова відображення => {ChangeLanguageEmojiButton}",
+                InlineKeyboardButton.WithCallbackData(text: $"Мова відображення: {ChangeLanguageEmojiButton}",
                     callbackData: BaseField.ChangeLearnSentencesModeCallback),
             },
             new[]
             {
-            InlineKeyboardButton.WithCallbackData(text: $"Часовий пояс => {timeZone} 🌐⏰",
+            InlineKeyboardButton.WithCallbackData(text: $"Часовий пояс: {timeZone} 🌐⏰",
             callbackData: BaseField.OpenChangeTimeZoneCallback),
             },
             new[]
             {
-                InlineKeyboardButton.WithCallbackData(text: $"Кількість повторень => {timesForDay} в день 🔃⏰",
+                InlineKeyboardButton.WithCallbackData(text: $"Кількість повторень: {timesForDay} в день 🔃⏰",
                     callbackData: BaseField.OpenChangeTimesForDayCallback),
             },
             new[]

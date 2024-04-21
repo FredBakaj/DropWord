@@ -10,7 +10,7 @@
         
         public const string RepeatSentenceKeyboard = "Повтор 🎴";
         public const string NewSentenceButton = "Нове 🆕";
-        public const string SettingsKeyboard = "⚙️";
+        public const string SettingsKeyboard = "Налаштування ⚙️";
         public const string SentencesRepetitionByInputKeyboard = "Повтор ✍️";
         public const string DeleteSingleAddedSentenceCallback = nameof(DeleteSingleAddedSentenceCallback);
         public const string EditSingleAddedSentenceCallback = nameof(EditSingleAddedSentenceCallback);
