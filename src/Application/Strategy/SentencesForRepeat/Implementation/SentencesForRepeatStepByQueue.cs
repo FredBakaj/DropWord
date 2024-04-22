@@ -29,7 +29,7 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
 
         //Получение ид последнего слова которое повторял пользователь
         var lastUseForDaySentenceId = user.UserLearningInfo.LastUseForDaySentencesId;
-        
+
         UsingSentencesPairEntity? resultUsingPair = null;
         if (lastUseForDaySentenceId != null)
         {
@@ -37,7 +37,7 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
                 .Where(u => u.Id == lastUseForDaySentenceId)
                 .Select(u => u.Created)
                 .FirstOrDefaultAsync();
-            
+
             resultUsingPair = await _context.UsingSentencesPair
                 .Include(x => x.SentencesPair)
                 .ThenInclude(x => x.FirstSentence)
@@ -51,7 +51,7 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
                             u.SentencesPair.SecondLanguage == user.UserSettings.LearnLanguage)
                 .OrderByDescending(u => u.Created.Date)
                 .ThenBy(u => u.Created.TimeOfDay)
-                .FirstOrDefaultAsync();   
+                .FirstOrDefaultAsync();
         }
         else
         {
@@ -67,7 +67,7 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
                 .ThenBy(u => u.Created.TimeOfDay)
                 .FirstOrDefaultAsync();
         }
-            
+
 
         if (resultUsingPair == null && lastUseForDaySentenceId != null)
         {
@@ -80,8 +80,12 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
         }
 
 
-        return CreateResponse(resultUsingPair.Id, resultUsingPair.SentencesPair.FirstSentence.Sentence,
-            resultUsingPair.SentencesPair.SecondSentence.Sentence, user.UserSettings.LearnSentencesModeEnum,
+        return CreateResponse(resultUsingPair.Id,
+            resultUsingPair.SentencesPair.FirstSentence.Sentence,
+            resultUsingPair.SentencesPair.SecondSentence.Sentence,
+            resultUsingPair.SentencesPair.FirstSentence.Language,
+            resultUsingPair.SentencesPair.SecondSentence.Language,
+            user.UserSettings.LearnSentencesModeEnum,
             resultUsingPair.IsLearning);
     }
 }

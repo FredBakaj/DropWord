@@ -50,23 +50,23 @@ public class RepeatForDayBotView : ABotView
     [BotView(RepeatForDayViewField.RightInputRepeatForDay)]
     public async Task RightInput(UpdateBDto rightInputVDto)
     {
-        var text = $"* Все правельно * 💪 ";
+        var text = $"*Вірний переклад* 💪 ";
         await _mainMenuComponent.SendAsync(rightInputVDto, text);
     }
 
     [BotView(RepeatForDayViewField.IncorrectInputRepeatForDay)]
     public async Task IncorrectInput(RepeatForDayIncorrectInputVDto incorrectInputVDto)
     {
-        var text = $"*Неправильний переклад* ☹️ \n\n" +
-                   $"* Як правельно* 🤔\n {incorrectInputVDto.RightSentence}";
+        var text = $"*Помилковий переклад* ☹️ \n\n" +
+                   $"*Як вірно* 🤔\n{incorrectInputVDto.RightSentence}";
         await _mainMenuComponent.SendAsync(incorrectInputVDto.Update, text);
     }
 
     [BotView(RepeatForDayViewField.InputWithErrorsRepeatForDay)]
     public async Task InputWithErrors(RepeatForDayInputWithErrorsVDto inputWithErrorsVDto)
     {
-        var text = $"*Майже вірно* 🤏 \n\n" +
-                   $" *Як правельно* 🤔\n {inputWithErrorsVDto.RightSentence} \n\n" +
+        var text = $"*Майже вірно* 🤏\n\n" +
+                   $" *Як вірно* 🤔\n {inputWithErrorsVDto.RightSentence} \n\n" +
                    $" *Де були помилки* 👀\n {inputWithErrorsVDto.CorrectedSentence}";
         await _mainMenuComponent.SendAsync(inputWithErrorsVDto.Update, text);
     }

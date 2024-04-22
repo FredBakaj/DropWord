@@ -377,7 +377,9 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                     Update = updateBDto,
                     SentenceToLearnLabel = repeatSentenceDto.SentenceToLearnLabel,
                     FirstSentence = repeatSentenceDto.FirstSentence,
-                    SecondSentence = repeatSentenceDto.SecondSentence
+                    SecondSentence = repeatSentenceDto.SecondSentence,
+                    FirstLanguage = repeatSentenceDto.FirstLanguage,
+                    SecondLanguage = repeatSentenceDto.SecondLanguage
                 };
                 await _botViewHandler.SendAsync(BaseViewField.RepeatSentence, viewDto);
 
