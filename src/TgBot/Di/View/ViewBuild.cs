@@ -7,10 +7,10 @@ public class ViewBuild
 {
     public static void BuildService(IServiceCollection services)
     {
-        services.AddTransient<IBotView, BaseBotView>();
-        services.AddTransient<IBotView, StartBotView>();
-        services.AddTransient<IBotView, SentencesRepetitionByInputBotView>();
-        services.AddTransient<IBotView, SettingsBotView>();
-        services.AddTransient<IBotView, RepeatForDayBotView>();
+        services.AddScoped<IBotView, BaseBotView>();
+        services.AddScoped<IBotView, StartBotView>();
+        services.AddScoped<IBotView, SentencesRepetitionByInputBotView>();
+        services.AddScoped<IBotView, SettingsBotView>();
+        services.AddScoped<IBotView, RepeatForDayBotView>();
     }
 }

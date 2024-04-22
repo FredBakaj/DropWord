@@ -11,6 +11,6 @@ namespace DropWord.TgBot.Core.Src.Middleware
         /// Виклик наступного елемента ланцюжка обовязків
         /// </summary>
         public Task Next(UpdateBDto update);
-        public Task SetNext(IBotMiddleware next);
+        public void SetNext(IBotMiddleware next);
     }
 }

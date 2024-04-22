@@ -6,7 +6,7 @@ namespace DropWord.TgBot.Core.Manager.UserFilter.Implementation
     public class SpamQueryManager : ISpamQueryManager
     {
         private List<SpamQueryBDto> _recordCollection;
-        const string directoryPath = "UserRecords";
+        private readonly string directoryPath = $"{System.IO.Directory.GetCurrentDirectory()}/UserRecords";
         
         public SpamQueryManager()
         {
@@ -61,7 +61,6 @@ namespace DropWord.TgBot.Core.Manager.UserFilter.Implementation
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
-
             }
             // Используем FileStream для асинхронной записи данных в файл
             using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None,

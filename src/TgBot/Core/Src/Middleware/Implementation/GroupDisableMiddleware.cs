@@ -6,6 +6,12 @@ namespace DropWord.TgBot.Core.Src.Middleware.Implementation;
 
 public class GroupDisableMiddleware : ABotMiddleware
 {
+    private readonly ILogger<GroupDisableMiddleware> _logger;
+
+    public GroupDisableMiddleware(ILogger<GroupDisableMiddleware> logger)
+    {
+        _logger = logger;
+    }
     public override async Task Next(UpdateBDto update)
     {
         if (update.GetChatType() == ChatType.Private)

@@ -38,7 +38,7 @@ public abstract class PollingServiceBase<TReceiverService> : BackgroundService
                 // Create new IServiceScope on each iteration.
                 // This way we can leverage benefits of Scoped TReceiverService
                 // and typed HttpClient - we'll grab "fresh" instance each time
-                using var scope = _serviceProvider.CreateScope();
+                await using var scope = _serviceProvider.CreateAsyncScope();
                 var receiver = scope.ServiceProvider.GetRequiredService<TReceiverService>();
 
                 await receiver.ReceiveAsync(stoppingToken);

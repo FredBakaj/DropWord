@@ -7,12 +7,12 @@ namespace DropWord.TgBot.Di.Middleware
     {
         public static void BuildService(IServiceCollection services)
         {
-            services.AddScoped<IBotMiddleware, GroupDisableMiddleware>();
-            services.AddScoped<IBotMiddleware, SpamBlockerMiddleware>();
-            services.AddScoped<IBotMiddleware, InitializationMiddleware>();
-            services.AddScoped<IBotMiddleware, CommandMiddleware>();
-            services.AddScoped<IBotMiddleware, StateMiddleware>();
-            services.AddScoped<IBotMiddleware, RouteMiddleware>();
+            services.AddTransient<IBotMiddleware, GroupDisableMiddleware>();
+            services.AddTransient<IBotMiddleware, SpamBlockerMiddleware>();
+            services.AddTransient<IBotMiddleware, InitializationMiddleware>();
+            services.AddTransient<IBotMiddleware, CommandMiddleware>();
+            services.AddTransient<IBotMiddleware, StateMiddleware>();
+            services.AddTransient<IBotMiddleware, RouteMiddleware>();
         }
     }
 }

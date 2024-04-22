@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConfiguration(builder.Configuration);
 builder.Logging.AddAzureWebAppDiagnostics();
 builder.Configuration.AddEnvironmentVariables(prefix: "DropWord_");
-
 ServicesBuild.BuildService(builder);
 
 var app = builder.Build();

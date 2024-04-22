@@ -16,11 +16,13 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
     {
         private readonly ITelegramBotClient _botClient;
         private readonly IMainMenuComponent _mainMenuComponent;
+        private readonly ILogger<BaseBotView> _logger;
 
-        public BaseBotView(ITelegramBotClient botClient, IMainMenuComponent mainMenuComponent)
+        public BaseBotView(ITelegramBotClient botClient, IMainMenuComponent mainMenuComponent, ILogger<BaseBotView> logger)
         {
             _botClient = botClient;
             _mainMenuComponent = mainMenuComponent;
+            _logger = logger;
         }
 
         [BotView(BaseViewField.Menu)]

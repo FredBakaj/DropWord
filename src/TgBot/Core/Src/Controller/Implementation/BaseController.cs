@@ -46,6 +46,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         private readonly IRepeatSentenceManager _repeatSentenceManager;
         private readonly IMenuSettingsManager _menuSettingsManager;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
         private readonly int _maxSentenceLength;
         private readonly int _maxCountSentences;
         private int _maxCountAddedSentences;
@@ -59,7 +60,8 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             IRepeatSentenceManager repeatSentenceManager,
             IMenuSettingsManager menuSettingsManager,
             IMapper mapper,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger logger)
         {
             _botStateTreeHandler = botStateTreeHandler;
             _botViewHandler = botViewHandler;
@@ -68,6 +70,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             _repeatSentenceManager = repeatSentenceManager;
             _menuSettingsManager = menuSettingsManager;
             _mapper = mapper;
+            _logger = logger;
 
             _maxSentenceLength =
                 Convert.ToInt32(configuration.GetSection("SentencesSettings")["MaxLengthSentenceForSave"]);

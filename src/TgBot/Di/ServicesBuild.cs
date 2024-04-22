@@ -49,6 +49,7 @@ namespace DropWord.TgBot.Di
             services.AddAutoMapper(typeof(MapperProfile));
 
             //Custom service
+            services.AddScoped<ILogger, Logger<ServicesBuild>>();
             ManagerBuild.BuildService(services);
             MiddlewareBuild.BuildService(services);
             ControllerBuild.BuildService(services);

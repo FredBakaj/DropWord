@@ -7,10 +7,10 @@ namespace DropWord.TgBot.Di.Controller
     {
         public static void BuildService(IServiceCollection services)
         {
-            services.AddTransient<IBotController, BaseController>();
-            services.AddTransient<IBotController, StartController>();
-            services.AddTransient<IBotController, SentencesRepetitionByInputController>();
-            services.AddTransient<IBotController, RepeatForDayController>();
+            services.AddScoped<IBotController, BaseController>();
+            services.AddScoped<IBotController, StartController>();
+            services.AddScoped<IBotController, SentencesRepetitionByInputController>();
+            services.AddScoped<IBotController, RepeatForDayController>();
         }
     }
 }

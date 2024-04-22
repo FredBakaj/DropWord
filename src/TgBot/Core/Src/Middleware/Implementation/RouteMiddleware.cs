@@ -9,10 +9,12 @@ namespace DropWord.TgBot.Core.Src.Middleware.Implementation
     /// </summary>
     public class RouteMiddleware : ABotMiddleware
     {
+        private readonly ILogger<RouteMiddleware> _logger;
         private readonly IFactory<IBotController> _controllerFactory;
 
-        public RouteMiddleware(IFactory<IBotController> controllerFactory)
+        public RouteMiddleware( ILogger<RouteMiddleware> logger, IFactory<IBotController> controllerFactory)
         {
+            _logger = logger;
             _controllerFactory = controllerFactory;
         }
 

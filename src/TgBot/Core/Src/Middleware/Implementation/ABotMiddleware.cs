@@ -17,8 +17,8 @@ public abstract class ABotMiddleware : IBotMiddleware
         }
     }
 
-    public virtual async Task SetNext(IBotMiddleware next)
+    public virtual void SetNext(IBotMiddleware next)
     {
-        await Task.Run(() => _nextMiddleware = next);
+         _nextMiddleware = next;
     }
 }

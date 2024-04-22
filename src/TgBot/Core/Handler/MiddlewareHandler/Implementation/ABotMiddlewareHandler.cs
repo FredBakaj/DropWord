@@ -15,8 +15,6 @@ namespace DropWord.TgBot.Core.Handler.MiddlewareHandler.Implementation
         {
             _serviceProvider = serviceProvider;
             _logger = serviceProvider.GetService<ILogger<ABotMiddlewareHandler>>()!;
-
-            Bind();
         }
 
         /// <summary>
@@ -38,6 +36,7 @@ namespace DropWord.TgBot.Core.Handler.MiddlewareHandler.Implementation
 
         public async Task Run(UpdateBDto update)
         {
+            Bind();
             await _firstMiddleware.Next(update);
         }
 
