@@ -20,7 +20,7 @@ if (true)
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
     await app.InitialiseDatabaseAsync();
 }

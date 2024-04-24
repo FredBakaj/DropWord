@@ -1,4 +1,5 @@
-﻿using DropWord.Application.Common.Interfaces;
+﻿using System.Globalization;
+using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
@@ -8,11 +9,13 @@ namespace DropWord.Application.Strategy.SentencesForRepeat.Implementation;
 public class SentencesForRepeatOldDataMinCount : ASentencesForRepeat, ISentencesForRepeatStrategy
 {
     private readonly IApplicationDbContext _context;
+    private readonly int _maxCountUseRepeatForDay;
     public SentenceForRepeatModeEnum Mode => SentenceForRepeatModeEnum.OldDataMinCount;
 
-    public SentencesForRepeatOldDataMinCount(IApplicationDbContext context)
+    public SentencesForRepeatOldDataMinCount(IApplicationDbContext context, IConfig config)
     {
         _context = context;
+        _maxCountUseRepeatForDay = int.Parse(config.GetValue("MaxCountUseRepeatForDay"), CultureInfo.InvariantCulture);
     }
 
     public async Task<SentenceForRepeatModel> Exec(long userId)
@@ -24,7 +27,8 @@ public class SentencesForRepeatOldDataMinCount : ASentencesForRepeat, ISentences
         var oldUsingSentencePair = await _context.UsingSentencesPair
             .Where(x => x.UserId == userId
                         && x.SentencesPair.FirstLanguage == userSettings!.MainLanguage
-                        && x.SentencesPair.SecondLanguage == userSettings!.LearnLanguage)
+                        && x.SentencesPair.SecondLanguage == userSettings!.LearnLanguage
+                        && x.CountUse <= _maxCountUseRepeatForDay)
             .OrderBy(x => x.UpdateDate)
             .ThenBy(x => x.CountUse)
             .FirstOrDefaultAsync();
