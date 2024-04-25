@@ -30,7 +30,7 @@ public class ReloadCommand : IBotCommand
     {
         await _botStateTreeUserHandler.SetStateAndActionAsync(update, BaseField.BaseState, BaseField.ReloadAction,
             CancellationToken.None);
-        await _client.SendTextMessageAsync(update.GetUserId(), "бот перезавантажен)");
+        await _client.SendTextMessageAsync(update.GetUserId(), "Бот перезавантажений 🏗");
         await _infoManager.SendBotCommandToUserAsync();
     }
 }

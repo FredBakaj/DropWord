@@ -70,9 +70,7 @@ public class RepeatForDayTrigger
                     new TimeSpan(16, 0, 0),
                     new TimeSpan(17, 0, 0),
                     new TimeSpan(18, 0, 0),
-                    new TimeSpan(19, 0, 0),
-                    new TimeSpan(22, 0, 0)
-
+                    new TimeSpan(19, 0, 0)
                 }
             },
             

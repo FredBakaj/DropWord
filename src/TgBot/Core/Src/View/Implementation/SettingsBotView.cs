@@ -107,7 +107,7 @@ public class SettingsBotView : ABotView
     [BotView(SettingsViewField.StartInputFeedback)]
     public async Task StartInputFeedback(UpdateBDto updateBDto)
     {
-        var text = "Введіть відгук/скаргу 📝";
+        var text = "Введіть питання/відгук/скаргу 📝";
 
         var replyMarkup = new ReplyKeyboardMarkup(new[]
         {
@@ -149,7 +149,7 @@ public class SettingsBotView : ABotView
             },
             new[]
             {
-                InlineKeyboardButton.WithCallbackData(text: $"Надіслати відгук/скаргу 📝",
+                InlineKeyboardButton.WithCallbackData(text: $"Надіслати питання/відгук/скаргу 📝",
                     callbackData: BaseField.InputFeedbackCallback),
             }
         });
