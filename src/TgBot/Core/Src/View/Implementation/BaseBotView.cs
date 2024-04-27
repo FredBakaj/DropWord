@@ -194,6 +194,14 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             var text = $"🔴 зараз немає можливості додавати одне слово. Напишіть речення, що складається з кількох слів, розділених пропусками";
             await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
         }
+        [BotView(BaseViewField.DetectMoreThanOneLanguageException)]
+        public async Task DetectMoreThanOneLanguageException(UpdateBDto viewDto)
+        {
+            var text = $"🔴 У тексті було визначено кілька мов. " +
+                       $"Змініть текст, щоб він відповідав одній мові. " +
+                       $"Якщо ж ви впевнені, що з текстом усе гаразд, ви можете надіслати скаргу через налаштування бота";
+            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+        }
         
         [BotView(BaseViewField.DeleteAddedSentenceFailed)]
         public async Task DeleteAddedSentenceFailed(UpdateBDto viewDto)

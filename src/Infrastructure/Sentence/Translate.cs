@@ -78,7 +78,13 @@ public class Translate : ITranslate
     private string DetectLang(string sentence)
     {
         var langDetector = new LanguageDetector();
-        langDetector.AddLanguages("ukr", "fra", "eng", "deu", "pol");
+        langDetector.AddLanguages(
+            "ukr", 
+            //"fra", 
+            "eng" 
+            //"deu", 
+            //"pol"
+            );
         return langDetector.Detect(sentence);
     }
 
@@ -102,10 +108,10 @@ public class Translate : ITranslate
         Dictionary<string, string> codes = new Dictionary<string, string>()
         {
             { "ukr", LanguageConst.Ukrainian },
-            { "fra", LanguageConst.French },
+            //{ "fra", LanguageConst.French },
             { "eng", LanguageConst.English },
-            { "deu", LanguageConst.German },
-            { "pol", LanguageConst.Polish },
+            //{ "deu", LanguageConst.German },
+            //{ "pol", LanguageConst.Polish },
         };
         return codes[code];
     }

@@ -212,6 +212,10 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             catch (TryAddOneWordException)
             {
                 await _botViewHandler.SendAsync(BaseViewField.TryAddOneWordException, update);
+            }
+            catch (DetectMoreThanOneLanguageException)
+            {
+                await _botViewHandler.SendAsync(BaseViewField.DetectMoreThanOneLanguageException, update);
 
             }
         }
