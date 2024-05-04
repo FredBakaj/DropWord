@@ -43,9 +43,12 @@ public class StartBotView : ABotView
     }
 
     [BotView(StartViewField.FirstShowMenu)]
-    public async Task FirstShowMenu(FirstShowMenuVDto viewDto)
+    public async Task FirstShowMenu(UpdateBDto viewDto)
     {
-        var text = viewDto.TutorialText;
-        await _mainMenuComponent.SendAsync(viewDto.Update, text);
+        var text = "Цей бот допоможе вам вивчати корисні фрази англійською. " +
+                   "Наприклад із цього <a href='https://youtu.be/0CdlL2MbSkc?si=wdjMts6HNqdt9Dz1'>відео</a>. " +
+                   "Все що потрібно, просто написати речення," +
+                   $" які ви хотіли б запам'ятати, і натиснути кнопку \"{BaseField.NewSentenceButton}\"";
+        await _mainMenuComponent.SendHTMLAsync(viewDto, text);
     }
 }

@@ -2,6 +2,7 @@
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Model;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DropWord.TgBot.Core.ViewComponent.Implementation;
@@ -16,7 +17,20 @@ public class MainMenuComponent : IMainMenuComponent
     }
     public async Task SendAsync(UpdateBDto update, string text)
     {
-        var replyMarkup = new ReplyKeyboardMarkup(new[]
+        var replyMarkup = CreateKeyboardButton();
+
+        await _botClient.SendTextMessageMarkdown2Async(update.GetUserId(), text, replyMarkup: replyMarkup);
+    }
+    public async Task SendHTMLAsync(UpdateBDto update, string text)
+    {
+        ReplyKeyboardMarkup replyMarkup = CreateKeyboardButton();
+
+        await _botClient.SendTextMessageAsync(update.GetUserId(), text, replyMarkup: replyMarkup, parseMode:ParseMode.Html, disableWebPagePreview:true);
+    }
+
+    private ReplyKeyboardMarkup CreateKeyboardButton()
+    {
+        return new ReplyKeyboardMarkup(new[]
         {
             new KeyboardButton[]
             {
@@ -24,7 +38,6 @@ public class MainMenuComponent : IMainMenuComponent
             },
             new KeyboardButton[] { BaseField.SentencesRepetitionByInputKeyboard,BaseField.SettingsKeyboard }
         }) { ResizeKeyboard = true };
-
-        await _botClient.SendTextMessageMarkdown2Async(update.GetUserId(), text, replyMarkup: replyMarkup);
     }
+    
 }

@@ -38,7 +38,6 @@ public class StartController : IBotController
     private void Initialize()
     {
         _botStateTreeHandler.AddAction(StartField.StartAction, StartActionAsync);
-        _botStateTreeHandler.AddAction(StartField.CompleteStartAction, OnCompleteStartActionAsync);
     }
 
     public async Task Exec(UpdateBDto update)
@@ -48,16 +47,9 @@ public class StartController : IBotController
 
     private async Task StartActionAsync(UpdateBDto update)
     {
-        await _botViewHandler.SendAsync(StartViewField.Start, update);
-        await _botStateTreeUserHandler.SetActionAsync(update, StartField.CompleteStartAction);
-    }
-
-    private async Task OnCompleteStartActionAsync(UpdateBDto update)
-    {
         await _botStateTreeUserHandler.SetStateAndActionAsync(update, BaseField.BaseState,
             BaseField.BaseAction);
-        var viewDto = new FirstShowMenuVDto() { Update = update, TutorialText = _infoManager.TutorialText };
-        await _botViewHandler.SendAsync(StartViewField.FirstShowMenu, viewDto);
+        await _botViewHandler.SendAsync(StartViewField.FirstShowMenu, update);
         await _infoManager.SendBotCommandToUserAsync();
     }
 }
