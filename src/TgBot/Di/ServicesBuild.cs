@@ -32,6 +32,7 @@ namespace DropWord.TgBot.Di
             if (Convert.ToBoolean(configuration.GetSection("CommonSettings")["IsWebHook"]))
             {
                 services.AddHostedService<ConfigureWebhook>();
+                services.AddHostedService<ResetWebhookService>();
             }
             else
             {
