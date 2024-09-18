@@ -18,6 +18,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<UsingSentencesPairEntity> UsingSentencesPair => Set<UsingSentencesPairEntity>();
     public DbSet<AnalyticsUserActionEntity> AnalyticsUserAction => Set<AnalyticsUserActionEntity>();
     public DbSet<FeedbackEntity> Feedback => Set<FeedbackEntity>();
+    public DbSet<RecommendedNewFirstSentenceEntity> RecommendedNewFirstSentence => Set<RecommendedNewFirstSentenceEntity>();
+    public DbSet<RecommendedNewSecondSentenceEntity> RecommendedNewSecondSentence => Set<RecommendedNewSecondSentenceEntity>();
+    public DbSet<RecommendedNewConnectionSentenceEntity> RecommendedNewConnectionSentence => Set<RecommendedNewConnectionSentenceEntity>();
+    public DbSet<RecommendedNewConnectionWithUserEntity> RecommendedNewConnectionWithUser => Set<RecommendedNewConnectionWithUserEntity>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

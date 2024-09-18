@@ -7,6 +7,7 @@ using DropWord.Application.UseCase.Sentence.Commands.RepeatSentence;
 using DropWord.Application.UseCase.Sentence.Commands.ResetCountRepeatSentence;
 using DropWord.Application.UseCase.Sentence.Commands.UpdateSentence;
 using DropWord.Application.UseCase.Sentence.Queries.GetNewSentence;
+using DropWord.Application.UseCase.Sentence.Queries.GetRecommendedNewSentence;
 using DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
 using DropWord.Application.UseCase.Sentence.Queries.GetSentencesPair;
 using DropWord.Application.UseCase.SentencesCollection.Commands.AddCollection;
@@ -142,7 +143,16 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             _botStateTreeHandler.AddAction(BaseField.InputFeedbackAction, InputFeedbackAction);
             _botStateTreeHandler.AddKeyboard(BaseField.InputFeedbackAction, BaseField.CancelInputFeedbackKeyboard,
                 OnCancelInputFeedbackAsync);
+
+            _botStateTreeHandler.AddKeyboard(BaseField.BaseAction, BaseField.RecommendedNewSentenceButton,
+                OnRecommendedNewSentenceButton);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction, BaseField.SaveRecommendedNewSentenceToRepeatCallback,
+                OnSaveRecommendedNewSentenceToRepeatCallback);
+            _botStateTreeHandler.AddCallback(BaseField.BaseAction,
+                BaseField.DeleteRecommendedNewSentenceToRepeatCallback,
+                OnDeleteRecommendedNewSentenceToRepeatCallback);
         }
+
 
         //Добавление предложений в базу 
         private async Task BaseAction(UpdateBDto update)
@@ -182,7 +192,6 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             catch (InvalidDataException)
             {
                 await _botViewHandler.SendAsync(BaseViewField.InvalidDataException, update);
-
             }
             catch (MaxCountSentencesException)
             {
@@ -216,7 +225,6 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             catch (DetectMoreThanOneLanguageException)
             {
                 await _botViewHandler.SendAsync(BaseViewField.DetectMoreThanOneLanguageException, update);
-
             }
         }
 
@@ -313,7 +321,8 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 SentencesCollectionId = sentencesCollectionId
             });
 
-            if (DateTimeOffset.UtcNow - sentencesCollection.Created < TimeSpan.FromMinutes(_maxMinutesForDeleteSentence))
+            if (DateTimeOffset.UtcNow - sentencesCollection.Created <
+                TimeSpan.FromMinutes(_maxMinutesForDeleteSentence))
             {
                 await _sender.Send(new DeleteAddedSentenceCollectionCommand()
                 {
@@ -441,7 +450,7 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
                 var viewModel =
                     new StartInputVDto() { Update = updateBDto, Sentence = nextSentence };
                 await _botViewHandler.SendAsync(SentencesRepetitionByInputViewField.StartInput, viewModel);
-                
+
                 //Переход в состояние повтора вводом
                 await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto,
                     SentencesRepetitionByInputField.State,
@@ -547,8 +556,10 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
             var timesForDayArray = new int[]
             {
-                (int)SentencesRepeatForDayTimesModeEnum.TurnOff, (int)SentencesRepeatForDayTimesModeEnum.Times1InDay,
-                (int)SentencesRepeatForDayTimesModeEnum.Times3InDay, (int)SentencesRepeatForDayTimesModeEnum.Times5InDay,
+                (int)SentencesRepeatForDayTimesModeEnum.TurnOff,
+                (int)SentencesRepeatForDayTimesModeEnum.Times1InDay,
+                (int)SentencesRepeatForDayTimesModeEnum.Times3InDay,
+                (int)SentencesRepeatForDayTimesModeEnum.Times5InDay,
                 (int)SentencesRepeatForDayTimesModeEnum.Times10InDay
             };
 
@@ -601,6 +612,31 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
         {
             await _botStateTreeUserHandler.SetActionAsync(updateBDto, BaseField.BaseAction);
             await _botViewHandler.SendAsync(BaseViewField.Menu, updateBDto);
+        }
+
+        private async Task OnRecommendedNewSentenceButton(UpdateBDto updateBDto)
+        {
+            var recommendedNewSentence =
+                await _sender.Send(new GetRecommendedNewSentenceQuery() { UserId = updateBDto.GetUserId() });
+
+            var viewModel = _mapper.Map<RecommendedNewSentenceVDto>(recommendedNewSentence);
+            viewModel.Update = updateBDto;
+            await _botViewHandler.SendAsync(BaseViewField.RecommendedNewSentence, viewModel);
+        }
+
+        private async Task OnSaveRecommendedNewSentenceToRepeatCallback(UpdateBDto updateBDto)
+        {
+            int recommendedNewSentencesId = int.Parse(updateBDto.CallbackData);
+            var viewModel = new SaveRecommendedNewSentenceToRepeatVDto()
+            {
+                Update = updateBDto, RecommendedNewSentenceId = recommendedNewSentencesId
+            };
+            await _botViewHandler.SendAsync(BaseViewField.SaveRecommendedNewSentenceToRepeat, viewModel);
+        }
+
+        private async Task OnDeleteRecommendedNewSentenceToRepeatCallback(UpdateBDto updateBDto)
+        {
+            await _botViewHandler.SendAsync(BaseViewField.DeleteRecommendedNewSentenceToRepeat, updateBDto);
         }
     }
 }

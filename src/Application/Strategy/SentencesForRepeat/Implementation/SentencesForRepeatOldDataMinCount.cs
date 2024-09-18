@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using DropWord.Application.Common.Interfaces;
+using DropWord.Application.Manager.Sentence;
 using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
@@ -12,7 +13,8 @@ public class SentencesForRepeatOldDataMinCount : ASentencesForRepeat, ISentences
     private readonly int _maxCountUseRepeatForDay;
     public SentenceForRepeatModeEnum Mode => SentenceForRepeatModeEnum.OldDataMinCount;
 
-    public SentencesForRepeatOldDataMinCount(IApplicationDbContext context, IConfig config)
+    public SentencesForRepeatOldDataMinCount(IApplicationDbContext context, IConfig config,
+        ISentenceManager sentenceManager) : base(sentenceManager)
     {
         _context = context;
         _maxCountUseRepeatForDay = int.Parse(config.GetValue("MaxCountUseRepeatForDay"), CultureInfo.InvariantCulture);
@@ -37,7 +39,7 @@ public class SentencesForRepeatOldDataMinCount : ASentencesForRepeat, ISentences
         {
             throw new EmptyOldUsingSentencesPairException("Not found sentences pair for repeat per day");
         }
-        
+
         var sentencesPair = await _context.SentencesPair
             .Include(x => x.FirstSentence)
             .Include(x => x.SecondSentence)

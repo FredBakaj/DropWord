@@ -266,6 +266,54 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                 $"🟡 Натисніть кнопку *{BaseField.NewSentenceButton}* для додавання речення в чергу";
             await _botClient.SendTextMessageMarkdown2Async(updateBDto.GetUserId(), text);
         }
+        
+        [BotView(BaseViewField.RecommendedNewSentence)]
+        public async Task RecommendedNewSentence(RecommendedNewSentenceVDto recommendedNewSentence)
+        {
+            var hideSentences = MakeHideSentencesPairText(recommendedNewSentence.SentenceToLearnLabel,
+                recommendedNewSentence.FirstSentence,
+                recommendedNewSentence.SecondSentence,
+                recommendedNewSentence.FirstLanguage,
+                recommendedNewSentence.SecondLanguage);
+            
+            var text = $"{hideSentences}";
+            InlineKeyboardMarkup inlineKeyboard = new(new[]
+            {
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: $"Додати в {BaseField.NewSentenceButton}",
+                        callbackData: BaseField.SaveRecommendedNewSentenceToRepeatCallback + ":" +
+                                      recommendedNewSentence.Id),
+                }
+            });
+            
+            await _botClient.SendTextMessageMarkdown2Async(recommendedNewSentence.Update.GetUserId(), text, replyMarkup:inlineKeyboard);
+        }
+
+        [BotView(BaseViewField.SaveRecommendedNewSentenceToRepeat)]
+        public async Task SaveRecommendedNewSentenceToRepeat(SaveRecommendedNewSentenceToRepeatVDto viewDto)
+        {
+            var messageId = viewDto.Update.GetMessage().MessageId;
+            var text = viewDto.Update.GetMessage().Text!;
+            InlineKeyboardMarkup inlineKeyboard = new(new[]
+            {
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData(text: $"Видалити з {BaseField.NewSentenceButton} ❌",
+                        callbackData: BaseField.DeleteRecommendedNewSentenceToRepeatCallback + ":" +
+                                      viewDto.RecommendedNewSentenceId),
+                }
+            });
+            await _botClient.EditTextMessageMarkdown2Async(viewDto.Update.GetUserId(),messageId, text, replyMarkup:inlineKeyboard);
+        }
+        [BotView(BaseViewField.DeleteRecommendedNewSentenceToRepeat)]
+        public async Task DeleteRecommendedNewSentenceToRepeat(UpdateBDto viewDto)
+        {
+            var messageId = viewDto.GetMessage().MessageId;
+            var text = viewDto.GetMessage().Text!;
+            
+            await _botClient.EditTextMessageMarkdown2Async(viewDto.GetUserId(),messageId, text);
+        }
 
 
         private string MakeHideSentencesPairText(SentenceToLearnLabelEnum learnSentencesModeEnum, string firstSentence,

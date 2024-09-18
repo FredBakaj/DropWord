@@ -9,4 +9,7 @@ public class UserEntity : BaseAuditableEntity<long>
     public List<SentencesPairEntity> SentencesPairs { get; set; } = null!;
     public List<UsingSentencesPairEntity> UsingSentencesPairs { get; set; } = null!;
     public List<UserSentencesCollectionEntity> UserSentencesCollections { get; set; } = null!;
+    
+    public List<RecommendedNewConnectionWithUserEntity> RecommendedNewConnectionWithUser { get; set; } = null!;
+    
 }

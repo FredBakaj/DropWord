@@ -1,5 +1,4 @@
 ﻿using DropWord.Application.Common.Interfaces;
-using DropWord.Application.Factory.Sentence;
 using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Enums;
 
@@ -8,16 +7,14 @@ namespace DropWord.Application.Manager.Sentence.Implementation;
 public class SentenceManager : ISentenceManager
 {
     private readonly IApplicationDbContext _context;
-    private readonly ISentencesFactory _sentencesFactory;
     private readonly IMapper _mapper;
 
     private int _limitForAddedSentences;
 
-    public SentenceManager(IApplicationDbContext context, ISentencesFactory sentencesFactory, IMapper mapper,
+    public SentenceManager(IApplicationDbContext context, IMapper mapper,
         IConfig config)
     {
         _context = context;
-        _sentencesFactory = sentencesFactory;
         _mapper = mapper;
 
         _limitForAddedSentences = Convert.ToInt16(config.GetValue("LimitForAddedSentences"));
@@ -47,13 +44,6 @@ public class SentenceManager : ISentenceManager
 
             await _context.SaveChangesAsync(cancellationToken);
         }
-    }
-
-    public async Task<SentenceForRepeatModel> GetSentenceForRepeatAsync(long userId, SentenceForRepeatModeEnum mode)
-    {
-        var sentencesForRepeat =
-            await _sentencesFactory.CreateSentencesForRepeatAsync(mode);
-        return await sentencesForRepeat.Exec(userId);
     }
 
     public async Task ChangeLastUseForDaySentenceAsync(long userId, int usingSentencesPairId,
@@ -173,5 +163,46 @@ public class SentenceManager : ISentenceManager
             }
         }
         return true;
+    }
+
+    public SentenceToLearnLabelEnum DetectSentenceToLearnLabel(bool isLearning, LearnSentencesModeEnum learnSentencesModeEnum)
+    {
+        if (learnSentencesModeEnum == LearnSentencesModeEnum.MainLanguage)
+        {
+            return SentenceToLearnLabelEnum.Second;
+        }
+        else if (learnSentencesModeEnum == LearnSentencesModeEnum.LearnLanguage)
+        {
+            return SentenceToLearnLabelEnum.First;
+        }
+        else if (learnSentencesModeEnum == LearnSentencesModeEnum.Random)
+        {
+            List<SentenceToLearnLabelEnum> label = new List<SentenceToLearnLabelEnum>()
+            {
+                SentenceToLearnLabelEnum.First, SentenceToLearnLabelEnum.Second
+            };
+            Random random = new Random();
+
+            // Генерируем случайный индекс
+            int randomIndex = random.Next(0, label.Count);
+
+            // Получаем элемент списка по случайному индексу
+            SentenceToLearnLabelEnum randomElement = label[randomIndex];
+
+            return randomElement;
+        }
+        else if (learnSentencesModeEnum == LearnSentencesModeEnum.Learned)
+        {
+            if (isLearning)
+            {
+                return SentenceToLearnLabelEnum.Second;
+            }
+            else
+            {
+                return SentenceToLearnLabelEnum.First;
+            }
+        }
+
+        throw new ArgumentException("not correct learnSentencesModeEnum value");
     }
 }

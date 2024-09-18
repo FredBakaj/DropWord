@@ -1,4 +1,5 @@
 ﻿using DropWord.Application.Common.Interfaces;
+using DropWord.Application.Manager.Sentence;
 using DropWord.Application.Manager.Sentence.Implementation.Model;
 using DropWord.Domain.Entities;
 using DropWord.Domain.Enums;
@@ -11,7 +12,8 @@ public class SentencesForRepeatStepByQueue : ASentencesForRepeat, ISentencesForR
     private readonly IApplicationDbContext _context;
     public SentenceForRepeatModeEnum Mode => SentenceForRepeatModeEnum.StepByQueue;
 
-    public SentencesForRepeatStepByQueue(IApplicationDbContext context)
+    public SentencesForRepeatStepByQueue(IApplicationDbContext context, ISentenceManager sentenceManager) : base(
+        sentenceManager)
     {
         _context = context;
     }

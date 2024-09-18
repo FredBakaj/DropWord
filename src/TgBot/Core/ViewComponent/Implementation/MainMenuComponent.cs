@@ -36,7 +36,14 @@ public class MainMenuComponent : IMainMenuComponent
             {
                 BaseField.RepeatSentenceKeyboard, BaseField.NewSentenceButton
             },
-            new KeyboardButton[] { BaseField.SentencesRepetitionByInputKeyboard,BaseField.SettingsKeyboard }
+            new KeyboardButton[]
+            {
+                BaseField.SentencesRepetitionByInputKeyboard, BaseField.RecommendedNewSentenceButton
+            },
+            new KeyboardButton[]
+            {
+                BaseField.SettingsKeyboard
+            }
         }) { ResizeKeyboard = true };
     }
     

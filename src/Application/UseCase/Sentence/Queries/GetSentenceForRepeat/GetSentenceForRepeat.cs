@@ -1,4 +1,4 @@
-﻿using DropWord.Application.Manager.Sentence;
+﻿using DropWord.Application.Factory.Sentence;
 using DropWord.Domain.Enums;
 
 namespace DropWord.Application.UseCase.Sentence.Queries.GetSentenceForRepeat;
@@ -17,20 +17,22 @@ public record GetSentenceForRepeatQuery : IRequest<SentenceForRepeatDto>
 
 public class GetSentenceForRepeatQueryHandler : IRequestHandler<GetSentenceForRepeatQuery, SentenceForRepeatDto>
 {
-    private readonly ISentenceManager _sentenceManager;
+    private readonly ISentencesFactory _sentencesFactory;
     private readonly IMapper _mapper;
 
 
-    public GetSentenceForRepeatQueryHandler(ISentenceManager sentenceManager, IMapper mapper)
+    public GetSentenceForRepeatQueryHandler(ISentencesFactory sentencesFactory, IMapper mapper)
     {
-        _sentenceManager = sentenceManager;
+        
+        _sentencesFactory = sentencesFactory;
         _mapper = mapper;
     }
 
     public async Task<SentenceForRepeatDto> Handle(GetSentenceForRepeatQuery request,
         CancellationToken cancellationToken)
     {
-        var result = await _sentenceManager.GetSentenceForRepeatAsync(request.UserId, SentenceForRepeatModeEnum.StepByQueue);
+        var sentencesForRepeat = await _sentencesFactory.CreateSentencesForRepeatAsync(SentenceForRepeatModeEnum.StepByQueue);
+        var result = await sentencesForRepeat.Exec(request.UserId);
         return _mapper.Map<SentenceForRepeatDto>(result);
     }
 }

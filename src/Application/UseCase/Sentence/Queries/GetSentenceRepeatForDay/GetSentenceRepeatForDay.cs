@@ -1,5 +1,5 @@
 ﻿using DropWord.Application.Common.Interfaces;
-using DropWord.Application.Manager.Sentence;
+using DropWord.Application.Factory.Sentence;
 using DropWord.Domain.Enums;
 
 namespace DropWord.Application.UseCase.Sentence.Queries.GetSentenceRepeatForDay;
@@ -16,27 +16,25 @@ public record GetSentenceRepeatForDayQuery : IRequest<SentenceRepeatForDayDto>
 //     }
 // }
 
-public class
-    GetSentenceRepeatForDayQueryHandler : IRequestHandler<GetSentenceRepeatForDayQuery, SentenceRepeatForDayDto>
+public class GetSentenceRepeatForDayQueryHandler : IRequestHandler<GetSentenceRepeatForDayQuery, SentenceRepeatForDayDto>
 {
     private readonly IApplicationDbContext _context;
-    private readonly ISentenceManager _sentenceManager;
     private readonly IMapper _mapper;
+    private readonly ISentencesFactory _sentencesFactory;
 
-    public GetSentenceRepeatForDayQueryHandler(IApplicationDbContext context, ISentenceManager sentenceManager,
-        IMapper mapper)
+    public GetSentenceRepeatForDayQueryHandler(IApplicationDbContext context,
+        IMapper mapper, ISentencesFactory sentencesFactory)
     {
         _context = context;
-        _sentenceManager = sentenceManager;
         _mapper = mapper;
+        _sentencesFactory = sentencesFactory;
     }
 
     public async Task<SentenceRepeatForDayDto> Handle(GetSentenceRepeatForDayQuery request,
         CancellationToken cancellationToken)
     {
-        var result =
-            await _sentenceManager.GetSentenceForRepeatAsync(request.UserId, SentenceForRepeatModeEnum.OldDataMinCount);
-
+        var sentencesForRepeat = await _sentencesFactory.CreateSentencesForRepeatAsync(SentenceForRepeatModeEnum.OldDataMinCount);
+        var result = await sentencesForRepeat.Exec(request.UserId);
         return _mapper.Map<SentenceRepeatForDayDto>(result);
     }
 }

@@ -6,9 +6,7 @@ namespace DropWord.Application.Manager.Sentence;
 public interface ISentenceManager
 {
     Task RepeatSentenceAsync(long userId, bool isLearn, int usingSentencesPairId, CancellationToken cancellationToken);
-
-    Task<SentenceForRepeatModel> GetSentenceForRepeatAsync(long userId, SentenceForRepeatModeEnum mode);
-
+    
     Task ChangeLastUseForDaySentenceAsync(long userId, int usingSentencesPairId,
         CancellationToken cancellationToken);
 
@@ -48,4 +46,7 @@ public interface ISentenceManager
     /// <returns></returns>
     bool IsNotOneWord(string sentence);
     bool IsNotOneWord(List<string> sentences);
+
+    SentenceToLearnLabelEnum DetectSentenceToLearnLabel(bool isLearning,
+        LearnSentencesModeEnum learnSentencesModeEnum);
 }

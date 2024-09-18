@@ -37,5 +37,10 @@
         public const string InputFeedbackAction = nameof(InputFeedbackAction);
         public const string CancelInputFeedbackKeyboard = "Скасувати ❌";
         public const string InputFeedbackCallback = nameof(InputFeedbackCallback);
+        
+        //Recommended new sentence
+        public const string RecommendedNewSentenceButton = "Нове 🎲";
+        public const string SaveRecommendedNewSentenceToRepeatCallback = nameof(SaveRecommendedNewSentenceToRepeatCallback);
+        public const string DeleteRecommendedNewSentenceToRepeatCallback = nameof(DeleteRecommendedNewSentenceToRepeatCallback);
     }
 }

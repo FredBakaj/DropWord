@@ -25,4 +25,7 @@ public abstract class BaseViewField
     public const string InvalidDataException = nameof(InvalidDataException);
     public const string TryAddOneWordException = nameof(TryAddOneWordException);
     public const string DetectMoreThanOneLanguageException = nameof(DetectMoreThanOneLanguageException);
+    public const string RecommendedNewSentence = nameof(RecommendedNewSentence);
+    public const string SaveRecommendedNewSentenceToRepeat = nameof(SaveRecommendedNewSentenceToRepeat);
+    public const string DeleteRecommendedNewSentenceToRepeat = nameof(DeleteRecommendedNewSentenceToRepeat);
 }
