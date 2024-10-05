@@ -1,4 +1,5 @@
 ﻿using DropWord.TgBot.Core.Handler.ServiceChanelHandler;
+using DropWord.TgBot.Core.Handler.TaskProcessingHandler;
 using DropWord.TgBot.Core.Service.Channel.SmallTalkChat;
 using Telegram.Bot;
 
@@ -8,15 +9,15 @@ public class GenerateReplyToUserMessageService : BackgroundService
 {
     private readonly IServiceChannelReaderHandler _serviceChannelReaderHandler;
     private readonly ITelegramBotClient _botClient;
-    private readonly Dictionary<long, (Task Task, CancellationTokenSource CancellationTokenSource)> _taskDictionary;
+    private readonly IBackgroundTaskHandler _backgroundTaskHandler;
 
 
     public GenerateReplyToUserMessageService(IServiceChannelReaderHandler serviceChannelReaderHandler,
-        ITelegramBotClient botClient)
+        ITelegramBotClient botClient, IBackgroundTaskHandler backgroundTaskHandler)
     {
         _serviceChannelReaderHandler = serviceChannelReaderHandler;
         _botClient = botClient;
-        _taskDictionary = new Dictionary<long, (Task, CancellationTokenSource)>();
+        _backgroundTaskHandler = backgroundTaskHandler;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -26,36 +27,15 @@ public class GenerateReplyToUserMessageService : BackgroundService
             // тормозит цикл, если небыло сигнала
             GenerateReplyToUserMessageChannel chanelData =
                 await _serviceChannelReaderHandler.ReadSignalAsync<GenerateReplyToUserMessageChannel>();
-            
-            lock (_taskDictionary)
+
+            if (await _backgroundTaskHandler.IsProcessRunningAsync(chanelData.UserId, "GenerateReplyToUserMessage"))
             {
-                foreach (var taskItem in _taskDictionary)
-                {
-                    if (taskItem.Value.Task.IsCanceled
-                        || taskItem.Value.Task.IsCompleted
-                        || taskItem.Value.Task.IsFaulted
-                        || _taskDictionary.ContainsKey(chanelData.UserId))
-                    {
-                        _taskDictionary[chanelData.UserId].CancellationTokenSource.CancelAsync();
-                        _taskDictionary.Remove(taskItem.Key); // Удаляем завершённую задачу из словаря
-                    }
-                }
+                await _backgroundTaskHandler.StopProcessAsync(chanelData.UserId, "GenerateReplyToUserMessage");
             }
 
-            // Создаём CancellationTokenSource для этой задачи
-            var cancellationTokenSource = new CancellationTokenSource();
-            var cancellationToken = cancellationTokenSource.Token;
+            await _backgroundTaskHandler.StartProcessAsync(chanelData.UserId, "GenerateReplyToUserMessage",
+                ProcessReplyToUserMessageAsync, chanelData);
 
-            // Создаём и запускаем задачу асинхронной обработки
-            var task = Task.Run(() => ProcessReplyToUserMessageAsync(chanelData, cancellationToken),
-                cancellationToken);
-
-            // Сохраняем задачу и её CancellationTokenSource в словарь
-            lock (_taskDictionary)
-            {
-                _taskDictionary[chanelData.UserId] = (task, cancellationTokenSource);
-            }
-            
             await Task.Delay(100, stoppingToken); // Ждём перед следующей итерацией
         }
     }
