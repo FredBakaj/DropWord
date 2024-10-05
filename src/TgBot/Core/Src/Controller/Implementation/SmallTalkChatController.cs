@@ -4,9 +4,8 @@ using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Handler.BotStateTreeHandler;
 using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
 using DropWord.TgBot.Core.Handler.BotViewHandler;
-using DropWord.TgBot.Core.Handler.ServiceChanelHandler;
+using DropWord.TgBot.Core.Handler.NotificationHandler.Notification.SmallTalkChat;
 using DropWord.TgBot.Core.Model;
-using DropWord.TgBot.Core.Service.Channel.SmallTalkChat;
 using MediatR;
 
 namespace DropWord.TgBot.Core.Src.Controller.Implementation;
@@ -16,19 +15,20 @@ public class SmallTalkChatController : IBotController
     private readonly IBotStateTreeHandler _botStateTreeHandler;
     private readonly IBotViewHandler _botViewHandler;
     private readonly ISender _sender;
+    private readonly IMediator _mediator;
     private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
-    private readonly IServiceChannelSenderHandler _serviceChannelSenderHandler;
     public string Name() => SmallTalkChatField.SmallTalkChatState;
 
     public SmallTalkChatController(IBotStateTreeHandler botStateTreeHandler, IBotViewHandler botViewHandler,
         ISender sender,
-        IBotStateTreeUserHandler botStateTreeUserHandler, IServiceChannelSenderHandler serviceChannelSenderHandler)
+        IMediator mediator,
+        IBotStateTreeUserHandler botStateTreeUserHandler)
     {
         _botStateTreeHandler = botStateTreeHandler;
         _botViewHandler = botViewHandler;
         _sender = sender;
+        _mediator = mediator;
         _botStateTreeUserHandler = botStateTreeUserHandler;
-        _serviceChannelSenderHandler = serviceChannelSenderHandler;
 
         Initialize();
     }
@@ -52,12 +52,13 @@ public class SmallTalkChatController : IBotController
     private async Task OnAutoChatAction(UpdateBDto updateBDto)
     {
         // await Task.Run(() => Console.WriteLine(updateBDto.GetMessage().Text));
-        await _serviceChannelSenderHandler.SendSignalAsync(
+        await _mediator.Publish(
             
-            new GenerateReplyToUserMessageChannel()
+            new UserSendMessageEvent()
             {
                 UserId = updateBDto.GetUserId(), Message = updateBDto.GetMessage().Text!
             });
+        
     }
 
     private async Task OnCancelKeyboard(UpdateBDto updateBDto)

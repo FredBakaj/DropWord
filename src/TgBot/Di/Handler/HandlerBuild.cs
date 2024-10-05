@@ -6,8 +6,6 @@ using DropWord.TgBot.Core.Handler.BotViewHandler;
 using DropWord.TgBot.Core.Handler.BotViewHandler.Implementation;
 using DropWord.TgBot.Core.Handler.MiddlewareHandler;
 using DropWord.TgBot.Core.Handler.MiddlewareHandler.Implementation;
-using DropWord.TgBot.Core.Handler.ServiceChanelHandler;
-using DropWord.TgBot.Core.Handler.ServiceChanelHandler.Implementation;
 using DropWord.TgBot.Core.Handler.TaskProcessingHandler;
 using DropWord.TgBot.Core.Handler.TaskProcessingHandler.Implementation;
 
@@ -25,14 +23,6 @@ public class HandlerBuild
         services.AddScoped<IBotStateTreeUserHandler, BotStateTreeUserHandler>();
         
         services.AddSingleton<IBackgroundTaskHandler, BackgroundTaskHandler>();
-        
-        services.AddSingleton<ServiceChannelHandler>();
-
-        services.AddSingleton<IServiceChannelReaderHandler>(provider => 
-            provider.GetRequiredService<ServiceChannelHandler>());
-
-        services.AddSingleton<IServiceChannelSenderHandler>(provider => 
-            provider.GetRequiredService<ServiceChannelHandler>());
         
     }
 }
