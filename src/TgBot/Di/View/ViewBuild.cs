@@ -12,5 +12,6 @@ public class ViewBuild
         services.AddScoped<IBotView, SentencesRepetitionByInputBotView>();
         services.AddScoped<IBotView, SettingsBotView>();
         services.AddScoped<IBotView, RepeatForDayBotView>();
+        services.AddScoped<IBotView, SmallTalkChatBotView>();
     }
 }

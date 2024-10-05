@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
-namespace DropWord.TgBot.Core.Service;
+namespace DropWord.TgBot.Core.Service.Implementation;
 
 public class ResetWebhookService : BackgroundService
 {

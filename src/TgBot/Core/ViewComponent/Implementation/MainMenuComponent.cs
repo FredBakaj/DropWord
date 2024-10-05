@@ -42,7 +42,7 @@ public class MainMenuComponent : IMainMenuComponent
             },
             new KeyboardButton[]
             {
-                BaseField.SettingsKeyboard
+                BaseField.ChatKeyboard, BaseField.SettingsKeyboard
             }
         }) { ResizeKeyboard = true };
     }

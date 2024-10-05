@@ -9,6 +9,7 @@ using DropWord.TgBot.Di.Factory;
 using DropWord.TgBot.Di.Handler;
 using DropWord.TgBot.Di.Manager;
 using DropWord.TgBot.Di.Middleware;
+using DropWord.TgBot.Di.Serivce;
 using DropWord.TgBot.Di.View;
 using DropWord.TgBot.Mapping;
 using Telegram.Bot;
@@ -51,6 +52,7 @@ namespace DropWord.TgBot.Di
 
             //Custom service
             services.AddScoped<ILogger, Logger<ServicesBuild>>();
+            ServiceBuild.BuildService(services);
             ManagerBuild.BuildService(services);
             MiddlewareBuild.BuildService(services);
             ControllerBuild.BuildService(services);

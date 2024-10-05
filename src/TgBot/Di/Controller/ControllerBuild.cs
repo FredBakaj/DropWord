@@ -11,6 +11,7 @@ namespace DropWord.TgBot.Di.Controller
             services.AddScoped<IBotController, StartController>();
             services.AddScoped<IBotController, SentencesRepetitionByInputController>();
             services.AddScoped<IBotController, RepeatForDayController>();
+            services.AddScoped<IBotController, SmallTalkChatController>();
         }
     }
 }

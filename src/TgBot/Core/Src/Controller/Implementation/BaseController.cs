@@ -151,6 +151,17 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
             _botStateTreeHandler.AddCallback(BaseField.BaseAction,
                 BaseField.DeleteRecommendedNewSentenceToRepeatCallback,
                 OnDeleteRecommendedNewSentenceToRepeatCallback);
+            
+            _botStateTreeHandler.AddKeyboard(BaseField.BaseAction, BaseField.ChatKeyboard,
+                OnChatKeyboard);
+        }
+
+        private async Task OnChatKeyboard(UpdateBDto updateBDto)
+        {
+            await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto, SmallTalkChatField.SmallTalkChatState,
+                SmallTalkChatField.SmallTalkChatAction);
+            await _botViewHandler.SendAsync(SmallTalkChatViewField.StartSmallTalkChatAction, updateBDto);
+
         }
 
 

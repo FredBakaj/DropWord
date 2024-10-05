@@ -1,4 +1,6 @@
-﻿namespace DropWord.TgBot.Core.Field.Controller
+﻿using Telegram.Bot.Types.ReplyMarkups;
+
+namespace DropWord.TgBot.Core.Field.Controller
 {
     public abstract class BaseField
     {
@@ -42,5 +44,6 @@
         public const string RecommendedNewSentenceButton = "Нове 🎲";
         public const string SaveRecommendedNewSentenceToRepeatCallback = nameof(SaveRecommendedNewSentenceToRepeatCallback);
         public const string DeleteRecommendedNewSentenceToRepeatCallback = nameof(DeleteRecommendedNewSentenceToRepeatCallback);
+        public const string ChatKeyboard = "Чат 💬";
     }
 }
