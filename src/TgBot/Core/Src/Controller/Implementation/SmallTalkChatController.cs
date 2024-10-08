@@ -4,7 +4,7 @@ using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Handler.BotStateTreeHandler;
 using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
 using DropWord.TgBot.Core.Handler.BotViewHandler;
-using DropWord.TgBot.Core.Handler.NotificationHandler.Notification.SmallTalkChat;
+using DropWord.TgBot.Core.Handler.NotificationHandler.Notification.Implementation.SmallTalkChat;
 using DropWord.TgBot.Core.Model;
 using MediatR;
 
@@ -15,13 +15,13 @@ public class SmallTalkChatController : IBotController
     private readonly IBotStateTreeHandler _botStateTreeHandler;
     private readonly IBotViewHandler _botViewHandler;
     private readonly ISender _sender;
-    private readonly IMediator _mediator;
+    private readonly IPublisher _mediator;
     private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
     public string Name() => SmallTalkChatField.SmallTalkChatState;
 
     public SmallTalkChatController(IBotStateTreeHandler botStateTreeHandler, IBotViewHandler botViewHandler,
         ISender sender,
-        IMediator mediator,
+        IPublisher mediator,
         IBotStateTreeUserHandler botStateTreeUserHandler)
     {
         _botStateTreeHandler = botStateTreeHandler;

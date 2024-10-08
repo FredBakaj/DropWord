@@ -2,6 +2,7 @@
 using DropWord.Application;
 using DropWord.Application.DI.Strategy;
 using DropWord.Infrastructure;
+using DropWord.TgBot.Core.Handler.NotificationHandler.Publisher.Implementation;
 using DropWord.TgBot.Core.Service;
 using DropWord.TgBot.Core.Service.Implementation;
 using DropWord.TgBot.Di.Command;
@@ -12,6 +13,7 @@ using DropWord.TgBot.Di.Manager;
 using DropWord.TgBot.Di.Middleware;
 using DropWord.TgBot.Di.View;
 using DropWord.TgBot.Mapping;
+using MediatR;
 using Telegram.Bot;
 
 namespace DropWord.TgBot.Di
@@ -50,6 +52,7 @@ namespace DropWord.TgBot.Di
             services.AddControllers();
             services.AddAutoMapper(typeof(MapperProfile));
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            services.AddSingleton<IPublisher, PrioritizedNotificationPublisher>();
 
             //Custom service
             services.AddScoped<ILogger, Logger<ServicesBuild>>();

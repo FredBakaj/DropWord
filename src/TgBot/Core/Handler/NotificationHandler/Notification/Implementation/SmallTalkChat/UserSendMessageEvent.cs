@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace DropWord.TgBot.Core.Handler.NotificationHandler.Notification.SmallTalkChat;
+namespace DropWord.TgBot.Core.Handler.NotificationHandler.Notification.Implementation.SmallTalkChat;
 
 public class UserSendMessageEvent: INotification
 {

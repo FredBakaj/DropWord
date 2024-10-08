@@ -1,12 +1,13 @@
 ﻿using DropWord.TgBot.Core.Field;
-using DropWord.TgBot.Core.Handler.NotificationHandler.Notification.SmallTalkChat;
+using DropWord.TgBot.Core.Handler.NotificationHandler.Notification;
+using DropWord.TgBot.Core.Handler.NotificationHandler.Notification.Implementation.SmallTalkChat;
 using DropWord.TgBot.Core.Handler.TaskProcessingHandler;
 using MediatR;
 using Telegram.Bot;
 
 namespace DropWord.TgBot.Core.Handler.NotificationHandler.Handler.SmallTalkChat;
 
-public class GenerateReplyToUserMessageHandler : INotificationHandler<UserSendMessageEvent>
+public class GenerateReplyToUserMessageHandler : INotificationHandler<UserSendMessageEvent>, IHasPriority
 {
     private readonly ITelegramBotClient _botClient;
     private readonly IBackgroundTaskHandler _backgroundTaskHandler;
@@ -36,4 +37,6 @@ public class GenerateReplyToUserMessageHandler : INotificationHandler<UserSendMe
         cancellationToken.ThrowIfCancellationRequested();
         await _botClient.SendTextMessageAsync(chanelData.UserId, chanelData.Message);
     }
+    
+    public int Priority => 1;
 }
