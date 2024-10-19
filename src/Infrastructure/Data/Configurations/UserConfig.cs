@@ -48,5 +48,10 @@ public class UserConfig : BaseConfig, IEntityTypeConfiguration<UserEntity>
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(x => x.AutoChatDates)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -2,6 +2,8 @@
 
 public class UserEntity : BaseAuditableEntity<long>
 {
+    public string Name { get; set; } = null!;
+    
     public StateTreeEntity StateTree { get; set; } = null!;
     public UserSettingsEntity UserSettings { get; set; } = null!;
     public UserLearningInfoEntity UserLearningInfo { get; set; } = null!;
@@ -12,4 +14,5 @@ public class UserEntity : BaseAuditableEntity<long>
     
     public List<RecommendedNewConnectionWithUserEntity> RecommendedNewConnectionWithUser { get; set; } = null!;
     
+    public List<AutoChatDataEntity> AutoChatDates { get; set; } = null!;
 }

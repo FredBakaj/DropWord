@@ -10,6 +10,9 @@ public class FeedbackConfig : BaseConfig, IEntityTypeConfiguration<FeedbackEntit
     {
         builder.ToTable("Feedback");
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .UseIdentityColumn(1, 1)
+            .HasColumnType("int");
         builder.HasQueryFilter(x => x.WhenDeleted == null);
     }
 }

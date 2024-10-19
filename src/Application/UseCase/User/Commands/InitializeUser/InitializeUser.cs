@@ -61,7 +61,9 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
             };
             var user_ = new UserEntity()
             {
-                Id = request.UserId, 
+                Id = request.UserId,
+                //TODO добавить генерацию имени
+                Name = "Farilder",
                 StateTree = stateTree, 
                 UserSettings = userSettings,
                 UserLearningInfo = userLearningInfo,

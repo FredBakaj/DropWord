@@ -10,6 +10,9 @@ public class RecommendedNewConnectionSentenceConfig : BaseConfig, IEntityTypeCon
     {
         builder.ToTable("RecommendedNewConnectionSentence");
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .UseIdentityColumn(1, 1)
+            .HasColumnType("int");
         builder.HasQueryFilter(x => x.WhenDeleted == null);
         
         builder.HasOne(x => x.RecommendedNewFirstSentence)

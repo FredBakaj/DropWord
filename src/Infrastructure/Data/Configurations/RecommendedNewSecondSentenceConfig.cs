@@ -10,6 +10,9 @@ public class RecommendedNewSecondSentenceConfig : BaseConfig, IEntityTypeConfigu
     {
         builder.ToTable("RecommendedNewSecondSentence");
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .UseIdentityColumn(1, 1)
+            .HasColumnType("int");
         builder.HasQueryFilter(x => x.WhenDeleted == null);
         
         builder.HasMany(x => x.RecommendedNewConnectionSentences)

@@ -22,6 +22,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<RecommendedNewSecondSentenceEntity> RecommendedNewSecondSentence => Set<RecommendedNewSecondSentenceEntity>();
     public DbSet<RecommendedNewConnectionSentenceEntity> RecommendedNewConnectionSentence => Set<RecommendedNewConnectionSentenceEntity>();
     public DbSet<RecommendedNewConnectionWithUserEntity> RecommendedNewConnectionWithUser => Set<RecommendedNewConnectionWithUserEntity>();
+    public DbSet<AutoChatDataEntity> AutoChatData => Set<AutoChatDataEntity>();
+    public DbSet<AutoChatBotEntity> AutoChatBot => Set<AutoChatBotEntity>();
+    public DbSet<AutoChatHistoryEntity> AutoChatHistory => Set<AutoChatHistoryEntity>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

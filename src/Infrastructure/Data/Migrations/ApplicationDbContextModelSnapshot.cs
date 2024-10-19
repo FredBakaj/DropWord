@@ -55,6 +55,114 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.ToTable("AnalyticsUserAction", (string)null);
                 });
 
+            modelBuilder.Entity("DropWord.Domain.Entities.AutoChatBotEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Interests")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AutoChatBot", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.AutoChatDataEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AutoChatBotId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutoChatBotId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AutoChatData", (string)null);
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.AutoChatHistoryEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AutoChatDataId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MessageTypeEnum")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderEnum")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("WhenDeleted")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutoChatDataId");
+
+                    b.ToTable("AutoChatHistory", (string)null);
+                });
+
             modelBuilder.Entity("DropWord.Domain.Entities.FeedbackEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -311,6 +419,10 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset?>("WhenDeleted")
                         .HasColumnType("datetimeoffset");
 
@@ -488,6 +600,36 @@ namespace DropWord.Infrastructure.Data.Migrations
                     b.ToTable("SentencesPairEntityUserSentencesCollectionEntity", (string)null);
                 });
 
+            modelBuilder.Entity("DropWord.Domain.Entities.AutoChatDataEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.AutoChatBotEntity", "AutoChatBot")
+                        .WithMany("AutoChatDates")
+                        .HasForeignKey("AutoChatBotId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DropWord.Domain.Entities.UserEntity", "User")
+                        .WithMany("AutoChatDates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AutoChatBot");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.AutoChatHistoryEntity", b =>
+                {
+                    b.HasOne("DropWord.Domain.Entities.AutoChatDataEntity", "AutoChatData")
+                        .WithMany("AutoChatHistories")
+                        .HasForeignKey("AutoChatDataId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("AutoChatData");
+                });
+
             modelBuilder.Entity("DropWord.Domain.Entities.RecommendedNewConnectionSentenceEntity", b =>
                 {
                     b.HasOne("DropWord.Domain.Entities.RecommendedNewFirstSentenceEntity", "RecommendedNewFirstSentence")
@@ -629,6 +771,16 @@ namespace DropWord.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DropWord.Domain.Entities.AutoChatBotEntity", b =>
+                {
+                    b.Navigation("AutoChatDates");
+                });
+
+            modelBuilder.Entity("DropWord.Domain.Entities.AutoChatDataEntity", b =>
+                {
+                    b.Navigation("AutoChatHistories");
+                });
+
             modelBuilder.Entity("DropWord.Domain.Entities.RecommendedNewConnectionSentenceEntity", b =>
                 {
                     b.Navigation("RecommendedNewConnectionWithUsers");
@@ -658,6 +810,8 @@ namespace DropWord.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("DropWord.Domain.Entities.UserEntity", b =>
                 {
+                    b.Navigation("AutoChatDates");
+
                     b.Navigation("RecommendedNewConnectionWithUser");
 
                     b.Navigation("SentencesPairs");

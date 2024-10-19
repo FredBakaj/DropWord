@@ -18,6 +18,10 @@ public interface IApplicationDbContext
     public DbSet<RecommendedNewSecondSentenceEntity> RecommendedNewSecondSentence { get; }
     public DbSet<RecommendedNewConnectionSentenceEntity> RecommendedNewConnectionSentence { get; }
     public DbSet<RecommendedNewConnectionWithUserEntity> RecommendedNewConnectionWithUser { get; }
+    public DbSet<AutoChatDataEntity> AutoChatData { get; }
+    public DbSet<AutoChatBotEntity> AutoChatBot { get; }
+    public DbSet<AutoChatHistoryEntity> AutoChatHistory { get; }
+    
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

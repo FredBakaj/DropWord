@@ -1,7 +1,9 @@
 using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Common.Interfaces.Sentence;
+using DropWord.Application.Common.Interfaces.SmallTalkChat;
 using DropWord.Infrastructure.Config;
 using DropWord.Infrastructure.Sentence;
+using DropWord.Infrastructure.SmallTalkChat;
 using DropWord.TgBot.Core.Manager.Analytics;
 using DropWord.TgBot.Core.Manager.Analytics.Implementation;
 using DropWord.TgBot.Core.Manager.Info;
@@ -28,5 +30,6 @@ public class ManagerBuild
         services.AddScoped<IAnalyticsManager, AnalyticsManager>();
         services.AddScoped<IInfoManager, InfoManager>();
         services.AddScoped<ISpamQueryManager, SpamQueryManager>();
+        services.AddScoped<IResponseMessageGenerator, ResponseMessageGenerator>();
     }
 }

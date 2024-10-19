@@ -6,4 +6,8 @@ public abstract class SmallTalkChatField
     public const string SmallTalkChatAction = nameof(SmallTalkChatAction);
     public const string BackKeyboard = "Повернутися 🍔";
     public const string SearchNewUserKeyboard = "Пошук 👤";
+    public const string CancelSearchKeyboard = "Відмінити пошук ❌";
+    
+    public const string SmallTalkWriteMessageAction = nameof(SmallTalkWriteMessageAction);
+    public const string SearchingNewUserAction = nameof(SearchingNewUserAction);
 }
