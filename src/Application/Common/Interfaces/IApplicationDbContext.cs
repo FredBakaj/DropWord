@@ -21,6 +21,8 @@ public interface IApplicationDbContext
     public DbSet<AutoChatDataEntity> AutoChatData { get; }
     public DbSet<AutoChatBotEntity> AutoChatBot { get; }
     public DbSet<AutoChatHistoryEntity> AutoChatHistory { get; }
+    public DbSet<AutoChatAnalysisHistoryEntity> AutoChatAnalysisHistory { get; }
+
     
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);

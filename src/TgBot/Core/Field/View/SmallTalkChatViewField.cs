@@ -11,4 +11,12 @@ public class SmallTalkChatViewField
     public const string SmallTalkWriteMessage = nameof(SmallTalkWriteMessage);
     public const string CancelSearchKeyboard = nameof(CancelSearchKeyboard);
     public const string SmallTalkEndChating = nameof(SmallTalkEndChating);
+    public const string SmallTalkAnalysisMessageSuccessful = nameof(SmallTalkAnalysisMessageSuccessful);
+    public const string SmallTalkAnalysisMessageSuccessfulAndContinueChat = nameof(SmallTalkAnalysisMessageSuccessfulAndContinueChat);
+    public const string SmallTalkAnalysisMessageReanalysisError = nameof(SmallTalkAnalysisMessageReanalysisError);
+    public const string SmallTalkAnalysisMessageError = nameof(SmallTalkAnalysisMessageError);
+    public const string SmallTalkAnalysisMessageProcessing = nameof(SmallTalkAnalysisMessageProcessing);
+    public const string SmallTalkAnalysisMessageNoTalkMessagesError = nameof(SmallTalkAnalysisMessageNoTalkMessagesError);
+    public const string SmallTalkAnalysisMessageStartAnalysis = nameof(SmallTalkAnalysisMessageStartAnalysis);
+    public const string SmallTalkAnalysisMessageTooManyAnalysisHistoryError = nameof(SmallTalkAnalysisMessageTooManyAnalysisHistoryError);
 }

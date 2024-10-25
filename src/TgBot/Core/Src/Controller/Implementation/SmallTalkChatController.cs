@@ -1,6 +1,8 @@
-﻿using DropWord.Application.UseCase.SmallTalkChat.Commands.CancelChat;
+﻿using DropWord.Application.UseCase.SmallTalkChat.Commands.AnalysisTalkMessages;
+using DropWord.Application.UseCase.SmallTalkChat.Commands.CancelChat;
 using DropWord.Application.UseCase.SmallTalkChat.Commands.GenerateReplyToUserMessage;
 using DropWord.Application.UseCase.SmallTalkChat.Commands.SearchNewBot;
+using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field;
 using DropWord.TgBot.Core.Field.Controller;
@@ -59,6 +61,8 @@ public class SmallTalkChatController : IBotController
             OnCancelKeyboard);
         _botStateTreeHandler.AddKeyboard(SmallTalkChatField.SmallTalkChatAction,
             SmallTalkChatField.SearchNewUserKeyboard, OnSearchNewUserKeyboard);
+        _botStateTreeHandler.AddKeyboard(SmallTalkChatField.SmallTalkChatAction,
+            SmallTalkChatField.AnalyzeMessagesKeyboard, OnAnalyzeMessagesKeyboard);
 
         _botStateTreeHandler.AddAction(SmallTalkChatField.SearchingNewUserAction, OnSearchingNewUserAction);
         _botStateTreeHandler.AddKeyboard(SmallTalkChatField.SearchingNewUserAction,
@@ -68,7 +72,9 @@ public class SmallTalkChatController : IBotController
         _botStateTreeHandler.AddKeyboard(SmallTalkChatField.SmallTalkWriteMessageAction,
             SmallTalkChatField.BackKeyboard, OnCancelKeyboard);
         _botStateTreeHandler.AddKeyboard(SmallTalkChatField.SmallTalkWriteMessageAction,
-            SmallTalkChatField.SearchNewUserKeyboard, OnSearchNewUserKeyboard);
+            SmallTalkChatField.SearchNextUserKeyboard, OnSearchNewUserKeyboard);
+        _botStateTreeHandler.AddKeyboard(SmallTalkChatField.SmallTalkWriteMessageAction,
+            SmallTalkChatField.AnalyzeMessagesKeyboard, OnAnalyzeMessagesKeyboard);
     }
 
     private async Task OnAutoChatAction(UpdateBDto updateBDto)
@@ -216,6 +222,7 @@ public class SmallTalkChatController : IBotController
         }
         catch (Exception)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             await _botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkEndChating, updateBDto);
             await botStateTreeUserHandler.SetActionAsync(updateBDto, SmallTalkChatField.SmallTalkChatAction);
         }
@@ -243,6 +250,80 @@ public class SmallTalkChatController : IBotController
 
             await botClient.SendChatActionAsync(updateBDto.GetUserId(), ChatAction.Typing);
             await Task.Delay(5000);
+        }
+    }
+
+    private async Task OnAnalyzeMessagesKeyboard(UpdateBDto updateBDto)
+    {
+        var services = _serviceProvider.CreateScope();
+        if (!await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
+                TaskProcessingField.AnalyzeTalkMessages))
+        {
+            await _backgroundTaskHandler.StartProcessAsync(updateBDto.GetUserId(),
+                TaskProcessingField.AnalyzeTalkMessages,
+                AnalyzeTalkMessagesAsync, updateBDto, services);
+            await _botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageStartAnalysis, updateBDto);
+        }
+        else
+        {
+            await _botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageProcessing, updateBDto);
+        }
+    }
+
+    private async Task AnalyzeTalkMessagesAsync(UpdateBDto updateBDto, IServiceScope serviceScope,
+        CancellationToken cancellationToken)
+    {
+        ISender sender = serviceScope.ServiceProvider.GetRequiredService<ISender>();
+        IBotViewHandler botViewHandler = serviceScope.ServiceProvider.GetRequiredService<IBotViewHandler>();
+        IBotStateTreeUserHandler botStateHandler =
+            serviceScope.ServiceProvider.GetRequiredService<IBotStateTreeUserHandler>();
+
+        try
+        {
+            AnalysisTalkMessagesDto result = await sender.Send(
+                new AnalysisTalkMessagesCommand() { UserId = updateBDto.GetUserId() },
+                cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var viewDto = new SmallTalkAnalysisMessageVDto()
+            {
+                Update = updateBDto, TextAnalysis = result.TextAnalysis
+            };
+
+            var stateAction = await botStateHandler.GetStateAndActionAsync(updateBDto);
+            if (stateAction.Action == SmallTalkChatField.SmallTalkWriteMessageAction)
+            {
+                await botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageSuccessfulAndContinueChat,
+                    viewDto);
+            }
+            else
+            {
+                await botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageSuccessful, viewDto);
+            }
+        }
+        catch (ReanalysisTalkMessagesException)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageReanalysisError, updateBDto);
+        }
+        catch (NoTalkMessagesException)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageNoTalkMessagesError,
+                updateBDto);
+        }
+        catch (TooManyAnalysisHistoryException)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageTooManyAnalysisHistoryError,
+                updateBDto);
+        }
+        catch (Exception)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageError, updateBDto);
+            throw;
         }
     }
 }

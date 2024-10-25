@@ -25,6 +25,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<AutoChatDataEntity> AutoChatData => Set<AutoChatDataEntity>();
     public DbSet<AutoChatBotEntity> AutoChatBot => Set<AutoChatBotEntity>();
     public DbSet<AutoChatHistoryEntity> AutoChatHistory => Set<AutoChatHistoryEntity>();
+    public DbSet<AutoChatAnalysisHistoryEntity> AutoChatAnalysisHistory => Set<AutoChatAnalysisHistoryEntity>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -35,7 +35,7 @@ public abstract class ReceiverServiceBase<TUpdateHandler> : IReceiverService
         // ToDo: we can inject ReceiverOptions through IOptions container
         var receiverOptions = new ReceiverOptions()
         {
-            AllowedUpdates = Array.Empty<UpdateType>(), ThrowPendingUpdates = true,
+            AllowedUpdates = Array.Empty<UpdateType>(),
         };
 
         var me = await _botClient.GetMeAsync(stoppingToken);

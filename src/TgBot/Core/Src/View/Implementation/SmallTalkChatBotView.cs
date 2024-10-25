@@ -1,5 +1,6 @@
 ﻿using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
+using DropWord.TgBot.Core.Field;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Model;
@@ -25,86 +26,158 @@ public class SmallTalkChatBotView : ABotView
     public async Task StartSmallTalkChatAction(UpdateBDto updateBDto)
     {
         var text =
-            "Привіт, я діяч DropWord! Ти можеш знайти людину, яка хочеш знати деталі про або знати більше про мене.";
-        var keyboard = GetMenuButton();
+            $"Чат для спілкування і застосування своїх навичок на практиці. Для більш детальної інформації /{CommandField.Tutorial}. " +
+            $"Щоб почати натисніть кнопку \"{SmallTalkChatField.SearchNewUserKeyboard}\"";
+        
+        var keyboard = GetMenuButtons();
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
-    [BotView(SmallTalkChatViewField.AutoChatAction)]
 
+    [BotView(SmallTalkChatViewField.AutoChatAction)]
     public async Task AutoChatAction(UpdateBDto updateBDto)
     {
-        var text = $"Натисніть на \"{SmallTalkChatField.SearchNewUserKeyboard}\". Щоб розпочати";
-        var keyboard = GetMenuButton();
+        var text = $"Натисніть кнопку \"{SmallTalkChatField.SearchNewUserKeyboard}\"";
+        var keyboard = GetMenuButtons();
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
-    
-    [BotView(SmallTalkChatViewField.CancelSearchKeyboard)]
 
+    [BotView(SmallTalkChatViewField.CancelSearchKeyboard)]
     public async Task CancelSearchKeyboard(UpdateBDto updateBDto)
     {
         var text = $"Скасування пошуку ❌";
-        var keyboard = GetMenuButton();
+        var keyboard = GetMenuButtons();
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.SearchNewUserKeyboard)]
     public async Task SearchNewUserKeyboard(UpdateBDto updateBDto)
     {
-        var text = "Пошук людини";
+        var text = "Шукаємо 🔎";
         var keyboard = new ReplyKeyboardMarkup(new[]
         {
-            new KeyboardButton[] {SmallTalkChatField.CancelSearchKeyboard }
+            new KeyboardButton[] { SmallTalkChatField.CancelSearchKeyboard }
         }) { ResizeKeyboard = true };
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup:keyboard);
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.SearchNewUserRunning)]
     public async Task SearchNewUserRunning(UpdateBDto updateBDto)
     {
-        var text = "Ще шукаемо!";
+        var text = "Пошук співрозмовника триває";
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
     }
 
-    [BotView(SmallTalkChatViewField. SearchNewUserSuccessfulResult)]
+    [BotView(SmallTalkChatViewField.SearchNewUserSuccessfulResult)]
     public async Task SearchNewUserSuccessfulResult(SearchNewUserSuccessfulResultVDto viewDto)
     {
-        var text = $"🪂 <b>Знайшовся співрозмовник</b> \n" +
-                   $"👤 {viewDto.Name} \n\n" +
-                   $"📝 {viewDto.Interests}\n";
-        var keyboard = GetMenuButton();
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, replyMarkup:keyboard, parseMode:ParseMode.Html);
+        var text = $"👤<b>{viewDto.Name}</b>\n" +
+                   $"📝 {viewDto.Interests}\n\n" +
+                   $"➡️ Напишіть повідомлення ✉️";
+        var keyboard = GetChatingMenuButtons();
+        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, replyMarkup: keyboard,
+            parseMode: ParseMode.Html);
     }
 
     [BotView(SmallTalkChatViewField.SearchNewUserBadResult)]
     public async Task SearchNewUserBadResult(UpdateBDto updateBDto)
     {
-        var text = $"Виникла помилка";
-        var keyboard = GetMenuButton();
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup:keyboard);
+        var text = $"🔴 Виникла помилка";
+        var keyboard = GetMenuButtons();
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkWriteMessage)]
     public async Task SmallTalkWriteMessage(SmallTalkWriteMessageVDto viewDto)
     {
-        var text = $"👤 <b>{viewDto.InterlocutorsName}</b>\n" +
+        var text = $"💬 <b>{viewDto.InterlocutorsName}</b>\n" +
                    $"{viewDto.Message}";
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode:ParseMode.Html);
+        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Html);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkEndChating)]
-
     public async Task SmallTalkEndChating(UpdateBDto updateBDto)
     {
         var text = $"Співрозмовник закінчив розмову 🫡";
-        var keyboard = GetMenuButton();
+        var keyboard = GetMenuButtons();
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
-    
-    private ReplyKeyboardMarkup GetMenuButton()
+
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageSuccessful)]
+    public async Task SmallTalkAnalysisMessageSuccessful(SmallTalkAnalysisMessageVDto viewDto)
+    {
+        var text = $"**Аналіз минулої переписки** 🧐\n" +
+                   $"{viewDto.TextAnalysis}";
+        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode:ParseMode.Markdown);
+    }
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageSuccessfulAndContinueChat)]
+    public async Task SmallTalkAnalysisMessageSuccessfulAndContinueChat(SmallTalkAnalysisMessageVDto viewDto)
+    {
+        var text = $"**Аналіз повідомлень** 🧐\n" +
+                   $"{viewDto.TextAnalysis}\n" +
+                   $"Можете продовжувати переписку ✍️";
+        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode:ParseMode.Markdown);
+    }
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageReanalysisError)]
+    public async Task SmallTalkAnalysisMessageReanalysisError(UpdateBDto updateBDto)
+    {
+        var text = $"🟡 Вже було проаналізовано ці повідомлення, продовжуйте переписку";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageError)]
+    public async Task SmallTalkAnalysisMessageError(UpdateBDto updateBDto)
+    {
+        var text = $"🔴 Під час аналізу сталася помилка";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageProcessing)]
+    public async Task SmallTalkAnalysisMessageProcessing(UpdateBDto updateBDto)
+    {
+        var text = $"🟡 Аналіз запущено. Зачекайте";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageNoTalkMessagesError)]
+    public async Task SmallTalkAnalysisMessageNoTalkMessagesError(UpdateBDto updateBDto)
+    {
+        var text = $"🔴 Немає повідомлень для аналізу, продовжуйте переписку";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageTooManyAnalysisHistoryError)]
+    public async Task SmallTalkAnalysisMessageTooManyAnalysisHistoryError(UpdateBDto updateBDto)
+    {
+        //TODO тянуть из конфига цифру 3 в тексте
+        var text = $"🔴 Досягнуто ліміт на аналіз повідомлень. На день доступно 3 аналізи";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
+
+    [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageStartAnalysis)]
+    public async Task SmallTalkAnalysisMessageStartAnalysis(UpdateBDto updateBDto)
+    {
+        var text = $"🟡 Розпочався аналіз";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
+
+    private ReplyKeyboardMarkup GetMenuButtons()
     {
         return new ReplyKeyboardMarkup(new[]
         {
-            new KeyboardButton[] { SmallTalkChatField.SearchNewUserKeyboard, SmallTalkChatField.BackKeyboard }
+            new KeyboardButton[] { SmallTalkChatField.SearchNewUserKeyboard, SmallTalkChatField.BackKeyboard },
+            new KeyboardButton[] { SmallTalkChatField.AnalyzeMessagesKeyboard }
+        }) { ResizeKeyboard = true };
+    }
+
+    private ReplyKeyboardMarkup GetChatingMenuButtons()
+    {
+        return new ReplyKeyboardMarkup(new[]
+        {
+            new KeyboardButton[] { SmallTalkChatField.SearchNextUserKeyboard, SmallTalkChatField.BackKeyboard },
+            new KeyboardButton[] { SmallTalkChatField.AnalyzeMessagesKeyboard }
         }) { ResizeKeyboard = true };
     }
 }
