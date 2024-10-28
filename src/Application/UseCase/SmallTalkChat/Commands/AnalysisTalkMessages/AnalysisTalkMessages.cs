@@ -111,12 +111,13 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
     private string GeneratePrompt(string userName, string chatHistory)
     {
         var result = $"""
+                      #ChatHistory
+                      {chatHistory}
                       #Insturction
                       Перевірити на помилки повідомленя які писав {userName}, як бы це зробыв вчитель англійскої мови
                       Потрібно скорочено описати граматичні та синтаксичні помилки. Також важливо зробити акцент на правельності написання слів.
+                      Також потрібно писати коротке пояснення помилок.
                       Опис зауважень повинен бути на українськй мові
-                      #ChatHistory
-                      {chatHistory}
                       """;
         
         return result;

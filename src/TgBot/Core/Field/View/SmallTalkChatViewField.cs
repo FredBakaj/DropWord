@@ -19,4 +19,6 @@ public class SmallTalkChatViewField
     public const string SmallTalkAnalysisMessageNoTalkMessagesError = nameof(SmallTalkAnalysisMessageNoTalkMessagesError);
     public const string SmallTalkAnalysisMessageStartAnalysis = nameof(SmallTalkAnalysisMessageStartAnalysis);
     public const string SmallTalkAnalysisMessageTooManyAnalysisHistoryError = nameof(SmallTalkAnalysisMessageTooManyAnalysisHistoryError);
+    public const string TooManyUserMessagesError = nameof(TooManyUserMessagesError);
+
 }

@@ -2,6 +2,7 @@
 using DropWord.Application.UseCase.SmallTalkChat.Commands.CancelChat;
 using DropWord.Application.UseCase.SmallTalkChat.Commands.GenerateReplyToUserMessage;
 using DropWord.Application.UseCase.SmallTalkChat.Commands.SearchNewBot;
+using DropWord.Application.UseCase.SmallTalkChat.Queries.GetUserCountMessage;
 using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field;
@@ -89,6 +90,19 @@ public class SmallTalkChatController : IBotController
 
     private async Task OnCancelKeyboard(UpdateBDto updateBDto)
     {
+        // TODO Вынести в отдельный сервис, для закрытия который будет подписываться на события
+        if (await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
+                TaskProcessingField.SearchNewUserMessage))
+            await _backgroundTaskHandler.StopProcessAsync(updateBDto.GetUserId(),
+                TaskProcessingField.SearchNewUserMessage);
+        
+        if (await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
+                TaskProcessingField.GenerateReplyToUserMessage))
+            await _backgroundTaskHandler.StopProcessAsync(updateBDto.GetUserId(),
+                TaskProcessingField.GenerateReplyToUserMessage);
+        
+        await _sender.Send(new CancelChatCommand() { UserId = updateBDto.GetUserId() });
+        
         await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto, BaseField.BaseState, BaseField.BaseAction);
         await _botViewHandler.SendAsync(BaseViewField.Menu, updateBDto);
     }
@@ -109,6 +123,15 @@ public class SmallTalkChatController : IBotController
 
     private async Task OnSearchNewUserKeyboard(UpdateBDto updateBDto)
     {
+        //Ограничение на 20 сообщений для Пользователя в день
+        var countMessageDto = await _sender.Send(new GetUserCountMessageQuery() { UserId = updateBDto.GetUserId() });
+        //TODO вынести 20 в конфиг
+        if (countMessageDto.CountMessage > 20)
+        {
+            await _botViewHandler.SendAsync(SmallTalkChatViewField.TooManyUserMessagesError, updateBDto);
+            return;
+        }
+        
         if (await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
                 TaskProcessingField.SearchNewUserMessage))
         {
@@ -171,6 +194,15 @@ public class SmallTalkChatController : IBotController
 
     private async Task OnSmallTalkWriteMessageAction(UpdateBDto updateBDto)
     {
+        //Ограничение на 20 сообщений для Пользователя в день
+        var countMessageDto = await _sender.Send(new GetUserCountMessageQuery() { UserId = updateBDto.GetUserId() });
+        //TODO вынести 20 в конфиг
+        if (countMessageDto.CountMessage > 20)
+        {
+            await _botViewHandler.SendAsync(SmallTalkChatViewField.TooManyUserMessagesError, updateBDto);
+            return;
+        }
+        
         var services = _serviceProvider.CreateScope();
         if (await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
                 TaskProcessingField.GenerateReplyToUserMessage))

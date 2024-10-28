@@ -30,8 +30,10 @@ public class CancelChatCommandHandler : IRequestHandler<CancelChatCommand>
                         && !x.IsClosed)
             .Take(10)
             .ToListAsync();
-
-        chat.ForEach(x => x.IsClosed = true);
-        await _context.SaveChangesAsync(cancellationToken);
+        if (chat.Count > 0)
+        {
+            chat.ForEach(x => x.IsClosed = true);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 }

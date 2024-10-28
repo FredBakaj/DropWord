@@ -155,6 +155,14 @@ public class SmallTalkChatBotView : ABotView
         var text = $"🔴 Досягнуто ліміт на аналіз повідомлень. На день доступно 3 аналізи";
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
     }
+    
+    [BotView(SmallTalkChatViewField.TooManyUserMessagesError)]
+    public async Task SmallTalkAnalysisMessageTooManyUserMessagesError(UpdateBDto updateBDto)
+    {
+        //TODO тянуть из конфига цифру 20 в тексте
+        var text = $"🔴 Досягнуто ліміт повідомлень. На день доступно 20 повідомлень";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageStartAnalysis)]
     public async Task SmallTalkAnalysisMessageStartAnalysis(UpdateBDto updateBDto)

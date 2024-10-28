@@ -32,6 +32,7 @@ public class ReloadCommand : IBotCommand
 
     public async Task Exec(UpdateBDto update)
     {
+        // TODO Вынести в отдельный сервис, для закрытия который будет подписываться на события
         if (await _backgroundTaskHandler.IsProcessRunningAsync(update.GetUserId(),
                 TaskProcessingField.SearchNewUserMessage))
             await _backgroundTaskHandler.StopProcessAsync(update.GetUserId(),

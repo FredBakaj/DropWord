@@ -141,7 +141,6 @@ public class
                      ### Response Creation Template
                      SELECT_TYPE_MESSAGE: Type
                      GENERATE_TEXT_MESSAGE: Text
-                     <break>   
                      """;
         return result;
     }
