@@ -26,7 +26,7 @@ public class SmallTalkChatBotView : ABotView
     public async Task StartSmallTalkChatAction(UpdateBDto updateBDto)
     {
         var text =
-            $"Чат для спілкування і застосування своїх навичок на практиці. Для більш детальної інформації /{CommandField.Tutorial}. " +
+            $"Чат для спілкування і застосування своїх навичок на практиці. Для більш детальної інформації /{CommandField.HelpChat}. " +
             $"Щоб почати натисніть кнопку \"{SmallTalkChatField.SearchNewUserKeyboard}\"";
         
         var keyboard = GetMenuButtons();

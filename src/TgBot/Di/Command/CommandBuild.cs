@@ -9,6 +9,10 @@ public class CommandBuild
     {
         services.AddScoped<IBotCommand, StartCommand>();
         services.AddScoped<IBotCommand, ReloadCommand>();
-        services.AddScoped<IBotCommand, TutorialCommand>();
+        services.AddScoped<IBotCommand, HelpCommand>();
+        services.AddScoped<IBotCommand, HelpChatCommand>();
+        services.AddScoped<IBotCommand, HelpNewSentencesCommand>();
+        services.AddScoped<IBotCommand, HelpRepeatSentencesCommand>();
+        services.AddScoped<IBotCommand, HelpSettingsCommand>();
     }
 }
