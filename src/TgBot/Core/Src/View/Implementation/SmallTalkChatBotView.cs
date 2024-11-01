@@ -94,6 +94,13 @@ public class SmallTalkChatBotView : ABotView
                    $"{viewDto.Message}";
         await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Html);
     }
+    
+    [BotView(SmallTalkChatViewField.InvalidCyrillicTextError)]
+    public async Task InvalidCyrillicTextError(UpdateBDto updateBDto)
+    {
+        var text = $"🔴 Текст має складатися тільки з латинських літер";
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
 
     [BotView(SmallTalkChatViewField.SmallTalkEndChating)]
     public async Task SmallTalkEndChating(UpdateBDto updateBDto)

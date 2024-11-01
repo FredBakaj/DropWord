@@ -15,6 +15,7 @@ using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
 using DropWord.TgBot.Core.Handler.BotViewHandler;
 using DropWord.TgBot.Core.Handler.TaskProcessingHandler;
 using DropWord.TgBot.Core.Manager.User;
+using DropWord.TgBot.Core.Manager.UserFilter;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.ViewDto;
 using MediatR;
@@ -33,6 +34,7 @@ public class SmallTalkChatController : IBotController
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SmallTalkChatController> _logger;
     private readonly IUserDateGeneratorManager _userDateGeneratorManager;
+    private readonly IValidationManager _validationManager;
     public string Name() => SmallTalkChatField.SmallTalkChatState;
 
     public SmallTalkChatController(IBotStateTreeHandler botStateTreeHandler, IBotViewHandler botViewHandler,
@@ -41,7 +43,8 @@ public class SmallTalkChatController : IBotController
         IBotStateTreeUserHandler botStateTreeUserHandler,
         IServiceProvider serviceProvider,
         ILogger<SmallTalkChatController> logger,
-        IUserDateGeneratorManager userDateGeneratorManager)
+        IUserDateGeneratorManager userDateGeneratorManager,
+        IValidationManager validationManager)
     {
         _botStateTreeHandler = botStateTreeHandler;
         _botViewHandler = botViewHandler;
@@ -51,6 +54,7 @@ public class SmallTalkChatController : IBotController
         _serviceProvider = serviceProvider;
         _logger = logger;
         _userDateGeneratorManager = userDateGeneratorManager;
+        _validationManager = validationManager;
 
         Initialize();
     }
@@ -133,6 +137,7 @@ public class SmallTalkChatController : IBotController
 
     private async Task OnSearchNewUserKeyboard(UpdateBDto updateBDto)
     {
+        
         //Ограничение на 20 сообщений для Пользователя в день
         var countMessageDto = await _sender.Send(new GetUserCountMessageQuery() { UserId = updateBDto.GetUserId() });
         //TODO вынести 20 в конфиг
@@ -204,6 +209,14 @@ public class SmallTalkChatController : IBotController
 
     private async Task OnSmallTalkWriteMessageAction(UpdateBDto updateBDto)
     {
+        
+        string text = updateBDto.GetMessage().Text!;
+        // Проверка есть ли в тексте сообщения керилица
+        if (_validationManager.IsAnyCyrillic(text))
+        {
+            await _botViewHandler.SendAsync(SmallTalkChatViewField.InvalidCyrillicTextError, updateBDto);
+            return;
+        }
         //Ограничение на 20 сообщений для Пользователя в день
         var countMessageDto = await _sender.Send(new GetUserCountMessageQuery() { UserId = updateBDto.GetUserId() });
         //TODO вынести 20 в конфиг

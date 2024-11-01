@@ -9,6 +9,7 @@ public class SmallTalkChatViewField
     public const string SearchNewUserRunning = nameof(SearchNewUserRunning);
     public const string AutoChatAction = nameof(AutoChatAction);
     public const string SmallTalkWriteMessage = nameof(SmallTalkWriteMessage);
+    public const string InvalidCyrillicTextError = nameof(InvalidCyrillicTextError);
     public const string CancelSearchKeyboard = nameof(CancelSearchKeyboard);
     public const string SmallTalkEndChating = nameof(SmallTalkEndChating);
     public const string SmallTalkAnalysisMessageSuccessful = nameof(SmallTalkAnalysisMessageSuccessful);

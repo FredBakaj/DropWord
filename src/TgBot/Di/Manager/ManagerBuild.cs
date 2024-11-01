@@ -34,5 +34,6 @@ public class ManagerBuild
         services.AddScoped<ISpamQueryManager, SpamQueryManager>();
         services.AddScoped<IResponseMessageGenerator, ResponseMessageGenerator>();
         services.AddScoped<IUserDateGeneratorManager, UserDateGeneratorManager>();
+        services.AddScoped<IValidationManager, ValidationManager>();
     }
 }
