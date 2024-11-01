@@ -3,6 +3,8 @@ using DropWord.Application.UseCase.SmallTalkChat.Commands.CancelChat;
 using DropWord.Application.UseCase.SmallTalkChat.Commands.GenerateReplyToUserMessage;
 using DropWord.Application.UseCase.SmallTalkChat.Commands.SearchNewBot;
 using DropWord.Application.UseCase.SmallTalkChat.Queries.GetUserCountMessage;
+using DropWord.Application.UseCase.User.Commands.UpdateUser;
+using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field;
@@ -12,6 +14,7 @@ using DropWord.TgBot.Core.Handler.BotStateTreeHandler;
 using DropWord.TgBot.Core.Handler.BotStateTreeUserHandler;
 using DropWord.TgBot.Core.Handler.BotViewHandler;
 using DropWord.TgBot.Core.Handler.TaskProcessingHandler;
+using DropWord.TgBot.Core.Manager.User;
 using DropWord.TgBot.Core.Model;
 using DropWord.TgBot.Core.ViewDto;
 using MediatR;
@@ -29,6 +32,7 @@ public class SmallTalkChatController : IBotController
     private readonly IBotStateTreeUserHandler _botStateTreeUserHandler;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SmallTalkChatController> _logger;
+    private readonly IUserDateGeneratorManager _userDateGeneratorManager;
     public string Name() => SmallTalkChatField.SmallTalkChatState;
 
     public SmallTalkChatController(IBotStateTreeHandler botStateTreeHandler, IBotViewHandler botViewHandler,
@@ -36,7 +40,8 @@ public class SmallTalkChatController : IBotController
         IBackgroundTaskHandler backgroundTaskHandler,
         IBotStateTreeUserHandler botStateTreeUserHandler,
         IServiceProvider serviceProvider,
-        ILogger<SmallTalkChatController> logger)
+        ILogger<SmallTalkChatController> logger,
+        IUserDateGeneratorManager userDateGeneratorManager)
     {
         _botStateTreeHandler = botStateTreeHandler;
         _botViewHandler = botViewHandler;
@@ -45,6 +50,7 @@ public class SmallTalkChatController : IBotController
         _botStateTreeUserHandler = botStateTreeUserHandler;
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _userDateGeneratorManager = userDateGeneratorManager;
 
         Initialize();
     }
@@ -76,6 +82,10 @@ public class SmallTalkChatController : IBotController
             SmallTalkChatField.SearchNextUserKeyboard, OnSearchNewUserKeyboard);
         _botStateTreeHandler.AddKeyboard(SmallTalkChatField.SmallTalkWriteMessageAction,
             SmallTalkChatField.AnalyzeMessagesKeyboard, OnAnalyzeMessagesKeyboard);
+
+        _botStateTreeHandler.AddAction(SmallTalkChatField.SelectGenderAction, OnSelectGenderAction);
+        _botStateTreeHandler.AddCallback(SmallTalkChatField.SelectGenderAction, SmallTalkChatField.SelectGenderCallback,
+            OnSelectGenderCallback);
     }
 
     private async Task OnAutoChatAction(UpdateBDto updateBDto)
@@ -95,14 +105,14 @@ public class SmallTalkChatController : IBotController
                 TaskProcessingField.SearchNewUserMessage))
             await _backgroundTaskHandler.StopProcessAsync(updateBDto.GetUserId(),
                 TaskProcessingField.SearchNewUserMessage);
-        
+
         if (await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
                 TaskProcessingField.GenerateReplyToUserMessage))
             await _backgroundTaskHandler.StopProcessAsync(updateBDto.GetUserId(),
                 TaskProcessingField.GenerateReplyToUserMessage);
-        
+
         await _sender.Send(new CancelChatCommand() { UserId = updateBDto.GetUserId() });
-        
+
         await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto, BaseField.BaseState, BaseField.BaseAction);
         await _botViewHandler.SendAsync(BaseViewField.Menu, updateBDto);
     }
@@ -131,7 +141,7 @@ public class SmallTalkChatController : IBotController
             await _botViewHandler.SendAsync(SmallTalkChatViewField.TooManyUserMessagesError, updateBDto);
             return;
         }
-        
+
         if (await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
                 TaskProcessingField.SearchNewUserMessage))
         {
@@ -202,7 +212,7 @@ public class SmallTalkChatController : IBotController
             await _botViewHandler.SendAsync(SmallTalkChatViewField.TooManyUserMessagesError, updateBDto);
             return;
         }
-        
+
         var services = _serviceProvider.CreateScope();
         if (await _backgroundTaskHandler.IsProcessRunningAsync(updateBDto.GetUserId(),
                 TaskProcessingField.GenerateReplyToUserMessage))
@@ -357,5 +367,30 @@ public class SmallTalkChatController : IBotController
             await botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkAnalysisMessageError, updateBDto);
             throw;
         }
+    }
+
+    private async Task OnSelectGenderAction(UpdateBDto updateBDto)
+    {
+        await _botViewHandler.SendAsync(SmallTalkChatViewField.SelectGenderAction, updateBDto);
+    }
+
+    private async Task OnSelectGenderCallback(UpdateBDto updateBDto)
+    {
+        var selectedGender = (UserGenderEnum)Convert.ToInt32(updateBDto.CallbackData);
+        var randomName = _userDateGeneratorManager.GetRandomUserName(selectedGender);
+
+        await _sender.Send(new UpdateUserCommand()
+        {
+            UserId = updateBDto.GetUserId(), Name = randomName, Gender = selectedGender
+        });
+
+        var viewDto = new SelectedGenderCallbackVDto()
+        {
+            Update = updateBDto, Name = randomName, Gender = selectedGender.ToString()
+        };
+        await _botViewHandler.SendAsync(SmallTalkChatViewField.SelectedGenderCallback, viewDto);
+        await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto, SmallTalkChatField.SmallTalkChatState,
+            SmallTalkChatField.SmallTalkChatAction);
+        await _botViewHandler.SendAsync(SmallTalkChatViewField.StartSmallTalkChatAction, updateBDto);
     }
 }

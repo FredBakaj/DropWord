@@ -1,4 +1,5 @@
-﻿using DropWord.TgBot.Core.Attribute;
+﻿using DropWord.Domain.Enums;
+using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
 using DropWord.TgBot.Core.Field;
 using DropWord.TgBot.Core.Field.Controller;
@@ -28,7 +29,7 @@ public class SmallTalkChatBotView : ABotView
         var text =
             $"Чат для спілкування і застосування своїх навичок на практиці. Для більш детальної інформації /{CommandField.HelpChat}. " +
             $"Щоб почати натисніть кнопку \"{SmallTalkChatField.SearchNewUserKeyboard}\"";
-        
+
         var keyboard = GetMenuButtons();
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
@@ -108,7 +109,7 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"**Аналіз минулої переписки** 🧐\n" +
                    $"{viewDto.TextAnalysis}";
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode:ParseMode.Markdown);
+        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Markdown);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageSuccessfulAndContinueChat)]
@@ -117,7 +118,7 @@ public class SmallTalkChatBotView : ABotView
         var text = $"**Аналіз повідомлень** 🧐\n" +
                    $"{viewDto.TextAnalysis}\n" +
                    $"Можете продовжувати переписку ✍️";
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode:ParseMode.Markdown);
+        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Markdown);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageReanalysisError)]
@@ -155,7 +156,7 @@ public class SmallTalkChatBotView : ABotView
         var text = $"🔴 Досягнуто ліміт на аналіз повідомлень. На день доступно 3 аналізи";
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
     }
-    
+
     [BotView(SmallTalkChatViewField.TooManyUserMessagesError)]
     public async Task SmallTalkAnalysisMessageTooManyUserMessagesError(UpdateBDto updateBDto)
     {
@@ -169,6 +170,36 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"🟡 Розпочався аналіз";
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+    }
+
+    [BotView(SmallTalkChatViewField.SelectGenderAction)]
+    public async Task SelectGenderAction(UpdateBDto updateBDto)
+    {
+        var text =
+            "Це анонімний чат 😊, тому ми призначимо вам випадкове ім'я для відображення. Оберіть стать для коректного звернення";
+
+        var inlineButton = new InlineKeyboardMarkup(new[]
+        {
+            new InlineKeyboardButton[]
+            {
+                InlineKeyboardButton.WithCallbackData("🙋‍♂️",
+                    SmallTalkChatField.SelectGenderCallback + $":{(int)UserGenderEnum.Man}"),
+                InlineKeyboardButton.WithCallbackData("🙋‍♀️",
+                    SmallTalkChatField.SelectGenderCallback + $":{(int)UserGenderEnum.Woman}")
+            }
+        });
+
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), BaseField.ChatKeyboard,
+            replyMarkup: new ReplyKeyboardRemove());
+        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: inlineButton);
+    }
+
+    [BotView(SmallTalkChatViewField.SelectedGenderCallback)]
+    public async Task SelectedGenderCallback(SelectedGenderCallbackVDto viewDto)
+    {
+        var text = $"🟡 Ваше ім'я в чаті буде *\"{viewDto.Name}\"*";
+        var messageId = viewDto.Update.GetMessage().MessageId;
+        await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), messageId, text, ParseMode.Markdown);
     }
 
     private ReplyKeyboardMarkup GetMenuButtons()

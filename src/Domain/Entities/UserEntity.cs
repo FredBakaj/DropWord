@@ -1,9 +1,11 @@
-﻿namespace DropWord.Domain.Entities;
+﻿using DropWord.Domain.Enums;
+
+namespace DropWord.Domain.Entities;
 
 public class UserEntity : BaseAuditableEntity<long>
 {
     public string Name { get; set; } = null!;
-    
+    public UserGenderEnum? Gender { get; set; }
     public StateTreeEntity StateTree { get; set; } = null!;
     public UserSettingsEntity UserSettings { get; set; } = null!;
     public UserLearningInfoEntity UserLearningInfo { get; set; } = null!;

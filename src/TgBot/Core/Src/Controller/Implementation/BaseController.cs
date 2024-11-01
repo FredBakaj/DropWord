@@ -158,9 +158,19 @@ namespace DropWord.TgBot.Core.Src.Controller.Implementation
 
         private async Task OnChatKeyboard(UpdateBDto updateBDto)
         {
-            await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto, SmallTalkChatField.SmallTalkChatState,
-                SmallTalkChatField.SmallTalkChatAction);
-            await _botViewHandler.SendAsync(SmallTalkChatViewField.StartSmallTalkChatAction, updateBDto);
+            var user = await _sender.Send(new GetUserQuery() { UserId = updateBDto.GetUserId() });
+            if (user.Gender is null || string.IsNullOrEmpty(user.Name))
+            {
+                await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto, SmallTalkChatField.SmallTalkChatState,
+                    SmallTalkChatField.SelectGenderAction);
+                await _botViewHandler.SendAsync(SmallTalkChatViewField.SelectGenderAction, updateBDto);
+            }
+            else
+            {
+                await _botStateTreeUserHandler.SetStateAndActionAsync(updateBDto, SmallTalkChatField.SmallTalkChatState,
+                    SmallTalkChatField.SmallTalkChatAction);
+                await _botViewHandler.SendAsync(SmallTalkChatViewField.StartSmallTalkChatAction, updateBDto);
+            }
 
         }
 

@@ -12,4 +12,9 @@ public abstract class SmallTalkChatField
     
     public const string SmallTalkWriteMessageAction = nameof(SmallTalkWriteMessageAction);
     public const string SearchingNewUserAction = nameof(SearchingNewUserAction);
+    
+    public const string SelectGenderAction = nameof(SelectGenderAction);
+    public const string SelectGenderCallback = nameof(SelectGenderCallback);
+    
+    
 }

@@ -20,5 +20,6 @@ public class SmallTalkChatViewField
     public const string SmallTalkAnalysisMessageStartAnalysis = nameof(SmallTalkAnalysisMessageStartAnalysis);
     public const string SmallTalkAnalysisMessageTooManyAnalysisHistoryError = nameof(SmallTalkAnalysisMessageTooManyAnalysisHistoryError);
     public const string TooManyUserMessagesError = nameof(TooManyUserMessagesError);
-
+    public const string SelectGenderAction = nameof(SelectGenderAction);
+    public const string SelectedGenderCallback = nameof(SelectedGenderCallback);
 }

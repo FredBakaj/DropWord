@@ -63,7 +63,8 @@ public class InitializeUserCommandHandler : IRequestHandler<InitializeUserComman
             {
                 Id = request.UserId,
                 //TODO добавить генерацию имени
-                Name = "Farilder",
+                Name = "",
+                Gender = null,
                 StateTree = stateTree, 
                 UserSettings = userSettings,
                 UserLearningInfo = userLearningInfo,
