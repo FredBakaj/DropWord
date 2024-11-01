@@ -38,11 +38,11 @@ public class MainMenuComponent : IMainMenuComponent
             },
             new KeyboardButton[]
             {
-                BaseField.SentencesRepetitionByInputKeyboard, BaseField.RecommendedNewSentenceButton
+                BaseField.ChatKeyboard,BaseField.SentencesRepetitionByInputKeyboard, // BaseField.RecommendedNewSentenceButton
             },
             new KeyboardButton[]
             {
-                BaseField.ChatKeyboard, BaseField.SettingsKeyboard
+                 BaseField.SettingsKeyboard
             }
         }) { ResizeKeyboard = true };
     }
