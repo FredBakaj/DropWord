@@ -140,8 +140,8 @@ public class SmallTalkChatController : IBotController
         
         //Ограничение на 20 сообщений для Пользователя в день
         var countMessageDto = await _sender.Send(new GetUserCountMessageQuery() { UserId = updateBDto.GetUserId() });
-        //TODO вынести 20 в конфиг
-        if (countMessageDto.CountMessage > 20)
+        //TODO вынести 35 в конфиг
+        if (countMessageDto.CountMessage > 35)
         {
             await _botViewHandler.SendAsync(SmallTalkChatViewField.TooManyUserMessagesError, updateBDto);
             return;
@@ -219,8 +219,8 @@ public class SmallTalkChatController : IBotController
         }
         //Ограничение на 20 сообщений для Пользователя в день
         var countMessageDto = await _sender.Send(new GetUserCountMessageQuery() { UserId = updateBDto.GetUserId() });
-        //TODO вынести 20 в конфиг
-        if (countMessageDto.CountMessage > 20)
+        //TODO вынести 35 в конфиг
+        if (countMessageDto.CountMessage > 35)
         {
             await _botViewHandler.SendAsync(SmallTalkChatViewField.TooManyUserMessagesError, updateBDto);
             return;
@@ -249,8 +249,8 @@ public class SmallTalkChatController : IBotController
             serviceScope.ServiceProvider.GetRequiredService<IBotStateTreeUserHandler>();
 
         // ждем перед первым отправлением
-        Random random = new Random();
-        await Task.Delay(random.Next(1, 6) * 1000);
+        //TODO вынести в конфиг 1
+        await WordCountWaitingAsync(updateBDto.GetMessage().Text!, 1);
 
         // Запускаем отправку события в телеграмм, чтобы в чате с ботом писало, что бот пишет
         await backgroundTaskHandler.StartProcessAsync(updateBDto.GetUserId(),
@@ -265,14 +265,21 @@ public class SmallTalkChatController : IBotController
                     UserId = updateBDto.GetUserId(), Message = updateBDto.GetMessage().Text!
                 },
                 cancellationToken);
-
+            //TODO могут приходить пустые сообщения, пока заглушка смайликом. В будущем, сделать логику
+            // где при получении не коректного ответа, отправлять новый запрос на генерацию для ответа
+            var message = string.IsNullOrEmpty(replyToUser.Message) ? "🧐" : replyToUser.Message;
+            
             var viewDto = new SmallTalkWriteMessageVDto()
             {
                 Update = updateBDto,
                 InterlocutorsName = replyToUser.InterlocutorsName,
-                Message = replyToUser.Message,
+                Message = message,
             };
-
+            //ожидаем перед отправкой сгенерированого текста, для создании ощющения что кто-то пишет, и сделать задержу,
+            //чтобы не пушили постояно запросами на генерацию
+            //TODO вынести в конфиг 1
+            await WordCountWaitingAsync(message, 1);
+            cancellationToken.ThrowIfCancellationRequested();
             await _botViewHandler.SendAsync(SmallTalkChatViewField.SmallTalkWriteMessage, viewDto);
         }
         catch (Exception)
@@ -306,6 +313,14 @@ public class SmallTalkChatController : IBotController
             await botClient.SendChatActionAsync(updateBDto.GetUserId(), ChatAction.Typing);
             await Task.Delay(5000);
         }
+    }
+    // метод для ожидания взависимости от кол-во пробелов в тексте, каждый пробел это добавление указаных секунд к 
+    // общему времени ожиданния
+    private async Task WordCountWaitingAsync(string text, int seconds)
+    {
+        int spaceCount = text.Count(c => c == ' ');
+        var ticks = seconds * 1000 * spaceCount;
+        await Task.Delay(ticks);
     }
 
     private async Task OnAnalyzeMessagesKeyboard(UpdateBDto updateBDto)

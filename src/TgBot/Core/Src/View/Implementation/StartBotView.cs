@@ -1,5 +1,6 @@
 ﻿using DropWord.TgBot.Core.Attribute;
 using DropWord.TgBot.Core.Extension;
+using DropWord.TgBot.Core.Field;
 using DropWord.TgBot.Core.Field.Controller;
 using DropWord.TgBot.Core.Field.View;
 using DropWord.TgBot.Core.Model;
@@ -45,10 +46,14 @@ public class StartBotView : ABotView
     [BotView(StartViewField.FirstShowMenu)]
     public async Task FirstShowMenu(UpdateBDto viewDto)
     {
-        var text = "Цей бот допоможе вам вивчати корисні фрази англійською. " +
-                   "Наприклад із цього <a href='https://youtu.be/0CdlL2MbSkc?si=wdjMts6HNqdt9Dz1'>відео</a>. " +
-                   "Все що потрібно, просто написати речення," +
-                   $" які ви хотіли б запам'ятати, і натиснути кнопку \"{BaseField.NewSentenceButton}\"";
-        await _mainMenuComponent.SendHTMLAsync(viewDto, text);
+        var text = $"""
+                    Ласкаво просимо! 👋
+                    Наш додаток зроблено так, щоб вчити мову стало цікавіше і простіше.
+                    
+                    З нами ти зможеш подолати бар'єр у спілкуванні англійською, практикувати мову щодня, розширювати словниковий запас і виправляти помилки, покращуючи свою граматику.
+                    
+                    Готовий почати? /{CommandField.Help}
+                    """;
+        await _mainMenuComponent.SendAsync(viewDto, text);
     }
 }

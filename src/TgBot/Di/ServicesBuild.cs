@@ -36,6 +36,7 @@ namespace DropWord.TgBot.Di
             {
                 services.AddHostedService<ConfigureWebhook>();
                 services.AddHostedService<ResetWebhookService>();
+                services.ConfigureTelegramBotMvc();
             }
             else
             {

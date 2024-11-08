@@ -1,6 +1,7 @@
 ﻿using DropWord.TgBot.Core.Service;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -15,51 +16,30 @@ public class BotWebhookController : ControllerBase
     private readonly IUpdateHandler _updateHandler;
     private readonly ILogger<BotWebhookController> _logger;
     private readonly ITelegramBotClient _botClient;
+    private readonly IConfiguration _configuration;
 
-    public BotWebhookController(IUpdateHandler updateHandler, ILogger<BotWebhookController> logger, ITelegramBotClient client)
+    public BotWebhookController(IUpdateHandler updateHandler, ILogger<BotWebhookController> logger, ITelegramBotClient client, IConfiguration configuration)
     {
         _updateHandler = updateHandler;
         _logger = logger;
         _botClient = client;
+        _configuration = configuration;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post()
+    public async Task<IActionResult> Post([FromBody] Update update, [FromServices] ITelegramBotClient bot, CancellationToken ct)
     {
+        if (Request.Headers["X-Telegram-Bot-Api-Secret-Token"] != _configuration.GetSection("CommonSettings")["WebHookSecretToken"]!)
+            return Forbid();
         try
         {
-            Update update;
-            if (Request.Body != null)
-            {
-                var originalBodyStream = Request.Body;
-
-                using (var test = new StreamReader(originalBodyStream))
-                {
-                    var body = await test.ReadToEndAsync();
-
-                    try
-                    {
-                        update = JsonConvert.DeserializeObject<Update>(body)!;
-
-                        if (update != null)
-                        {
-                            CancellationTokenSource cts = new CancellationTokenSource();
-                            var token = cts.Token;
-                            await _updateHandler.HandleUpdateAsync(_botClient ,update, token);
-                        }
-                    }
-                    catch (JsonException ex)
-                    {
-                        _logger.LogError(ex.Message);
-                    }
-                }
-            }
+            await _updateHandler.HandleUpdateAsync(_botClient ,update, ct);
         }
-        catch (ApiRequestException ex)
+        catch (Exception exception)
         {
-            _logger.LogError(ex.Message);
+            await _updateHandler.HandleErrorAsync(_botClient, exception, ct);
         }
-
         return Ok();
     }
+   
 }

@@ -72,7 +72,6 @@ public class SmallTalkChatBotView : ABotView
     public async Task SearchNewUserSuccessfulResult(SearchNewUserSuccessfulResultVDto viewDto)
     {
         var text = $"👤<b>{viewDto.Name}</b>\n" +
-                   $"📝 {viewDto.Interests}\n\n" +
                    $"➡️ Напишіть повідомлення ✉️";
         var keyboard = GetChatingMenuButtons();
         await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, replyMarkup: keyboard,
@@ -122,10 +121,10 @@ public class SmallTalkChatBotView : ABotView
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageSuccessfulAndContinueChat)]
     public async Task SmallTalkAnalysisMessageSuccessfulAndContinueChat(SmallTalkAnalysisMessageVDto viewDto)
     {
-        var text = $"**Аналіз повідомлень** 🧐\n" +
-                   $"{viewDto.TextAnalysis}\n" +
-                   $"Можете продовжувати переписку ✍️";
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Markdown);
+        var text = $"<b>Аналіз повідомлень</b> 🧐\n" +
+                   $"{viewDto.TextAnalysis}\n\n" +
+                   $"<b> Можете продовжувати переписку</b> ✍️";
+        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Html);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageReanalysisError)]
@@ -159,16 +158,16 @@ public class SmallTalkChatBotView : ABotView
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageTooManyAnalysisHistoryError)]
     public async Task SmallTalkAnalysisMessageTooManyAnalysisHistoryError(UpdateBDto updateBDto)
     {
-        //TODO тянуть из конфига цифру 3 в тексте
-        var text = $"🔴 Досягнуто ліміт на аналіз повідомлень. На день доступно 3 аналізи";
+        //TODO тянуть из конфига цифру 6 в тексте
+        var text = $"🔴 Досягнуто ліміт на аналіз повідомлень. На день доступно 6 аналізи";
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.TooManyUserMessagesError)]
     public async Task SmallTalkAnalysisMessageTooManyUserMessagesError(UpdateBDto updateBDto)
     {
-        //TODO тянуть из конфига цифру 20 в тексте
-        var text = $"🔴 Досягнуто ліміт повідомлень. На день доступно 20 повідомлень";
+        //TODO тянуть из конфига цифру 35 в тексте
+        var text = $"🔴 Досягнуто ліміт повідомлень. На день доступно 35 повідомлень";
         await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
     }
 

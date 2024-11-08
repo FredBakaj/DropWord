@@ -33,11 +33,12 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
         CancellationToken cancellationToken)
     {
         var AnalysisHistorysFor24Hours = await _context.AutoChatAnalysisHistory
-            .Where(x => x.Created >= DateTime.Now.AddHours(-24))
+            .Where(x => x.UserId == request.UserId 
+                        && x.Created >= DateTime.Now.AddHours(-24))
             .ToListAsync();
         
-        //TODO Вынести 3 в конфиг
-        if (AnalysisHistorysFor24Hours.Count > 3)
+        //TODO Вынести 6 в конфиг
+        if (AnalysisHistorysFor24Hours.Count > 6)
         {
             throw new TooManyAnalysisHistoryException("Too many analysis historys for 24 hours, please try again later");
         }
@@ -117,7 +118,8 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
                       Перевірити на помилки повідомленя які писав {userName}, як бы це зробыв вчитель англійскої мови
                       Потрібно скорочено описати граматичні та синтаксичні помилки. Також важливо зробити акцент на правельності написання слів.
                       Також потрібно писати коротке пояснення помилок.
-                      Опис зауважень повинен бути на українськй мові
+                      Опис зауважень повинен бути на українськй мові.
+                      Результат не повинен мати Markdown розмітку або будь-яку іншу.
                       """;
         
         return result;
