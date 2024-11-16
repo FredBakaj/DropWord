@@ -14,5 +14,6 @@ public class CommandBuild
         services.AddScoped<IBotCommand, HelpNewSentencesCommand>();
         services.AddScoped<IBotCommand, HelpRepeatSentencesCommand>();
         services.AddScoped<IBotCommand, HelpSettingsCommand>();
+        services.AddScoped<IBotCommand, CountUsersCommand>();
     }
 }

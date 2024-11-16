@@ -10,5 +10,6 @@
         public const string HelpNewSentences = "help_new_sentences";
         public const string HelpChat = "help_chat";
         public const string HelpSettings = "help_settings";
+        public const string CountUsers = "count_users";
     }
 }
