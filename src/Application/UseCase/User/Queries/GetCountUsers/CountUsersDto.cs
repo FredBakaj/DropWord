@@ -2,5 +2,6 @@
 
 public class CountUsersDto
 {
-    public int Count {get; set;}
+    public int CountUsers {get; set;}
+    public int CountReturnUsers { get; set; }
 }

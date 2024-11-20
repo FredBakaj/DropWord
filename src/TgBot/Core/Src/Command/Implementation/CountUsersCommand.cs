@@ -26,8 +26,10 @@ public class CountUsersCommand: IBotCommand
         //TODO сделать нормальное разделение ролей, на юзера и админа
         if (update.GetUserId() == 1903751935)
         {
-            var countUsersDto = await _sender.Send(new GetCountUsersQuery());
-            var text = $"Count users: {countUsersDto.Count}";
+            var returnUserDays = 7;
+            var countUsersDto = await _sender.Send(new GetCountUsersQuery(){ReturnUserDays = returnUserDays});
+            var text = $"Count users: {countUsersDto.CountUsers}\n" +
+                       $"Count return users for days {returnUserDays}: {countUsersDto.CountReturnUsers}";
             await _client.SendTextMessageMarkdown2Async(update.GetUserId(), text);
         }
     }
