@@ -66,6 +66,6 @@ public class InfoManager : IInfoManager
             new BotCommand(){Command = CommandField.Reload, Description = "Перезавантажити бот"},
             new BotCommand(){Command = CommandField.Help, Description = "Керівництво керування ботом"}
         };
-        await _client.SetMyCommandsAsync(commands);
+        await _client.SetMyCommands(commands);
     }
 }

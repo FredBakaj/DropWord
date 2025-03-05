@@ -33,7 +33,7 @@ public class SpamBlockerMiddleware : ABotMiddleware
         }
         else
         {
-            await _client.SendTextMessageAsync(telegramUpdate.GetUserId(), "spam block");
+            await _client.SendMessage(telegramUpdate.GetUserId(), "spam block");
         }
 
     }

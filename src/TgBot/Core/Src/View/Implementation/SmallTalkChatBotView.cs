@@ -31,7 +31,7 @@ public class SmallTalkChatBotView : ABotView
             $"Щоб почати натисніть кнопку \"{SmallTalkChatField.SearchNewUserKeyboard}\"";
 
         var keyboard = GetMenuButtons();
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.AutoChatAction)]
@@ -39,7 +39,7 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"Натисніть кнопку \"{SmallTalkChatField.SearchNewUserKeyboard}\"";
         var keyboard = GetMenuButtons();
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.CancelSearchKeyboard)]
@@ -47,7 +47,7 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"Скасування пошуку ❌";
         var keyboard = GetMenuButtons();
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.SearchNewUserKeyboard)]
@@ -58,14 +58,14 @@ public class SmallTalkChatBotView : ABotView
         {
             new KeyboardButton[] { SmallTalkChatField.CancelSearchKeyboard }
         }) { ResizeKeyboard = true };
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.SearchNewUserRunning)]
     public async Task SearchNewUserRunning(UpdateBDto updateBDto)
     {
         var text = "Пошук співрозмовника триває";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SearchNewUserSuccessfulResult)]
@@ -74,7 +74,7 @@ public class SmallTalkChatBotView : ABotView
         var text = $"👤<b>{viewDto.Name}</b>\n" +
                    $"➡️ Напишіть повідомлення ✉️";
         var keyboard = GetChatingMenuButtons();
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, replyMarkup: keyboard,
+        await _botClient.SendMessage(viewDto.Update.GetUserId(), text, replyMarkup: keyboard,
             parseMode: ParseMode.Html);
     }
 
@@ -83,7 +83,7 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"🔴 Виникла помилка";
         var keyboard = GetMenuButtons();
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkWriteMessage)]
@@ -91,14 +91,14 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"💬 <b>{viewDto.InterlocutorsName}</b>\n" +
                    $"{viewDto.Message}";
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Html);
+        await _botClient.SendMessage(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Html);
     }
     
     [BotView(SmallTalkChatViewField.InvalidCyrillicTextError)]
     public async Task InvalidCyrillicTextError(UpdateBDto updateBDto)
     {
         var text = $"🔴 Текст має складатися тільки з латинських літер";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkEndChating)]
@@ -106,7 +106,7 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"Співрозмовник закінчив розмову 🫡";
         var keyboard = GetMenuButtons();
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: keyboard);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: keyboard);
     }
 
 
@@ -115,7 +115,7 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"**Аналіз минулої переписки** 🧐\n" +
                    $"{viewDto.TextAnalysis}";
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Markdown);
+        await _botClient.SendMessage(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Markdown);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageSuccessfulAndContinueChat)]
@@ -124,35 +124,35 @@ public class SmallTalkChatBotView : ABotView
         var text = $"<b>Аналіз повідомлень</b> 🧐\n" +
                    $"{viewDto.TextAnalysis}\n\n" +
                    $"<b> Можете продовжувати переписку</b> ✍️";
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Html);
+        await _botClient.SendMessage(viewDto.Update.GetUserId(), text, parseMode: ParseMode.Html);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageReanalysisError)]
     public async Task SmallTalkAnalysisMessageReanalysisError(UpdateBDto updateBDto)
     {
         var text = $"🟡 Вже було проаналізовано ці повідомлення, продовжуйте переписку";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageError)]
     public async Task SmallTalkAnalysisMessageError(UpdateBDto updateBDto)
     {
         var text = $"🔴 Під час аналізу сталася помилка";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageProcessing)]
     public async Task SmallTalkAnalysisMessageProcessing(UpdateBDto updateBDto)
     {
         var text = $"🟡 Аналіз запущено. Зачекайте";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageNoTalkMessagesError)]
     public async Task SmallTalkAnalysisMessageNoTalkMessagesError(UpdateBDto updateBDto)
     {
         var text = $"🔴 Немає повідомлень для аналізу, продовжуйте переписку";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageTooManyAnalysisHistoryError)]
@@ -160,7 +160,7 @@ public class SmallTalkChatBotView : ABotView
     {
         //TODO тянуть из конфига цифру 6 в тексте
         var text = $"🔴 Досягнуто ліміт на аналіз повідомлень. На день доступно 6 аналізи";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.TooManyUserMessagesError)]
@@ -168,14 +168,14 @@ public class SmallTalkChatBotView : ABotView
     {
         //TODO тянуть из конфига цифру 35 в тексте
         var text = $"🔴 Досягнуто ліміт повідомлень. На день доступно 35 повідомлень";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SmallTalkAnalysisMessageStartAnalysis)]
     public async Task SmallTalkAnalysisMessageStartAnalysis(UpdateBDto updateBDto)
     {
         var text = $"🟡 Розпочався аналіз";
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text);
     }
 
     [BotView(SmallTalkChatViewField.SelectGenderAction)]
@@ -195,9 +195,9 @@ public class SmallTalkChatBotView : ABotView
             }
         });
 
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), BaseField.ChatKeyboard,
+        await _botClient.SendMessage(updateBDto.GetUserId(), BaseField.ChatKeyboard,
             replyMarkup: new ReplyKeyboardRemove());
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: inlineButton);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: inlineButton);
     }
 
     [BotView(SmallTalkChatViewField.SelectedGenderCallback)]
@@ -205,7 +205,7 @@ public class SmallTalkChatBotView : ABotView
     {
         var text = $"🟡 Ваше ім'я в чаті буде *\"{viewDto.Name}\"*";
         var messageId = viewDto.Update.GetMessage().MessageId;
-        await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), messageId, text, ParseMode.Markdown);
+        await _botClient.EditMessageText(viewDto.Update.GetUserId(), messageId, text, ParseMode.Markdown);
     }
 
     private ReplyKeyboardMarkup GetMenuButtons()

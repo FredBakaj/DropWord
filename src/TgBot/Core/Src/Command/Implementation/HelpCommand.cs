@@ -20,6 +20,6 @@ public class HelpCommand : IBotCommand
     }
     public async Task Exec(UpdateBDto update)
     {
-        await _client.SendTextMessageAsync(update.GetUserId(), _infoManager.HelpText);
+        await _client.SendMessage(update.GetUserId(), _infoManager.HelpText);
     }
 }

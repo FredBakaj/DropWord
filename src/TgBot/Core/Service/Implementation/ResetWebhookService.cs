@@ -35,11 +35,11 @@ public class ResetWebhookService : BackgroundService
         {
             try
             {
-                var webhookInfo = await _botClient.GetWebhookInfoAsync();
+                var webhookInfo = await _botClient.GetWebhookInfo();
                 if (string.IsNullOrEmpty(webhookInfo.Url))
                 {
                     _logger.LogInformation("reset webhook: {WebhookAddress}", _webhookAddress);
-                    await _botClient.SetWebhookAsync(
+                    await _botClient.SetWebhook(
                         url: _webhookAddress,
                         allowedUpdates: Array.Empty<UpdateType>(),
                         secretToken: _webHookSecretToken,

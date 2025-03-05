@@ -52,7 +52,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                                       collectionSentences.CollectionId),
                 }
             });
-            await _botClient.SendTextMessageAsync(collectionSentences.Update.GetUserId(), text,
+            await _botClient.SendMessage(collectionSentences.Update.GetUserId(), text,
                 replyMarkup: inlineKeyboard);
         }
 
@@ -66,7 +66,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
 
             InlineKeyboardMarkup inlineKeyboard = viewElements.Item2;
 
-            await _botClient.SendTextMessageAsync(sentence.Update.GetUserId(), text,
+            await _botClient.SendMessage(sentence.Update.GetUserId(), text,
                 replyMarkup: inlineKeyboard);
         }
 
@@ -101,7 +101,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                                       editSentenceVDto.Id),
                 }
             });
-            await _botClient.EditMessageTextAsync(editSentenceVDto.Update.GetUserId(),
+            await _botClient.EditMessageText(editSentenceVDto.Update.GetUserId(),
                 editSentenceVDto.Update.GetMessage().MessageId, text,
                 replyMarkup: inlineKeyboard);
         }
@@ -111,9 +111,9 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         {
             var text = "Введіть речення ✏️";
             var textEditMessage = updateBDto.GetMessage().Text;
-            await _botClient.EditMessageTextAsync(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId,
+            await _botClient.EditMessageText(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId,
                 textEditMessage!);
-            await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text);
+            await _botClient.SendMessage(updateBDto.GetUserId(), text);
         }
 
         [BotView(BaseViewField.CancelEditAddedSentence)]
@@ -126,7 +126,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
 
             InlineKeyboardMarkup inlineKeyboard = viewElements.Item2;
 
-            await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
+            await _botClient.EditMessageText(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
                 text, replyMarkup: inlineKeyboard);
         }
 
@@ -134,14 +134,14 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         public async Task DeleteAddedSentence(UpdateBDto updateBDto)
         {
             var text = "Речення видалено 🗑";
-            await _botClient.EditMessageTextAsync(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId, text);
+            await _botClient.EditMessageText(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId, text);
         }
 
         [BotView(BaseViewField.DeleteAddedSentenceCollection)]
         public async Task DeleteAddedSentenceCollection(UpdateBDto updateBDto)
         {
             var text = "Речення видалено 📄🗑";
-            await _botClient.EditMessageTextAsync(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId, text);
+            await _botClient.EditMessageText(updateBDto.GetUserId(), updateBDto.GetMessage().MessageId, text);
         }
 
         [BotView(BaseViewField.MaxCountSentencesException)]
@@ -150,7 +150,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             var text = $"🔴 Перевищена межа кількості речень у тексті." +
                        $" Максимальна кількість речень {viewDto.MaxCountSentences} " +
                        $"(Текст розбивається по крапках, і переносах на наступний рядок)";
-            await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.Update.GetUserId(), text);
         }
 
         [BotView(BaseViewField.MaxLengthSentenceException)]
@@ -158,41 +158,41 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         {
             var text = $"🔴 Перевищена межа кількості символів у реченні." +
                        $" Максимальна кількість символів {viewDto.MaxLengthSentence} ";
-            await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.Update.GetUserId(), text);
         }
 
         [BotView(BaseViewField.LimitAddSentencesExceededException)]
         public async Task LimitAddSentencesExceededException(LimitAddSentencesExceededExceptionVDto viewDto)
         {
             var text = $"🔴 Перевищено денний ліміт на додавання речень. Денний ліміт {viewDto.MaxCountSentence}";
-            await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.Update.GetUserId(), text);
         }
 
         [BotView(BaseViewField.SentencesNotValidForAddException)]
         public async Task SentencesNotValidForAddException(UpdateBDto viewDto)
         {
             var text = $"🔴 У тексті присутні заборонені символи (~ * _)";
-            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.GetUserId(), text);
         }
         [BotView(BaseViewField.NoNewSentenceException)]
         public async Task NoNewSentenceException(UpdateBDto viewDto)
         {
             var text = $"Зараз у вас немає нових речень для вивчення😔 Щоб додати, надішліть повідомлення в бот✍️";
-            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.GetUserId(), text);
         }
         
         [BotView(BaseViewField.InvalidDataException)]
         public async Task InvalidDataException(UpdateBDto viewDto)
         {
             var text = $"🔴 Сталася помилка під час спроби розбити текст на окремі речення";
-            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.GetUserId(), text);
         }
         
         [BotView(BaseViewField.TryAddOneWordException)]
         public async Task TryAddOneWordException(UpdateBDto viewDto)
         {
             var text = $"🔴 зараз немає можливості додавати одне слово. Напишіть речення, що складається з кількох слів, розділених пропусками";
-            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.GetUserId(), text);
         }
         [BotView(BaseViewField.DetectMoreThanOneLanguageException)]
         public async Task DetectMoreThanOneLanguageException(UpdateBDto viewDto)
@@ -200,7 +200,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
             var text = $"🔴 У тексті було визначено кілька мов. " +
                        $"Змініть текст, щоб він відповідав одній мові. " +
                        $"Якщо ж ви впевнені, що з текстом усе гаразд, ви можете надіслати скаргу через налаштування бота";
-            await _botClient.SendTextMessageAsync(viewDto.GetUserId(), text);
+            await _botClient.SendMessage(viewDto.GetUserId(), text);
         }
         
         [BotView(BaseViewField.DeleteAddedSentenceFailed)]
@@ -208,7 +208,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
         {
             var text = viewDto.GetMessage().Text + "\n\n" +
                 $"Минуло багато часу, це речення вже неможливо видалити 😕.";
-            await _botClient.EditMessageTextAsync(viewDto.GetUserId(), viewDto.GetMessage().MessageId, text);
+            await _botClient.EditMessageText(viewDto.GetUserId(), viewDto.GetMessage().MessageId, text);
         }
 
         [BotView(BaseViewField.NewSentence)]
@@ -348,7 +348,7 @@ namespace DropWord.TgBot.Core.Src.View.Implementation
                         callbackData: BaseField.ResetCountRepeatSentencesCallback),
                 }
             });
-            await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: inlineKeyboard);
+            await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: inlineKeyboard);
         }
 
         private (string, InlineKeyboardMarkup) AddSentenceElements(int sentencePairId, string firstSentence,

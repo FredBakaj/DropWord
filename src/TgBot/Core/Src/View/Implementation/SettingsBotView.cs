@@ -30,7 +30,7 @@ public class SettingsBotView : ABotView
     {
         var settingsItem = SettingsMenuItem(viewDto.ChangeModeIcon, viewDto.LearnLanguagePairEmoji,
             viewDto.TimeZone, viewDto.TimesForDay);
-        await _botClient.SendTextMessageAsync(viewDto.Update.GetUserId(), settingsItem.Item1,
+        await _botClient.SendMessage(viewDto.Update.GetUserId(), settingsItem.Item1,
             replyMarkup: settingsItem.Item2);
     }
 
@@ -39,7 +39,7 @@ public class SettingsBotView : ABotView
     {
         var settingsItem = SettingsMenuItem(viewDto.ChangeModeIcon, viewDto.LearnLanguagePairEmoji,
             viewDto.TimeZone, viewDto.TimesForDay);
-        await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(),
+        await _botClient.EditMessageText(viewDto.Update.GetUserId(),
             viewDto.Update.GetMessage().MessageId,
             settingsItem.Item1,
             replyMarkup: settingsItem.Item2);
@@ -61,7 +61,7 @@ public class SettingsBotView : ABotView
         buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
             callbackData: BaseField.BackToSettingsMenuCallback)});
 
-        await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
+        await _botClient.EditMessageText(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
             text, replyMarkup: new InlineKeyboardMarkup(buttons.ToArray()));
 
     }
@@ -81,7 +81,7 @@ public class SettingsBotView : ABotView
         buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
             callbackData: BaseField.BackToSettingsMenuCallback)});
 
-        await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
+        await _botClient.EditMessageText(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
             text, replyMarkup: new InlineKeyboardMarkup(buttons.ToArray()));
     }
     
@@ -100,7 +100,7 @@ public class SettingsBotView : ABotView
         buttons.Add(new []{InlineKeyboardButton.WithCallbackData(text: "Повернутися ⬅️",
             callbackData: BaseField.BackToSettingsMenuCallback)});
 
-        await _botClient.EditMessageTextAsync(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
+        await _botClient.EditMessageText(viewDto.Update.GetUserId(), viewDto.Update.GetMessage().MessageId,
             text, replyMarkup: new InlineKeyboardMarkup(buttons.ToArray()));
     }
     
@@ -114,7 +114,7 @@ public class SettingsBotView : ABotView
             new KeyboardButton[] { BaseField.CancelInputFeedbackKeyboard }
         }) { ResizeKeyboard = true };
 
-        await _botClient.SendTextMessageAsync(updateBDto.GetUserId(), text, replyMarkup: replyMarkup);
+        await _botClient.SendMessage(updateBDto.GetUserId(), text, replyMarkup: replyMarkup);
     }
 
     [BotView(SettingsViewField.SendFeedback)]

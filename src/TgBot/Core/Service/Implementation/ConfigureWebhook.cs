@@ -32,7 +32,7 @@ public class ConfigureWebhook : IHostedService
         var webhookAddress = _configuration.GetSection("CommonSettings")["WebHookUrl"];
         var secretToken = _configuration.GetSection("CommonSettings")["WebHookSecretToken"];
         _logger.LogInformation("Setting webhook: {WebhookAddress}", webhookAddress);
-        await botClient.SetWebhookAsync(
+        await botClient.SetWebhook(
             url: webhookAddress!,
             allowedUpdates: Array.Empty<UpdateType>(),
             secretToken: secretToken!,
@@ -46,6 +46,6 @@ public class ConfigureWebhook : IHostedService
 
         // Remove webhook on app shutdown
         _logger.LogInformation("Removing webhook");
-        await botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
+        await botClient.DeleteWebhook(cancellationToken: cancellationToken);
     }
 }

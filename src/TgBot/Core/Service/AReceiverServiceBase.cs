@@ -38,14 +38,14 @@ public abstract class ReceiverServiceBase<TUpdateHandler> : IReceiverService
             AllowedUpdates = Array.Empty<UpdateType>(),
         };
 
-        var me = await _botClient.GetMeAsync(stoppingToken);
+        var me = await _botClient.GetMe(stoppingToken);
         _logger.LogInformation("Start receiving updates for {BotName}", me.Username ?? "My Awesome Bot");
         
         //delete webhook
-        var webhookInfo = await _botClient.GetWebhookInfoAsync(cancellationToken: stoppingToken);
+        var webhookInfo = await _botClient.GetWebhookInfo(cancellationToken: stoppingToken);
         if (webhookInfo.Url != string.Empty)
         {
-            await _botClient.DeleteWebhookAsync(cancellationToken: stoppingToken);
+            await _botClient.DeleteWebhook(cancellationToken: stoppingToken);
         }
 
         // Start receiving updates

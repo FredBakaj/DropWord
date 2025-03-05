@@ -310,7 +310,7 @@ public class SmallTalkChatController : IBotController
                 break;
             }
 
-            await botClient.SendChatActionAsync(updateBDto.GetUserId(), ChatAction.Typing);
+            await botClient.SendChatAction(updateBDto.GetUserId(), ChatAction.Typing);
             await Task.Delay(5000);
         }
     }

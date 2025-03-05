@@ -11,7 +11,7 @@ public static class TelegramBotClientExtension
         IReplyMarkup? replyMarkup = null)
     {
         message = MessageReplaceSymbols(message);
-        return await client.SendTextMessageAsync(chatId, message, replyMarkup: replyMarkup, parseMode: ParseMode.MarkdownV2);
+        return await client.SendMessage(chatId, message, replyMarkup: replyMarkup, parseMode: ParseMode.MarkdownV2);
     }
 
     public static async Task<Message> EditTextMessageMarkdown2Async(this ITelegramBotClient client, long chatId,
@@ -20,7 +20,7 @@ public static class TelegramBotClientExtension
         InlineKeyboardMarkup? replyMarkup = null)
     {
         message = MessageReplaceSymbols(message);
-        return await client.EditMessageTextAsync(chatId, messageId, message, replyMarkup: replyMarkup, parseMode: ParseMode.MarkdownV2);
+        return await client.EditMessageText(chatId, messageId, message, replyMarkup: replyMarkup, parseMode: ParseMode.MarkdownV2);
 
     }
 

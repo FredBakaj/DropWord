@@ -25,7 +25,7 @@ public class MainMenuComponent : IMainMenuComponent
     {
         ReplyKeyboardMarkup replyMarkup = CreateKeyboardButton();
 
-        await _botClient.SendTextMessageAsync(update.GetUserId(), text, replyMarkup: replyMarkup, parseMode:ParseMode.Html);
+        await _botClient.SendMessage(update.GetUserId(), text, replyMarkup: replyMarkup, parseMode:ParseMode.Html);
     }
 
     private ReplyKeyboardMarkup CreateKeyboardButton()

@@ -49,7 +49,7 @@ public class GenerateReplyToUserMessageHandler : INotificationHandler<UserSendMe
     {
         await Task.Delay(10000);
         cancellationToken.ThrowIfCancellationRequested();
-        await _botClient.SendTextMessageAsync(chanelData.UserId, chanelData.Message);
+        await _botClient.SendMessage(chanelData.UserId, chanelData.Message);
     }
     
     public int Priority => 1;
