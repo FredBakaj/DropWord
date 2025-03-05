@@ -100,7 +100,7 @@ public class Translate : ITranslate
         var body = new { q = input, source = languageFrom, target = languageTo };
         var apiResponse = await restApiClient.PostAsync<TranslateDataDTO>(apiUrl, headers, body);
 
-        return apiResponse.Data.Translations.TranslatedText;
+        return apiResponse.Data.Translations.TranslatedText.First();
     }
 
     public string ConvertLanguageCode(string code)
