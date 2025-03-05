@@ -1,5 +1,9 @@
-﻿using DropWord.Application.Common.Interfaces;
+﻿using System.ClientModel;
+using Azure.AI.OpenAI;
+using DropWord.Application.Common.Interfaces;
+using DropWord.Application.Manager.Ai;
 using DropWord.Domain.Constants;
+using DropWord.Infrastructure.Ai;
 using DropWord.Infrastructure.Data;
 using DropWord.Infrastructure.Data.Interceptors;
 using DropWord.Infrastructure.DI.Manager;
@@ -23,6 +27,12 @@ public static class DependencyInjection
 
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        services.AddScoped<IAiManager, AiManager>();
+        services.AddScoped<AzureOpenAIClient>(p => new AzureOpenAIClient(
+            new Uri(p.GetService<IConfiguration>()?.GetSection("CommonSettings")["AiEndpoint"] ??
+                    throw new InvalidOperationException()),
+            new ApiKeyCredential(p.GetService<IConfiguration>()?.GetSection("CommonSettings")["AiApiKey"] ??
+                                 throw new InvalidOperationException())));
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
@@ -51,9 +61,9 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
             options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
-        
+
         ManagerBuild.BuildService(services);
-        
+
         return services;
     }
 }

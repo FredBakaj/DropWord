@@ -1,5 +1,6 @@
 ﻿using DropWord.Application.Common.Interfaces;
 using DropWord.Application.Common.Interfaces.SmallTalkChat;
+using DropWord.Application.Manager.Ai;
 using DropWord.Domain.Entities;
 using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
@@ -22,27 +23,31 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
 {
     private readonly IApplicationDbContext _context;
     private readonly IResponseMessageGenerator _responseMessageGenerator;
+    private readonly IAiManager _aiManager;
 
-    public AnalysisTalkMessagesCommandHandler(IApplicationDbContext context, IResponseMessageGenerator responseMessageGenerator)
+    public AnalysisTalkMessagesCommandHandler(IApplicationDbContext context,
+        IResponseMessageGenerator responseMessageGenerator, IAiManager aiManager)
     {
         _context = context;
         _responseMessageGenerator = responseMessageGenerator;
+        _aiManager = aiManager;
     }
 
     public async Task<AnalysisTalkMessagesDto> Handle(AnalysisTalkMessagesCommand request,
         CancellationToken cancellationToken)
     {
         var AnalysisHistorysFor24Hours = await _context.AutoChatAnalysisHistory
-            .Where(x => x.UserId == request.UserId 
+            .Where(x => x.UserId == request.UserId
                         && x.Created >= DateTime.Now.AddHours(-24))
             .ToListAsync();
-        
+
         //TODO Вынести 6 в конфиг
         if (AnalysisHistorysFor24Hours.Count > 6)
         {
-            throw new TooManyAnalysisHistoryException("Too many analysis historys for 24 hours, please try again later");
+            throw new TooManyAnalysisHistoryException(
+                "Too many analysis historys for 24 hours, please try again later");
         }
-        
+
         var chatData = await _context.AutoChatData
             .Where(x => x.UserId == request.UserId)
             .OrderByDescending(x => x.Id)
@@ -55,11 +60,12 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
             .Take(6)
             .OrderBy(x => x.Created)
             .ToListAsync();
-    
+
         if (chatHistory.Count == 0)
         {
             throw new NoTalkMessagesException("no talk messages found, for analysis");
         }
+
         var lastAnalysisHistory = await _context.AutoChatAnalysisHistory
             .Where(x => x.UserId == request.UserId)
             .OrderByDescending(x => x.Id)
@@ -70,26 +76,26 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
         {
             throw new ReanalysisTalkMessagesException("for these messages have already been analyzed");
         }
-        
+
         var autoChatBot = await _context.AutoChatBot
             .Where(x => x.Id == chatData.AutoChatBotId)
             .FirstOrDefaultAsync();
-        
+
         var user = await _context.Users
             .Where(x => x.Id == request.UserId)
             .FirstOrDefaultAsync();
-        
+
         var chatHistoryText = "";
         foreach (var row in chatHistory)
         {
             var characterName = row.SenderEnum == AutoChatSenderEnum.User ? user!.Name : autoChatBot!.Name;
             chatHistoryText += $"{characterName}: {row.Message}\n";
         }
-        
+
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         var prompt = GeneratePrompt(user!.Name, chatHistoryText);
-        var responseMessage = (await _responseMessageGenerator.GenerateAiMessageAsync(prompt, 320)).Message;
+        var responseMessage = await _aiManager.QueryToLlmModelAsync(prompt);
         responseMessage = ParseResponseMessage(responseMessage);
 
         var newAnalysisHistoryRecord = new AutoChatAnalysisHistoryEntity()
@@ -99,14 +105,11 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
             LastAnalyzeAutoChatHistoryId = chatHistory.LastOrDefault()!.Id,
             TextAnalysis = responseMessage
         };
-        
+
         await _context.AutoChatAnalysisHistory.AddAsync(newAnalysisHistoryRecord);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new AnalysisTalkMessagesDto()
-        {
-            TextAnalysis = responseMessage,
-        };
+        return new AnalysisTalkMessagesDto() { TextAnalysis = responseMessage, };
     }
 
     private string GeneratePrompt(string userName, string chatHistory)
@@ -121,12 +124,12 @@ public class AnalysisTalkMessagesCommandHandler : IRequestHandler<AnalysisTalkMe
                       Опис зауважень повинен бути на українськй мові.
                       Результат не повинен мати Markdown розмітку або будь-яку іншу.
                       """;
-        
+
         return result;
     }
+
     private string ParseResponseMessage(string responseMessage)
     {
         return responseMessage;
     }
-
 }

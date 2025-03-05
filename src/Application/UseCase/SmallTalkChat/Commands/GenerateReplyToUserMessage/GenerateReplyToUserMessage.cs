@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using DropWord.Application.Common.Interfaces;
-using DropWord.Application.Common.Interfaces.SmallTalkChat;
+using DropWord.Application.Manager.Ai;
 using DropWord.Domain.Entities;
 using DropWord.Domain.Enums;
 using DropWord.Domain.Exceptions;
@@ -24,16 +24,15 @@ public class
     GenerateReplyToUserMessageCommandHandler : IRequestHandler<GenerateReplyToUserMessageCommand, ReplyToUserMessageDto>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IResponseMessageGenerator _responseMessageGenerator;
-    
+    private readonly IAiManager _aiManager;
+
     private static readonly Regex regexPattern = new Regex(@"GENERATE_TEXT_MESSAGE:\s*(.*)", RegexOptions.Compiled);
 
 
-    public GenerateReplyToUserMessageCommandHandler(IApplicationDbContext context,
-        IResponseMessageGenerator responseMessageGenerator)
+    public GenerateReplyToUserMessageCommandHandler(IApplicationDbContext context, IAiManager aiManager)
     {
         _context = context;
-        _responseMessageGenerator = responseMessageGenerator;
+        _aiManager = aiManager;
     }
 
     public async Task<ReplyToUserMessageDto> Handle(GenerateReplyToUserMessageCommand request,
@@ -61,7 +60,7 @@ public class
         await _context.AutoChatHistory.AddAsync(autoChatHistoryEntity);
         await _context.SaveChangesAsync(cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         // получаем информацию для генерации ответа
         var autoChatBot = await _context.AutoChatBot
             .Where(x => x.Id == chatData.AutoChatBotId)
@@ -85,23 +84,24 @@ public class
             var characterName = row.SenderEnum == AutoChatSenderEnum.User ? user!.Name : autoChatBot!.Name;
             chatHistoryText += $"{characterName}: {row.Message}\n";
         }
-        
+
         // Формирование ответа моделью ИИ
         cancellationToken.ThrowIfCancellationRequested();
         var prompt = "";
         if (chatHistory.Count() > 2)
         {
-            prompt = GeneratePromptToContinueChat(autoChatBot!.Name, user!.Name, user.Gender.ToString()!, autoChatBot!.Description, chatHistoryText);
+            prompt = GeneratePromptToContinueChat(autoChatBot!.Name, user!.Name, user.Gender.ToString()!,
+                autoChatBot!.Description, chatHistoryText);
         }
         else
         {
             prompt = GeneratePromptToStartChat(autoChatBot!.Name, autoChatBot!.Description, chatHistoryText);
         }
-        
-        var responseMessage = (await _responseMessageGenerator.GenerateAiMessageAsync(prompt, 120)).Message;
+
+        var responseMessage = await _aiManager.QueryToLlmModelAsync(prompt);
         responseMessage = ParseResponseMessage(responseMessage);
-        
-        
+
+
         // добавляем в базу сгенерированый ответ
         cancellationToken.ThrowIfCancellationRequested();
         var generateBotAutoChatHistoryEntity = new AutoChatHistoryEntity()
@@ -115,20 +115,16 @@ public class
         await _context.SaveChangesAsync(cancellationToken);
 
         // возвращаем результат
-        return new ReplyToUserMessageDto()
-        {
-            InterlocutorsName = autoChatBot.Name,
-            Message = responseMessage
-        };
-
+        return new ReplyToUserMessageDto() { InterlocutorsName = autoChatBot.Name, Message = responseMessage };
     }
 
-    private string GeneratePromptToContinueChat(string botName, string userName, string userGender, string botDescription, string chatHistoryText)
+    private string GeneratePromptToContinueChat(string botName, string userName, string userGender,
+        string botDescription, string chatHistoryText)
     {
         var dateTimeNow = DateTime.UtcNow + TimeSpan.FromHours(2);
         var timeNow = dateTimeNow.ToString("hh:mm tt"); // "tt" will display "AM" or "PM"
         var dateNow = dateTimeNow.ToString("dd.MM.yyyy");
-        
+
         var random = new Random();
         // часто в конце предложения задаёт вопрос, хочеться чтобы переодически юзер сам был инициатором разговора
         // по этому с опередёным шансом будет запрещаться задавать вопросы
@@ -138,33 +134,33 @@ public class
         // Модель постояно пишет большие предложения нужно часть из них сократить
         var randomNumberBanLongAnswer = random.Next() % 100;
         var banLongAnswer = randomNumberBanLongAnswer < 70 ? $"{botName} doesn't like to write long messages" : "";
-        
-        
+
+
         var result = $"""
-                     ### Human Description ({botName})
-                     {botDescription}                    
-                     The gender of {userName} is {userGender}.
+                      ### Human Description ({botName})
+                      {botDescription}
+                      The gender of {userName} is {userGender}.
 
-                     ### Human Relationship
-                     The person is in a chat room where people want to improve their language skills and communicate on various topics.
-                     The time is now {timeNow}.
-                     The date is now {dateNow}.
-                     
-                     ####Instructions
-                     Make up a text message on behalf of {botName}. It can be a question or a made up life story. The answer should be based on the chat history, and the description of {botName}. Also, the answers should not be too large 1-2 sentences. Before forming the text of the message, you should briefly analyze what is the best answer and why.
-                     {banOnAskingQuestion}
-                     {banLongAnswer}
-                     ####Chat History
-                     {chatHistoryText}
-                     
-                     ### Response Creation Template
-                     BRIEFLY_ANALYZE: Analyze
-                     GENERATE_TEXT_MESSAGE: Text
+                      ### Human Relationship
+                      The person is in a chat room where people want to improve their language skills and communicate on various topics.
+                      The time is now {timeNow}.
+                      The date is now {dateNow}.
 
-                     """;
+                      ####Instructions
+                      Make up a text message on behalf of {botName}. It can be a question or a made up life story. The answer should be based on the chat history, and the description of {botName}. Also, the answers should not be too large 1-2 sentences. Before forming the text of the message, you should briefly analyze what is the best answer and why.
+                      {banOnAskingQuestion}
+                      {banLongAnswer}
+                      ####Chat History
+                      {chatHistoryText}
+
+                      ### Response Creation Template
+                      BRIEFLY_ANALYZE: Analyze
+                      GENERATE_TEXT_MESSAGE: Text
+
+                      """;
         return result;
     }
-    
+
     private string GeneratePromptToStartChat(string botName, string botDescription, string chatHistoryText)
     {
         // Время по ютиси + 2 часа. Как по Украине
@@ -174,36 +170,30 @@ public class
 
         var moods = new[]
         {
-            "Joy and happiness", 
-            "Anxiety and worry", 
-            "Anger and irritation", 
-            "Satisfaction", 
-            "Surprise", 
-            "Interest and inspiration", 
-            "Apathy and indifference", 
-            "Enthusiasm and enthusiasm", 
+            "Joy and happiness", "Anxiety and worry", "Anger and irritation", "Satisfaction", "Surprise",
+            "Interest and inspiration", "Apathy and indifference", "Enthusiasm and enthusiasm",
         };
 
         var randomMood = moods[(new Random()).Next(moods.Length)];
-        
+
         var result = $"""
-                     ### Human Relations
-                     A man, to improve his social skills, went to an anonymous chat room to meet and discuss topics of interest.
-                     The time is now {timeNow}.
-                     Date is now {dateNow}.
-                     
-                     ####Chat History
-                     {chatHistoryText}
-                     
-                     ####Instructions
-                     You need to get to know the person you are chatting with as {botName}
-                     You should not write large messages.
-                     You should take into account that {botName} is in a {randomMood} mood today.
-                     
-                     ### Response Creation Template
-                     SELECT_TYPE_MESSAGE: Type
-                     GENERATE_TEXT_MESSAGE: Text
-                     """;
+                      ### Human Relations
+                      A man, to improve his social skills, went to an anonymous chat room to meet and discuss topics of interest.
+                      The time is now {timeNow}.
+                      Date is now {dateNow}.
+
+                      ####Chat History
+                      {chatHistoryText}
+
+                      ####Instructions
+                      You need to get to know the person you are chatting with as {botName}
+                      You should not write large messages.
+                      You should take into account that {botName} is in a {randomMood} mood today.
+
+                      ### Response Creation Template
+                      SELECT_TYPE_MESSAGE: Type
+                      GENERATE_TEXT_MESSAGE: Text
+                      """;
         return result;
     }
 
@@ -213,5 +203,4 @@ public class
         var result = regexPattern.Match(message).Groups[1].Value;
         return result;
     }
-    
 }
