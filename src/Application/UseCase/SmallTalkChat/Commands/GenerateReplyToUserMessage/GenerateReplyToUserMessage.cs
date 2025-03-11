@@ -88,10 +88,15 @@ public class
         // Формирование ответа моделью ИИ
         cancellationToken.ThrowIfCancellationRequested();
         var prompt = "";
-        if (chatHistory.Count() > 2)
+        if (chatHistory.Count() > 6)
         {
             prompt = GeneratePromptToContinueChat(autoChatBot!.Name, user!.Name, user.Gender.ToString()!,
-                autoChatBot!.Description, chatHistoryText);
+                autoChatBot!.Description, chatHistoryText, false);
+        }
+        else if (chatHistory.Count() > 5)
+        {
+            prompt = GeneratePromptToContinueChat(autoChatBot!.Name, user!.Name, user.Gender.ToString()!,
+                autoChatBot!.Description, chatHistoryText, true);
         }
         else
         {
@@ -119,44 +124,75 @@ public class
     }
 
     private string GeneratePromptToContinueChat(string botName, string userName, string userGender,
-        string botDescription, string chatHistoryText)
+        string botDescription, string chatHistoryText, bool isNeedTopicDiscussion)
     {
-        var dateTimeNow = DateTime.UtcNow + TimeSpan.FromHours(2);
-        var timeNow = dateTimeNow.ToString("hh:mm tt"); // "tt" will display "AM" or "PM"
-        var dateNow = dateTimeNow.ToString("dd.MM.yyyy");
-
         var random = new Random();
-        // часто в конце предложения задаёт вопрос, хочеться чтобы переодически юзер сам был инициатором разговора
-        // по этому с опередёным шансом будет запрещаться задавать вопросы
-        //TODO сделать шанс уникальным для каждого юзера
-        var randomNumber = random.Next() % 100;
-        var banOnAskingQuestion = randomNumber < 70 ? $"{botName} doesn't like to ask questions" : "";
-        // Модель постояно пишет большие предложения нужно часть из них сократить
-        var randomNumberBanLongAnswer = random.Next() % 100;
-        var banLongAnswer = randomNumberBanLongAnswer < 70 ? $"{botName} doesn't like to write long messages" : "";
+        var maxCountMessage = new List<int>
+        {
+            7,
+            13,
+            13,
+            13,
+            13,
+            13,
+            17,
+            25
+        };
+        var countMessage = maxCountMessage[random.Next(maxCountMessage.Count)];
 
+        var listBehaviorVector =
+            new List<string>
+            {
+                "you have to ask a question",
+                "you have to ask a question",
+                "you have to make a joke",
+                "you have to tell a story",
+                "you have to tell a story",
+                "you have to tell a story",
+            };
+        var behaviorVector = listBehaviorVector[random.Next(listBehaviorVector.Count)];
+
+        var randomTopic = "";
+        if (isNeedTopicDiscussion)
+        {
+            var topicForDiscussion = new List<string>()
+            {
+                "Daily Routine",
+                "Hobbies and Interests",
+                "Travel and Places",
+                "Work and Career",
+                "Movies and TV Shows",
+                "Books and Reading",
+                "Food and Cooking",
+                "Technology and Gadgets",
+                "Music and Artists",
+                "Sports and Fitness",
+                "Shopping and Fashion",
+                "Current Events and News",
+                "Weather and Seasons",
+                "Friends and Social Life",
+                "Dreams and Goals",
+                "Holidays and Celebrations",
+                "Transportation and Driving",
+                "Pets and Animals",
+                "Learning and Education",
+                "Funny Stories and Experiences"
+            };
+
+            randomTopic = topicForDiscussion[random.Next(topicForDiscussion.Count)];
+            randomTopic = $"discussion topic: {randomTopic}";
+        }
 
         var result = $"""
-                      ### Human Description ({botName})
-                      {botDescription}
-                      The gender of {userName} is {userGender}.
-
-                      ### Human Relationship
-                      The person is in a chat room where people want to improve their language skills and communicate on various topics.
-                      The time is now {timeNow}.
-                      The date is now {dateNow}.
-
-                      ####Instructions
-                      Make up a text message on behalf of {botName}. It can be a question or a made up life story. The answer should be based on the chat history, and the description of {botName}. Also, the answers should not be too large 1-2 sentences. Before forming the text of the message, you should briefly analyze what is the best answer and why.
-                      {banOnAskingQuestion}
-                      {banLongAnswer}
-                      ####Chat History
+                      ###Instructions
+                        Your job is to communicate with the person you're talking to like a real person. {behaviorVector}
+                        {randomTopic}
+                        you can't write sentences longer than {countMessage} words.
+                      ###Chat history
                       {chatHistoryText}
 
-                      ### Response Creation Template
-                      BRIEFLY_ANALYZE: Analyze
-                      GENERATE_TEXT_MESSAGE: Text
-
+                      ### The format of the answer you should return!
+                        GENERATE_TEXT_MESSAGE: Answer for person
                       """;
         return result;
     }
